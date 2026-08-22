@@ -1,0 +1,159 @@
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap');
+
+:root {
+  --bg: #171714;
+  --surface: #22221E;
+  --surface-elevated: #292923;
+  --text-primary: #F3F0E8;
+  --text-secondary: #AAA89F;
+  --text-muted: #77766F;
+  --accent: #C89B5B;
+  --accent-hover: #D4AA6C;
+  --completed: #8C9A7A;
+  --border: #383832;
+  --danger: #A96A5F;
+  --font-serif: 'DM Serif Display', Georgia, serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: var(--accent);
+  color: var(--bg);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* Focus ring */
+:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Route line animation */
+@keyframes routePulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, var(--surface) 25%, var(--surface-elevated) 50%, var(--surface) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* React Flow overrides */
+.react-flow__renderer { background: var(--bg) !important; }
+.react-flow__background { background: var(--bg) !important; }
+.react-flow__edge-path { stroke: var(--border) !important; }
+.react-flow__minimap { background: var(--surface) !important; }
+
+/* Utility classes */
+.font-serif { font-family: var(--font-serif); }
+.text-accent { color: var(--accent); }
+.text-secondary { color: var(--text-secondary); }
+.text-muted { color: var(--text-muted); }
+.text-completed { color: var(--completed); }
+.text-danger { color: var(--danger); }
+.bg-surface { background-color: var(--surface); }
+.bg-elevated { background-color: var(--surface-elevated); }
+.border-default { border-color: var(--border); }
+
+/* Section label style */
+.label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Route line */
+.route-line {
+  width: 1px;
+  background-color: var(--border);
+  flex-shrink: 0;
+}
+
+/* Thin progress bar base */
+.progress-track {
+  height: 2px;
+  background: var(--border);
+  border-radius: 1px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 1px;
+  transition: width 0.8s ease;
+}
+
+/* Input base */
+input, textarea, select {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  width: 100%;
+  transition: border-color 0.2s;
+}
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+input::placeholder, textarea::placeholder {
+  color: var(--text-muted);
+}
+select option {
+  background: var(--surface);
+}
+
+/* Tags/chips */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
