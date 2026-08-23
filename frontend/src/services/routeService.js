@@ -6,59 +6,60 @@ const delay = (ms) => new Promise((r) => setTimeout(r, ms));
 export const routeService = {
   async getRoutes() {
     try {
-      const res = await client.get('/api/routes');
+      const res = await client.get('/routes');
       return res.data;
     } catch {
-      await delay(500);
+      await delay(400);
       return mockRoutes;
     }
   },
 
   async getRouteById(routeId) {
     try {
-      const res = await client.get(`/api/routes/${routeId}`);
+      const res = await client.get(`/routes/${routeId}`);
       return res.data;
     } catch {
-      await delay(400);
+      await delay(300);
       return mockRoutes.find((r) => r.id === routeId) || mockRoutes[0];
     }
   },
 
-  async createRoute(goalData) {
+  async generateRoute(goalData) {
     try {
-      const res = await client.post('/api/routes', goalData);
+      const res = await client.post('/routes/generate', goalData);
       return res.data;
     } catch {
-      await delay(1500);
+      await delay(1200);
       return {
         id: `route-${Date.now()}`,
-        title: goalData.goal || 'New Learning Route',
+        title: goalData.career_title || goalData.goal || 'New Learning Route',
         progress: 0,
         status: 'active',
-        isCurrent: false,
-        currentStage: 'Starting',
+        is_current: true,
+        current_stage: 'Starting',
         stages: [],
-        milestones: [],
       };
     }
   },
 
+  async createRoute(goalData) {
+    return this.generateRoute(goalData);
+  },
+
   async pauseRoute(routeId) {
     try {
-      const res = await client.patch(`/api/routes/${routeId}/pause`);
+      const res = await client.patch(`/routes/${routeId}/pause`);
       return res.data;
     } catch {
-      await delay(300);
       return { success: true };
     }
   },
 
   async resumeRoute(routeId) {
     try {
-      const res = await client.patch(`/api/routes/${routeId}/resume`);
+      const res = await client.patch(`/routes/${routeId}/resume`);
       return res.data;
     } catch {
-      await delay(300);
       return { success: true };
     }
   },
