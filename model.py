@@ -16,14 +16,14 @@ def build_tfidf_model(df):
         sublinear_tf=True     # log-scale TF for better weighting
     )
     tfidf_matrix = vectorizer.fit_transform(df['combined_features'])
-    print(f"✅ TF-IDF matrix built: {tfidf_matrix.shape}")
+    print(f"OK: TF-IDF matrix built: {tfidf_matrix.shape}")
     return vectorizer, tfidf_matrix
 
 
 def compute_similarity_matrix(tfidf_matrix):
     """Pre-compute full cosine similarity matrix (for small-medium datasets)."""
     similarity_matrix = cosine_similarity(tfidf_matrix, tfidf_matrix)
-    print(f"✅ Similarity matrix computed: {similarity_matrix.shape}")
+    print(f"OK: Similarity matrix computed: {similarity_matrix.shape}")
     return similarity_matrix
 
 
@@ -41,7 +41,7 @@ def save_model(vectorizer, tfidf_matrix, similarity_matrix, df, model_dir='model
         pickle.dump(similarity_matrix, f)
 
     df.to_pickle(os.path.join(model_dir, 'courses_df.pkl'))
-    print(f"✅ All model artifacts saved to '{model_dir}'")
+    print(f"SUCCESS: All model artifacts saved to '{model_dir}'")
 
 
 def load_model(model_dir='model/'):
@@ -58,7 +58,7 @@ def load_model(model_dir='model/'):
     import pandas as pd
     df = pd.read_pickle(os.path.join(model_dir, 'courses_df.pkl'))
 
-    print("✅ Model loaded successfully from disk.")
+    print("SUCCESS: Model loaded successfully from disk.")
     return vectorizer, tfidf_matrix, similarity_matrix, df
 
 
@@ -92,7 +92,7 @@ def evaluate_model(df, similarity_matrix, sample_size=10):
     coverage = len(recommended_set) / len(df) * 100
     avg_diversity = np.mean(diversities)
 
-    print("\n📊 Model Evaluation Metrics:")
+    print("\nModel Evaluation Metrics:")
     print(f"   Catalogue size       : {len(df)} courses")
     print(f"   Coverage @10         : {coverage:.1f}%")
     print(f"   Avg Intra-list Div.  : {avg_diversity:.4f}  (1=max diverse, 0=identical)")

@@ -1,0 +1,14 @@
+{
+  "python.defaultInterpreterPath": "${workspaceFolder}/venv/Scripts/python.exe",
+  "python.pythonPath": "${workspaceFolder}/venv/Scripts/python.exe",
+  "pyrefly.pythonPath": "${workspaceFolder}/venv/Scripts/python.exe",
+  "pyright.pythonPath": "${workspaceFolder}/venv/Scripts/python.exe",
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}",
+    "${workspaceFolder}/ai-service"
+  ],
+  "python.autoComplete.extraPaths": [
+    "${workspaceFolder}",
+    "${workspaceFolder}/ai-service"
+  ]
+}

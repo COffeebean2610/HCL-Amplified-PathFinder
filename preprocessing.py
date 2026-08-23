@@ -37,11 +37,11 @@ def clean_skills(skills_text):
     return skills
 
 
-def load_and_preprocess(filepath='data/coursera_courses.csv'):
+def load_and_preprocess(filepath='data/processed/courses.csv'):
     """Load dataset and apply full preprocessing pipeline."""
     df = pd.read_csv(filepath)
 
-    print(f"✅ Dataset loaded: {df.shape[0]} rows, {df.shape[1]} columns")
+    print(f"OK: Dataset loaded: {df.shape[0]} rows, {df.shape[1]} columns")
     print(f"   Columns found: {list(df.columns)}")
 
     # ── Column name normalization ──────────────────────────────────────────────
@@ -125,7 +125,7 @@ def load_and_preprocess(filepath='data/coursera_courses.csv'):
         .astype(int)
     )
 
-    print(f"✅ Preprocessing complete. {len(df)} courses ready.")
+    print(f"SUCCESS: Preprocessing complete. {len(df)} courses ready.")
     return df
 
 

@@ -1,0 +1,14 @@
+{
+  "student_id": "STU_84920",
+  "skills": [
+    "Python",
+    "SQL"
+  ],
+  "interests": "Artificial Intelligence",
+  "target_role": "AI Engineer",
+  "difficulty": "Intermediate",
+  "completed_courses": [
+    "Introduction to Python"
+  ],
+  "number_of_results": 3
+}

@@ -18,17 +18,17 @@ def initialize_model():
     model_dir = 'model/'
 
     if os.path.exists(os.path.join(model_dir, 'vectorizer.pkl')):
-        print("📦 Loading existing model from disk...")
+        print("INFO: Loading existing model from disk...")
         vectorizer, tfidf_matrix, similarity_matrix, df = load_model(model_dir)
     else:
-        print("🔨 Building model from scratch...")
-        df = load_and_preprocess('data/coursera_courses.csv')
+        print("INFO: Building model from scratch...")
+        df = load_and_preprocess('data/processed/courses.csv')
         vectorizer, tfidf_matrix = build_tfidf_model(df)
         similarity_matrix = compute_similarity_matrix(tfidf_matrix)
         save_model(vectorizer, tfidf_matrix, similarity_matrix, df, model_dir)
 
     recommender = CourseRecommender(vectorizer, tfidf_matrix, similarity_matrix, df)
-    print(f"✅ Recommender ready with {len(df)} courses.")
+    print(f"SUCCESS: Recommender ready with {len(df)} courses.")
 
 
 # ── Routes ─────────────────────────────────────────────────────────────────────
@@ -106,6 +106,64 @@ def api_recommend():
         top_n=data.get('top_n', 10)
     )
     return jsonify({'recommendations': results, 'count': len(results)})
+
+
+@app.route('/api/recommend-projects', methods=['POST'])
+def api_recommend_projects():
+    """JSON API endpoint for engineering project recommendations."""
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'No JSON body'}), 400
+
+    target_role = data.get('target_role') or data.get('target_career')
+    if not target_role:
+        return jsonify({'error': 'Missing target_role or target_career parameter'}), 400
+
+    payload = {
+        "skills": data.get('skills', []),
+        "interests": data.get('interests', ''),
+        "target_role": target_role,
+        "difficulty": data.get('difficulty', 'Any Level'),
+        "top_k": int(data.get('top_k', 5))
+    }
+
+    try:
+        from src.project_recommender.engine import recommend_projects_api
+        res = recommend_projects_api(payload)
+        return jsonify(res)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/generate-roadmap', methods=['POST'])
+def api_generate_roadmap():
+    """JSON API endpoint for generating personalized learning roadmaps."""
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'No JSON body'}), 400
+
+    target_role = data.get('target_role') or data.get('target_career')
+    if not target_role:
+        return jsonify({'error': 'Missing target_role or target_career parameter'}), 400
+
+    payload = {
+        "skills": data.get('skills', []),
+        "interests": data.get('interests', ''),
+        "target_role": target_role,
+        "difficulty": data.get('difficulty', 'Any Level'),
+        "completed_courses": data.get('completed_courses', []),
+        "courses_per_skill": int(data.get('courses_per_skill', 3)),
+        "projects_per_skill": int(data.get('projects_per_skill', 2))
+    }
+
+    try:
+        from src.roadmap_generator.engine import generate_roadmap_api
+        res = generate_roadmap_api(payload)
+        return jsonify(res)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 
 
 @app.route('/evaluate')

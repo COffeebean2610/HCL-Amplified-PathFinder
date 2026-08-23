@@ -80,7 +80,8 @@ class CourseRecommender:
         difficulty: str = 'any',
         top_n: int = 10,
         content_weight: float = 0.6,
-        skills_weight: float = 0.4
+        skills_weight: float = 0.4,
+        target_career: str = None
     ) -> list:
         """
         Returns a list of dicts (top_n recommended courses).
@@ -94,9 +95,46 @@ class CourseRecommender:
         top_n            : number of results
         content_weight   : weight for TF-IDF content score  (default 0.6)
         skills_weight    : weight for skills overlap score   (default 0.4)
+        target_career    : Target career ID or title for Phase 7 hybrid routing (optional)
         """
         if user_skills      is None: user_skills       = []
         if completed_courses is None: completed_courses = []
+
+        if target_career:
+            try:
+                from src.hybrid_recommender.engine import recommend_hybrid
+                payload = {
+                    "interests": interests,
+                    "current_skills": user_skills,
+                    "target_career": target_career,
+                    "completed_courses": completed_courses,
+                    "difficulty": difficulty,
+                    "top_k": top_n
+                }
+                res = recommend_hybrid(payload)
+                formatted_results = []
+                for idx, c in enumerate(res["courses"], 1):
+                    formatted_results.append({
+                        'rank'                   : idx,
+                        'course_name'            : c['course_name'],
+                        'organization'           : c['organization'],
+                        'course_difficulty'      : c['course_difficulty'],
+                        'course_rating'          : c['course_rating'],
+                        'course_certificate_type': '',
+                        'skills'                 : c['missing_relevant_skills'] + c['matched_skills'],
+                        'course_url'             : c['course_url'],
+                        'content_score'          : c['semantic_score'],
+                        'skills_score'           : c['skill_match_score'],
+                        'final_score'            : c['final_score'],
+                        'prerequisite_score'     : c['prerequisite_score'],
+                        'difficulty_score'       : c['difficulty_score'],
+                        'prerequisite_status'    : c['prerequisite_status'],
+                        'reason'                 : c['reason']
+                    })
+                return formatted_results
+            except Exception as e:
+                print(f"WARNING: Hybrid recommender routing failed ({e}). Falling back to legacy TF-IDF content baseline.")
+
 
         # Build query string = interests + skills
         user_skills_parsed = [_parse_user_input(s) for s in user_skills]
