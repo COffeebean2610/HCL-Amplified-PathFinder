@@ -1,0 +1,382 @@
+{
+  "career": {
+    "career_id": "CAR_003",
+    "career_title": "AI Engineer",
+    "career_domain": "Artificial Intelligence"
+  },
+  "readiness_score": 26.1,
+  "technical_match_pct": 26.1,
+  "current_skills": [
+    "Python",
+    "SQL",
+    "Git"
+  ],
+  "matched_skills": [
+    "Python",
+    "SQL",
+    "Git"
+  ],
+  "missing_skills": [
+    {
+      "skill_id": "SK_00264",
+      "skill_name": "Machine Learning",
+      "skill_category": "Cloud",
+      "priority": "Critical"
+    },
+    {
+      "skill_id": "SK_00132",
+      "skill_name": "Deep Learning",
+      "skill_category": "AI/ML",
+      "priority": "Critical"
+    },
+    {
+      "skill_id": "SK_00361",
+      "skill_name": "PyTorch",
+      "skill_category": "AI/ML",
+      "priority": "High"
+    },
+    {
+      "skill_id": "SK_00457",
+      "skill_name": "TensorFlow",
+      "skill_category": "AI/ML",
+      "priority": "High"
+    },
+    {
+      "skill_id": "SK_00145",
+      "skill_name": "Docker",
+      "skill_category": "Cloud",
+      "priority": "High"
+    },
+    {
+      "skill_id": "SK_00046",
+      "skill_name": "Amazon Web Services",
+      "skill_category": "Cloud",
+      "priority": "High"
+    },
+    {
+      "skill_id": "SK_00188",
+      "skill_name": "Generative AI",
+      "skill_category": "Generative AI",
+      "priority": "Medium"
+    },
+    {
+      "skill_id": "SK_00255",
+      "skill_name": "Large Language Models",
+      "skill_category": "Generative AI",
+      "priority": "Medium"
+    },
+    {
+      "skill_id": "SK_00382",
+      "skill_name": "REST APIs",
+      "skill_category": "Database Management",
+      "priority": "Medium"
+    }
+  ],
+  "prerequisite_gaps": [
+    {
+      "skill_id": "SK_00270",
+      "skill_name": "Mathematics",
+      "required_by_skill_id": "SK_00264",
+      "required_by_skill_name": "Machine Learning",
+      "reason": "Linear algebra, calculus, and probability are fundamental to understanding ML algorithms."
+    },
+    {
+      "skill_id": "SK_00257",
+      "skill_name": "Linux",
+      "required_by_skill_id": "SK_00145",
+      "required_by_skill_name": "Docker",
+      "reason": "Docker containers are fundamentally based on Linux kernel features like cgroups."
+    },
+    {
+      "skill_id": "SK_00082",
+      "skill_name": "Cloud Computing",
+      "required_by_skill_id": "SK_00046",
+      "required_by_skill_name": "Amazon Web Services",
+      "reason": "General cloud concepts must be understood before learning specific AWS services."
+    },
+    {
+      "skill_id": "SK_00302",
+      "skill_name": "Natural Language Processing",
+      "required_by_skill_id": "SK_00260",
+      "required_by_skill_name": "LLMs",
+      "reason": "LLMs are advanced applications of NLP principles like tokenization and semantic understanding."
+    },
+    {
+      "skill_id": "SK_00260",
+      "skill_name": "LLMs",
+      "required_by_skill_id": "SK_00188",
+      "required_by_skill_name": "Generative AI",
+      "reason": "LLMs are a foundational technology within the broader Generative AI ecosystem."
+    },
+    {
+      "skill_id": "SK_00212",
+      "skill_name": "HTML",
+      "required_by_skill_id": "SK_00106",
+      "required_by_skill_name": "CSS",
+      "reason": "HTML provides the structure of web pages, which is necessary before applying styles with CSS."
+    },
+    {
+      "skill_id": "SK_00106",
+      "skill_name": "CSS",
+      "required_by_skill_id": "SK_00240",
+      "required_by_skill_name": "JavaScript",
+      "reason": "CSS styling concepts are often manipulated dynamically using JavaScript."
+    },
+    {
+      "skill_id": "SK_00179",
+      "skill_name": "Flask",
+      "required_by_skill_id": "SK_00382",
+      "required_by_skill_name": "REST APIs",
+      "reason": "Flask is highly suited and commonly used for developing lightweight REST APIs."
+    },
+    {
+      "skill_id": "SK_00240",
+      "skill_name": "JavaScript",
+      "required_by_skill_id": "SK_00244",
+      "required_by_skill_name": "JSON",
+      "reason": "JavaScript Object Notation is the standard data interchange format derived from JavaScript."
+    },
+    {
+      "skill_id": "SK_00314",
+      "skill_name": "Node.js",
+      "required_by_skill_id": "SK_00173",
+      "required_by_skill_name": "Express.js",
+      "reason": "Express.js is a minimal and flexible Node.js web application framework."
+    },
+    {
+      "skill_id": "SK_00244",
+      "skill_name": "JSON",
+      "required_by_skill_id": "SK_00382",
+      "required_by_skill_name": "REST APIs",
+      "reason": "REST APIs predominantly use JSON to format and transmit data payloads between client and server."
+    },
+    {
+      "skill_id": "SK_00173",
+      "skill_name": "Express.js",
+      "required_by_skill_id": "SK_00382",
+      "required_by_skill_name": "REST APIs",
+      "reason": "Express.js is commonly used to design and route RESTful APIs."
+    }
+  ],
+  "learning_sequence": [
+    {
+      "sequence_number": 1,
+      "skill_id": "SK_00257",
+      "skill_name": "Linux",
+      "skill_type": "prerequisite",
+      "priority": "High",
+      "reason": "Foundational prerequisite for learning Docker. Reason: Docker containers are fundamentally based on Linux kernel features like cgroups.",
+      "prerequisites": []
+    },
+    {
+      "sequence_number": 2,
+      "skill_id": "SK_00179",
+      "skill_name": "Flask",
+      "skill_type": "prerequisite",
+      "priority": "Medium",
+      "reason": "Foundational prerequisite for learning REST APIs. Reason: Flask is highly suited and commonly used for developing lightweight REST APIs.",
+      "prerequisites": []
+    },
+    {
+      "sequence_number": 3,
+      "skill_id": "SK_00212",
+      "skill_name": "HTML",
+      "skill_type": "prerequisite",
+      "priority": "Medium",
+      "reason": "Foundational prerequisite for learning CSS. Reason: HTML provides the structure of web pages, which is necessary before applying styles with CSS.",
+      "prerequisites": []
+    },
+    {
+      "sequence_number": 4,
+      "skill_id": "SK_00270",
+      "skill_name": "Mathematics",
+      "skill_type": "prerequisite",
+      "priority": "Critical",
+      "reason": "Foundational prerequisite for learning Machine Learning. Reason: Linear algebra, calculus, and probability are fundamental to understanding ML algorithms.",
+      "prerequisites": []
+    },
+    {
+      "sequence_number": 5,
+      "skill_id": "SK_00302",
+      "skill_name": "Natural Language Processing",
+      "skill_type": "prerequisite",
+      "priority": "Medium",
+      "reason": "Foundational prerequisite for learning LLMs. Reason: LLMs are advanced applications of NLP principles like tokenization and semantic understanding.",
+      "prerequisites": []
+    },
+    {
+      "sequence_number": 6,
+      "skill_id": "SK_00255",
+      "skill_name": "Large Language Models",
+      "skill_type": "technical",
+      "priority": "Medium",
+      "reason": "Directly required for AI Engineer. Description: Advanced AI models trained on massive text datasets to understand and generate human language.",
+      "prerequisites": []
+    },
+    {
+      "sequence_number": 7,
+      "skill_id": "SK_00082",
+      "skill_name": "Cloud Computing",
+      "skill_type": "prerequisite",
+      "priority": "High",
+      "reason": "Foundational prerequisite for learning Amazon Web Services. Reason: General cloud concepts must be understood before learning specific AWS services.",
+      "prerequisites": []
+    },
+    {
+      "sequence_number": 8,
+      "skill_id": "SK_00145",
+      "skill_name": "Docker",
+      "skill_type": "technical",
+      "priority": "High",
+      "reason": "Directly required for AI Engineer. Description: Containerization technology used to package applications and dependencies for consistent deployment.",
+      "prerequisites": [
+        "SK_00257"
+      ]
+    },
+    {
+      "sequence_number": 9,
+      "skill_id": "SK_00106",
+      "skill_name": "CSS",
+      "skill_type": "prerequisite",
+      "priority": "Medium",
+      "reason": "Foundational prerequisite for learning JavaScript. Reason: CSS styling concepts are often manipulated dynamically using JavaScript.",
+      "prerequisites": [
+        "SK_00212"
+      ]
+    },
+    {
+      "sequence_number": 10,
+      "skill_id": "SK_00264",
+      "skill_name": "Machine Learning",
+      "skill_type": "technical",
+      "priority": "Critical",
+      "reason": "Directly required for AI Engineer. Description: Methods for building systems that learn patterns from data and make predictions.",
+      "prerequisites": [
+        "SK_00270"
+      ]
+    },
+    {
+      "sequence_number": 11,
+      "skill_id": "SK_00260",
+      "skill_name": "LLMs",
+      "skill_type": "prerequisite",
+      "priority": "Medium",
+      "reason": "Foundational prerequisite for learning Generative AI. Reason: LLMs are a foundational technology within the broader Generative AI ecosystem.",
+      "prerequisites": [
+        "SK_00302"
+      ]
+    },
+    {
+      "sequence_number": 12,
+      "skill_id": "SK_00046",
+      "skill_name": "Amazon Web Services",
+      "skill_type": "technical",
+      "priority": "High",
+      "reason": "Directly required for AI Engineer. Description: Amazon Web Services cloud computing platform for deploying scalable applications.",
+      "prerequisites": [
+        "SK_00082"
+      ]
+    },
+    {
+      "sequence_number": 13,
+      "skill_id": "SK_00240",
+      "skill_name": "JavaScript",
+      "skill_type": "prerequisite",
+      "priority": "Medium",
+      "reason": "Foundational prerequisite for learning JSON. Reason: JavaScript Object Notation is the standard data interchange format derived from JavaScript.",
+      "prerequisites": [
+        "SK_00106"
+      ]
+    },
+    {
+      "sequence_number": 14,
+      "skill_id": "SK_00132",
+      "skill_name": "Deep Learning",
+      "skill_type": "technical",
+      "priority": "Critical",
+      "reason": "Directly required for AI Engineer. Description: Machine learning approach based on multi-layer neural networks for complex data tasks.",
+      "prerequisites": [
+        "SK_00264"
+      ]
+    },
+    {
+      "sequence_number": 15,
+      "skill_id": "SK_00188",
+      "skill_name": "Generative AI",
+      "skill_type": "technical",
+      "priority": "Medium",
+      "reason": "Directly required for AI Engineer. Description: AI systems capable of generating text, images, or other media in response to prompts.",
+      "prerequisites": [
+        "SK_00260"
+      ]
+    },
+    {
+      "sequence_number": 16,
+      "skill_id": "SK_00314",
+      "skill_name": "Node.js",
+      "skill_type": "prerequisite",
+      "priority": "Medium",
+      "reason": "Foundational prerequisite for learning Express.js. Reason: Express.js is a minimal and flexible Node.js web application framework.",
+      "prerequisites": [
+        "SK_00240"
+      ]
+    },
+    {
+      "sequence_number": 17,
+      "skill_id": "SK_00244",
+      "skill_name": "JSON",
+      "skill_type": "prerequisite",
+      "priority": "Medium",
+      "reason": "Foundational prerequisite for learning REST APIs. Reason: REST APIs predominantly use JSON to format and transmit data payloads between client and server.",
+      "prerequisites": [
+        "SK_00240"
+      ]
+    },
+    {
+      "sequence_number": 18,
+      "skill_id": "SK_00361",
+      "skill_name": "PyTorch",
+      "skill_type": "technical",
+      "priority": "High",
+      "reason": "Directly required for AI Engineer. Description: Deep learning framework widely used for developing and training neural network models.",
+      "prerequisites": [
+        "SK_00132"
+      ]
+    },
+    {
+      "sequence_number": 19,
+      "skill_id": "SK_00457",
+      "skill_name": "TensorFlow",
+      "skill_type": "technical",
+      "priority": "High",
+      "reason": "Directly required for AI Engineer. Description: Open-source machine learning framework for training and deploying deep neural networks.",
+      "prerequisites": [
+        "SK_00132"
+      ]
+    },
+    {
+      "sequence_number": 20,
+      "skill_id": "SK_00173",
+      "skill_name": "Express.js",
+      "skill_type": "prerequisite",
+      "priority": "Medium",
+      "reason": "Foundational prerequisite for learning REST APIs. Reason: Express.js is commonly used to design and route RESTful APIs.",
+      "prerequisites": [
+        "SK_00314"
+      ]
+    },
+    {
+      "sequence_number": 21,
+      "skill_id": "SK_00382",
+      "skill_name": "REST APIs",
+      "skill_type": "technical",
+      "priority": "Medium",
+      "reason": "Directly required for AI Engineer. Description: Architectural style for designing networked applications and integrating software services.",
+      "prerequisites": [
+        "SK_00173",
+        "SK_00179",
+        "SK_00244"
+      ]
+    }
+  ]
+}

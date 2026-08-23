@@ -1,0 +1,17 @@
+{
+  "student_id": "STU_84920",
+  "skills": [
+    "Python",
+    "SQL",
+    "Git"
+  ],
+  "interests": "Artificial Intelligence, Generative AI",
+  "target_role": "AI Engineer",
+  "difficulty": "Intermediate",
+  "completed_courses": [
+    "Introduction to Python"
+  ],
+  "number_of_results": 3,
+  "courses_per_skill": 2,
+  "projects_per_skill": 1
+}

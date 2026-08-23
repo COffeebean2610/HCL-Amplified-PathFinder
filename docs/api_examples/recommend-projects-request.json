@@ -1,0 +1,12 @@
+{
+  "student_id": "STU_84920",
+  "skills": [
+    "Python",
+    "SQL",
+    "Git"
+  ],
+  "interests": "Computer Vision",
+  "target_role": "AI Engineer",
+  "difficulty": "Intermediate",
+  "number_of_results": 3
+}

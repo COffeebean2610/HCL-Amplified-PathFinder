@@ -1,0 +1,185 @@
+{
+  "recommendations": [
+    {
+      "career_id": "CAR_003",
+      "career_title": "AI Engineer",
+      "career_domain": "Artificial Intelligence",
+      "match_score": 46.0,
+      "technical_match_score": 26.1,
+      "matched_skills": [
+        "Python",
+        "SQL",
+        "Git"
+      ],
+      "missing_skills": [
+        {
+          "skill_id": "",
+          "skill_name": "Machine Learning",
+          "importance": "Medium"
+        },
+        {
+          "skill_id": "",
+          "skill_name": "Deep Learning",
+          "importance": "Medium"
+        },
+        {
+          "skill_id": "",
+          "skill_name": "PyTorch",
+          "importance": "Medium"
+        },
+        {
+          "skill_id": "",
+          "skill_name": "TensorFlow",
+          "importance": "Medium"
+        },
+        {
+          "skill_id": "",
+          "skill_name": "Docker",
+          "importance": "Medium"
+        },
+        {
+          "skill_id": "",
+          "skill_name": "Amazon Web Services",
+          "importance": "Medium"
+        },
+        {
+          "skill_id": "",
+          "skill_name": "Generative AI",
+          "importance": "Medium"
+        },
+        {
+          "skill_id": "",
+          "skill_name": "Large Language Models",
+          "importance": "Medium"
+        },
+        {
+          "skill_id": "",
+          "skill_name": "REST APIs",
+          "importance": "Medium"
+        }
+      ],
+      "reason": "'AI Engineer' is a moderate match (46%) for your profile. Your interests show moderate alignment with this field. Your existing skills in Python, SQL, Git satisfy key technical requirements (Tech score: 26%). To succeed in this role, your primary learning focus should be on critical missing skills: Machine Learning, Deep Learning. Additionally, you have foundational prerequisite gaps to address first, including Cloud Computing, CSS, Express.js, and 9 other foundation skills."
+    },
+    {
+      "career_id": "CAR_076",
+      "career_title": "Machine Learning Engineer",
+      "career_domain": "Artificial Intelligence",
+      "match_score": 37.0,
+      "technical_match_score": 28.0,
+      "matched_skills": [
+        "Python",
+        "SQL",
+        "Git"
+      ],
+      "missing_skills": [
+        {
+          "skill_id": "",
+          "skill_name": "Machine Learning",
+          "importance": "Medium"
+        },
+        {
+          "skill_id": "",
+          "skill_name": "Deep Learning",
+          "importance": "Medium"
+        },
+        {
+          "skill_id": "",
+          "skill_name": "Pandas",
+          "importance": "Medium"
+        },
+        {
+          "skill_id": "",
+          "skill_name": "Apache Spark",
+          "importance": "Medium"
+        },
+        {
+          "skill_id": "",
+          "skill_name": "Docker",
+          "importance": "Medium"
+        },
+        {
+          "skill_id": "",
+          "skill_name": "Kubernetes",
+          "importance": "Medium"
+        },
+        {
+          "skill_id": "",
+          "skill_name": "CI/CD",
+          "importance": "Medium"
+        },
+        {
+          "skill_id": "",
+          "skill_name": "Amazon Web Services",
+          "importance": "Medium"
+        },
+        {
+          "skill_id": "",
+          "skill_name": "MLOps",
+          "importance": "Medium"
+        }
+      ],
+      "reason": "'Machine Learning Engineer' is a moderate match (37%) for your profile. Your existing skills in Python, SQL, Git satisfy key technical requirements (Tech score: 28%). To succeed in this role, your primary learning focus should be on critical missing skills: Machine Learning, MLOps. Additionally, you have foundational prerequisite gaps to address first, including Cloud Computing, Linux, Mathematics, and 1 other foundation skills."
+    },
+    {
+      "career_id": "CAR_013",
+      "career_title": "Backend Developer",
+      "career_domain": "Software Engineering",
+      "match_score": 33.0,
+      "technical_match_score": 32.0,
+      "matched_skills": [
+        "Python",
+        "SQL",
+        "Git"
+      ],
+      "missing_skills": [
+        {
+          "skill_id": "",
+          "skill_name": "Node.js",
+          "importance": "Medium"
+        },
+        {
+          "skill_id": "",
+          "skill_name": "Java",
+          "importance": "Medium"
+        },
+        {
+          "skill_id": "",
+          "skill_name": "PostgreSQL",
+          "importance": "Medium"
+        },
+        {
+          "skill_id": "",
+          "skill_name": "MongoDB",
+          "importance": "Medium"
+        },
+        {
+          "skill_id": "",
+          "skill_name": "REST APIs",
+          "importance": "Medium"
+        },
+        {
+          "skill_id": "",
+          "skill_name": "GraphQL",
+          "importance": "Medium"
+        },
+        {
+          "skill_id": "",
+          "skill_name": "Docker",
+          "importance": "Medium"
+        },
+        {
+          "skill_id": "",
+          "skill_name": "Redis",
+          "importance": "Medium"
+        },
+        {
+          "skill_id": "",
+          "skill_name": "Amazon Web Services",
+          "importance": "Medium"
+        }
+      ],
+      "reason": "'Backend Developer' is a moderate match (33%) for your profile. Your existing skills in Python, SQL, Git satisfy key technical requirements (Tech score: 32%). To succeed in this role, your primary learning focus should be on critical missing skills: REST APIs. Additionally, you have foundational prerequisite gaps to address first, including Cloud Computing, CSS, Express.js, and 6 other foundation skills."
+    }
+  ],
+  "total": 3
+}

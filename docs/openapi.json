@@ -1,0 +1,2631 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "RouteMaster AI Service",
+    "description": "AI-powered career, skill-gap, course, project, and roadmap recommendation service for RouteMaster \u2014 Mastering the Sequence of Complex Educational Goals.\n\n**Score conventions**:\n- `match_score`, `readiness_score`, `technical_match_score` \u2192 **0\u2013100** (percentage)\n- `relevance_score`, `final_score`, component scores \u2192 **0\u20131.0** (normalized)\n\n**Note**: `target_role` accepts both canonical IDs (e.g. `CA_042`) and display titles (e.g. `AI Engineer`).",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Service health check",
+        "description": "Returns service liveness status. Does NOT perform model inference.",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ready": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Service readiness check",
+        "description": "Verifies that AI engines are loaded and ready to serve requests.",
+        "operationId": "ready_ready_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadinessResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ai/recommend-career": {
+      "post": {
+        "tags": [
+          "Career"
+        ],
+        "summary": "Recommend careers matching a student profile",
+        "description": "Analyzes the student's current skills and interests against the RouteMaster career knowledge base (Phase 3). Returns ranked career matches with gap analysis and explainable reasons. Scores are 0\u2013100.",
+        "operationId": "recommend_career_ai_recommend_career_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CareerRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CareerResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error \u2014 invalid request body"
+          },
+          "500": {
+            "description": "Recommendation engine failure"
+          }
+        }
+      }
+    },
+    "/ai/skill-gap": {
+      "post": {
+        "tags": [
+          "Skill Gap"
+        ],
+        "summary": "Calculate skill gap for a target career",
+        "description": "Identifies missing technical skills and transitive prerequisite gaps between the learner's current profile and a target career (Phase 4). Returns prioritized missing skills and a topologically ordered learning sequence. Readiness scores are 0\u2013100.",
+        "operationId": "skill_gap_ai_skill_gap_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SkillGapRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkillGapResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Target career not found in knowledge base"
+          },
+          "422": {
+            "description": "Validation error"
+          },
+          "500": {
+            "description": "Skill gap engine failure"
+          }
+        }
+      }
+    },
+    "/ai/recommend-courses": {
+      "post": {
+        "tags": [
+          "Courses"
+        ],
+        "summary": "Recommend courses for a target career",
+        "description": "Uses the Phase 7 Hybrid Recommender (skill matching + Sentence Transformer semantic search + prerequisite graph + difficulty alignment) to rank courses. Completed courses are excluded. Relevance scores are 0\u20131.0.",
+        "operationId": "recommend_courses_ai_recommend_courses_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CourseRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error \u2014 check difficulty value"
+          },
+          "500": {
+            "description": "Course recommendation engine failure"
+          }
+        }
+      }
+    },
+    "/ai/recommend-projects": {
+      "post": {
+        "tags": [
+          "Projects"
+        ],
+        "summary": "Recommend skill-gap-aware engineering projects",
+        "description": "Uses Phase 8 to recommend projects that help learners practice skills they already have while developing skills in their gap. Skill gaps are derived automatically from target_role \u2014 no need to supply them manually. Relevance scores are 0\u20131.0.",
+        "operationId": "recommend_projects_ai_recommend_projects_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error"
+          },
+          "500": {
+            "description": "Project recommendation engine failure"
+          }
+        }
+      }
+    },
+    "/ai/generate-roadmap": {
+      "post": {
+        "tags": [
+          "Roadmap"
+        ],
+        "summary": "Generate a personalized prerequisite-aware learning roadmap",
+        "description": "Combines Phase 9 with Phases 2, 4, 7, and 8 to produce a React Flow\u2013compatible node/edge graph representing the learner's personalized study path. Node statuses: completed | next | locked. Cycle warnings are returned in the warnings[] field without crashing.",
+        "operationId": "generate_roadmap_ai_generate_roadmap_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoadmapRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoadmapResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error"
+          },
+          "500": {
+            "description": "Roadmap generation failure"
+          }
+        }
+      }
+    },
+    "/ai/recommend": {
+      "post": {
+        "tags": [
+          "Recommendation"
+        ],
+        "summary": "Full AI pipeline: career \u2192 gap \u2192 courses \u2192 projects \u2192 roadmap",
+        "description": "The primary orchestration endpoint. Runs the complete RouteMaster AI pipeline in a single request. If target_role is provided it is used directly; otherwise the top career recommendation is selected automatically.\n\nSkill gap results are computed once and shared across course, project, and roadmap engines \u2014 no redundant computation.\n\nIf any component fails, status='partial' and the failure is described in warnings[]. Successful components are still returned.",
+        "operationId": "recommend_ai_recommend_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecommendationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecommendationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error"
+          },
+          "500": {
+            "description": "Critical pipeline failure"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CareerRecommendationItem": {
+        "properties": {
+          "career_id": {
+            "type": "string",
+            "title": "Career Id",
+            "description": "Canonical career ID (e.g., CA_042).",
+            "examples": [
+              "CA_042"
+            ]
+          },
+          "career_title": {
+            "type": "string",
+            "title": "Career Title",
+            "description": "Display title of the career.",
+            "examples": [
+              "AI Engineer"
+            ]
+          },
+          "career_domain": {
+            "type": "string",
+            "title": "Career Domain",
+            "description": "Industry domain category.",
+            "default": "",
+            "examples": [
+              "Artificial Intelligence"
+            ]
+          },
+          "match_score": {
+            "type": "number",
+            "title": "Match Score",
+            "description": "Overall profile-career fit score (0\u2013100 scale).",
+            "examples": [
+              87.4
+            ]
+          },
+          "technical_match_score": {
+            "type": "number",
+            "title": "Technical Match Score",
+            "description": "Technical skills direct coverage score (0\u2013100 scale).",
+            "examples": [
+              75.0
+            ]
+          },
+          "matched_skills": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Matched Skills",
+            "description": "Skills the learner already possesses for this career.",
+            "default": [],
+            "examples": [
+              [
+                "Python",
+                "SQL"
+              ]
+            ]
+          },
+          "missing_skills": {
+            "items": {
+              "$ref": "#/components/schemas/MissingSkillBrief"
+            },
+            "type": "array",
+            "title": "Missing Skills",
+            "description": "Required career skills the learner is currently missing.",
+            "default": []
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason",
+            "description": "Human-readable explainable rationale generated by the AI engine.",
+            "examples": [
+              "Strong alignment with AI interests. Python and SQL match core engineering requirements."
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "career_id",
+          "career_title",
+          "match_score",
+          "technical_match_score",
+          "reason"
+        ],
+        "title": "CareerRecommendationItem"
+      },
+      "CareerRequest": {
+        "properties": {
+          "student_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Student Id",
+            "description": "Optional unique student identifier.",
+            "examples": [
+              "STU_1001"
+            ]
+          },
+          "skills": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Skills",
+            "description": "Current learner skills (raw text \u2014 normalized internally).",
+            "default": [],
+            "examples": [
+              [
+                "Python",
+                "SQL",
+                "Git"
+              ]
+            ]
+          },
+          "current_skills": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Skills",
+            "description": "Alias for 'skills'.",
+            "examples": [
+              [
+                "Python",
+                "SQL",
+                "Git"
+              ]
+            ]
+          },
+          "interests": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            ],
+            "title": "Interests",
+            "description": "Free-text interests or list of interest keywords.",
+            "default": "",
+            "examples": [
+              "Artificial Intelligence, Machine Learning"
+            ]
+          },
+          "top_k": {
+            "type": "integer",
+            "maximum": 20.0,
+            "minimum": 1.0,
+            "title": "Top K",
+            "description": "Number of career recommendations to return (1\u201320).",
+            "default": 5,
+            "examples": [
+              5
+            ]
+          }
+        },
+        "type": "object",
+        "title": "CareerRequest",
+        "description": "Request schema for POST /ai/recommend-career."
+      },
+      "CareerResponse": {
+        "properties": {
+          "recommendations": {
+            "items": {
+              "$ref": "#/components/schemas/CareerRecommendationItem"
+            },
+            "type": "array",
+            "title": "Recommendations",
+            "description": "List of ranked career recommendations ordered by match score descending."
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "description": "Total count of returned career recommendations.",
+            "examples": [
+              5
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "recommendations",
+          "total"
+        ],
+        "title": "CareerResponse",
+        "description": "Response schema for POST /ai/recommend-career."
+      },
+      "CourseItem": {
+        "properties": {
+          "course_id": {
+            "type": "string",
+            "title": "Course Id",
+            "description": "Unique course identifier in catalog.",
+            "examples": [
+              "C_1042"
+            ]
+          },
+          "course_name": {
+            "type": "string",
+            "title": "Course Name",
+            "description": "Official title of the course.",
+            "examples": [
+              "Machine Learning Specialization"
+            ]
+          },
+          "organization": {
+            "type": "string",
+            "title": "Organization",
+            "description": "Course provider or university.",
+            "default": "",
+            "examples": [
+              "DeepLearning.AI"
+            ]
+          },
+          "difficulty": {
+            "type": "string",
+            "title": "Difficulty",
+            "description": "Difficulty level.",
+            "examples": [
+              "Intermediate"
+            ]
+          },
+          "rating": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rating",
+            "description": "Average learner rating (out of 5.0).",
+            "examples": [
+              4.9
+            ]
+          },
+          "url": {
+            "type": "string",
+            "title": "Url",
+            "description": "Direct URL to enroll/view course.",
+            "examples": [
+              "https://coursera.org/learn/machine-learning"
+            ]
+          },
+          "relevance_score": {
+            "type": "number",
+            "title": "Relevance Score",
+            "description": "Hybrid recommendation composite match score (0.0\u20131.0 scale).",
+            "examples": [
+              0.9142
+            ]
+          },
+          "matched_skills": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Matched Skills",
+            "description": "Skills learner already possesses that are strengthened by this course.",
+            "default": [],
+            "examples": [
+              [
+                "Python"
+              ]
+            ]
+          },
+          "missing_skills_covered": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Missing Skills Covered",
+            "description": "Target career gap skills taught by this course.",
+            "default": [],
+            "examples": [
+              [
+                "Machine Learning",
+                "Supervised Learning"
+              ]
+            ]
+          },
+          "prerequisite_status": {
+            "type": "string",
+            "title": "Prerequisite Status",
+            "description": "Prerequisite graph readiness: 'Ready' if prerequisites met, else 'Locked'.",
+            "default": "Ready",
+            "examples": [
+              "Ready"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason",
+            "description": "Explainable deterministic matching reason.",
+            "examples": [
+              "Teaches 2 critical gap skills (Machine Learning, Supervised Learning) with high rating."
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "course_id",
+          "course_name",
+          "difficulty",
+          "url",
+          "relevance_score",
+          "reason"
+        ],
+        "title": "CourseItem"
+      },
+      "CourseRequest": {
+        "properties": {
+          "student_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Student Id",
+            "description": "Optional unique student identifier.",
+            "examples": [
+              "STU_1001"
+            ]
+          },
+          "skills": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Skills",
+            "description": "Current learner skills.",
+            "default": [],
+            "examples": [
+              [
+                "Python",
+                "Machine Learning"
+              ]
+            ]
+          },
+          "current_skills": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Skills",
+            "description": "Alias for 'skills'.",
+            "examples": [
+              [
+                "Python",
+                "Machine Learning"
+              ]
+            ]
+          },
+          "interests": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            ],
+            "title": "Interests",
+            "description": "Learner interests (free text or list).",
+            "default": "",
+            "examples": [
+              "Artificial Intelligence, Deep Learning"
+            ]
+          },
+          "target_role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Role",
+            "description": "Target career title or canonical ID.",
+            "examples": [
+              "AI Engineer"
+            ]
+          },
+          "target_career": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Career",
+            "description": "Alias for 'target_role'.",
+            "examples": [
+              "AI Engineer"
+            ]
+          },
+          "difficulty": {
+            "type": "string",
+            "title": "Difficulty",
+            "description": "Difficulty filter: Any Level | Beginner | Intermediate | Advanced.",
+            "default": "Any Level",
+            "examples": [
+              "Intermediate"
+            ]
+          },
+          "preferred_difficulty": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferred Difficulty",
+            "description": "Alias for 'difficulty'.",
+            "examples": [
+              "Intermediate"
+            ]
+          },
+          "completed_courses": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Completed Courses",
+            "description": "Course names to exclude from recommendation results.",
+            "default": [],
+            "examples": [
+              [
+                "Introduction to Python"
+              ]
+            ]
+          },
+          "number_of_results": {
+            "type": "integer",
+            "maximum": 50.0,
+            "minimum": 1.0,
+            "title": "Number Of Results",
+            "description": "Number of courses to return (1\u201350).",
+            "default": 5,
+            "examples": [
+              5
+            ]
+          }
+        },
+        "type": "object",
+        "title": "CourseRequest",
+        "description": "Request schema for POST /ai/recommend-courses."
+      },
+      "CourseResponse": {
+        "properties": {
+          "target_role": {
+            "type": "string",
+            "title": "Target Role",
+            "description": "Target career role evaluated.",
+            "examples": [
+              "AI Engineer"
+            ]
+          },
+          "courses": {
+            "items": {
+              "$ref": "#/components/schemas/CourseItem"
+            },
+            "type": "array",
+            "title": "Courses",
+            "description": "Ranked list of course recommendations."
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "description": "Total count of returned courses.",
+            "examples": [
+              5
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "target_role",
+          "courses",
+          "total"
+        ],
+        "title": "CourseResponse",
+        "description": "Response schema for POST /ai/recommend-courses."
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "examples": [
+              "healthy"
+            ]
+          },
+          "service": {
+            "type": "string",
+            "title": "Service",
+            "default": "routemaster-ai"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "environment": {
+            "type": "string",
+            "title": "Environment"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "version",
+          "environment"
+        ],
+        "title": "HealthResponse"
+      },
+      "LearningStep": {
+        "properties": {
+          "sequence_number": {
+            "type": "integer",
+            "title": "Sequence Number",
+            "description": "Topological rank in recommended study sequence.",
+            "examples": [
+              1
+            ]
+          },
+          "skill_id": {
+            "type": "string",
+            "title": "Skill Id",
+            "description": "Canonical skill identifier.",
+            "examples": [
+              "SK_00264"
+            ]
+          },
+          "skill_name": {
+            "type": "string",
+            "title": "Skill Name",
+            "description": "Display name of the skill.",
+            "examples": [
+              "Machine Learning"
+            ]
+          },
+          "skill_type": {
+            "type": "string",
+            "title": "Skill Type",
+            "description": "Skill type (technical | transferable | prerequisite).",
+            "default": "technical",
+            "examples": [
+              "technical"
+            ]
+          },
+          "priority": {
+            "type": "string",
+            "title": "Priority",
+            "description": "Priority ranking.",
+            "examples": [
+              "Critical"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason",
+            "description": "Sequencing explanation.",
+            "examples": [
+              "Direct critical requirement for target career."
+            ]
+          },
+          "prerequisites": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Prerequisites",
+            "description": "List of immediate required skill IDs.",
+            "default": [],
+            "examples": [
+              [
+                "SK_00360"
+              ]
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "sequence_number",
+          "skill_id",
+          "skill_name",
+          "priority",
+          "reason"
+        ],
+        "title": "LearningStep"
+      },
+      "MissingSkill": {
+        "properties": {
+          "skill_id": {
+            "type": "string",
+            "title": "Skill Id",
+            "description": "Canonical skill identifier.",
+            "examples": [
+              "SK_00264"
+            ]
+          },
+          "skill_name": {
+            "type": "string",
+            "title": "Skill Name",
+            "description": "Display name of the missing skill.",
+            "examples": [
+              "Machine Learning"
+            ]
+          },
+          "skill_category": {
+            "type": "string",
+            "title": "Skill Category",
+            "description": "Taxonomy domain category.",
+            "default": "Technical",
+            "examples": [
+              "AI & ML"
+            ]
+          },
+          "priority": {
+            "type": "string",
+            "title": "Priority",
+            "description": "Priority tier: Critical | High | Medium | Low",
+            "examples": [
+              "Critical"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "skill_id",
+          "skill_name",
+          "priority"
+        ],
+        "title": "MissingSkill"
+      },
+      "MissingSkillBrief": {
+        "properties": {
+          "skill_id": {
+            "type": "string",
+            "title": "Skill Id",
+            "description": "Canonical skill ID (e.g., SK_00264).",
+            "examples": [
+              "SK_00264"
+            ]
+          },
+          "skill_name": {
+            "type": "string",
+            "title": "Skill Name",
+            "description": "Display name of the missing skill.",
+            "examples": [
+              "Machine Learning"
+            ]
+          },
+          "importance": {
+            "type": "string",
+            "title": "Importance",
+            "description": "Priority importance: Critical | High | Medium | Low",
+            "examples": [
+              "Critical"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "skill_id",
+          "skill_name",
+          "importance"
+        ],
+        "title": "MissingSkillBrief"
+      },
+      "PrerequisiteGap": {
+        "properties": {
+          "skill_id": {
+            "type": "string",
+            "title": "Skill Id",
+            "description": "Canonical prerequisite skill ID.",
+            "examples": [
+              "SK_00360"
+            ]
+          },
+          "skill_name": {
+            "type": "string",
+            "title": "Skill Name",
+            "description": "Prerequisite skill name.",
+            "examples": [
+              "Python"
+            ]
+          },
+          "required_by_skill_id": {
+            "type": "string",
+            "title": "Required By Skill Id",
+            "description": "Downstream skill requiring this prerequisite.",
+            "examples": [
+              "SK_00264"
+            ]
+          },
+          "required_by_skill_name": {
+            "type": "string",
+            "title": "Required By Skill Name",
+            "description": "Downstream skill title.",
+            "examples": [
+              "Machine Learning"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason",
+            "description": "Prerequisite dependency rationale.",
+            "examples": [
+              "Machine Learning requires Python as a programming prerequisite."
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "skill_id",
+          "skill_name",
+          "required_by_skill_id",
+          "required_by_skill_name",
+          "reason"
+        ],
+        "title": "PrerequisiteGap"
+      },
+      "ProjectItem": {
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "title": "Project Id",
+            "description": "Unique project ID from dataset.",
+            "examples": [
+              "PROJ_042"
+            ]
+          },
+          "project_name": {
+            "type": "string",
+            "title": "Project Name",
+            "description": "Engineering project title.",
+            "examples": [
+              "Autonomous Drone Navigation System"
+            ]
+          },
+          "domain": {
+            "type": "string",
+            "title": "Domain",
+            "description": "Engineering domain category.",
+            "default": "",
+            "examples": [
+              "Robotics & AI"
+            ]
+          },
+          "difficulty": {
+            "type": "string",
+            "title": "Difficulty",
+            "description": "Project difficulty tier.",
+            "examples": [
+              "Intermediate"
+            ]
+          },
+          "github_url": {
+            "type": "string",
+            "title": "Github Url",
+            "description": "GitHub repository reference URL.",
+            "examples": [
+              "https://github.com/example/drone-nav"
+            ]
+          },
+          "relevance_score": {
+            "type": "number",
+            "title": "Relevance Score",
+            "description": "Skill-gap-aware composite match score (0.0\u20131.0 scale).",
+            "examples": [
+              0.8875
+            ]
+          },
+          "skills_to_develop": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Skills To Develop",
+            "description": "Target career missing skills developed by completing this project.",
+            "default": [],
+            "examples": [
+              [
+                "Computer Vision",
+                "Reinforcement Learning"
+              ]
+            ]
+          },
+          "matched_existing_skills": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Matched Existing Skills",
+            "description": "Current skills the student can practice in this project.",
+            "default": [],
+            "examples": [
+              [
+                "Python",
+                "Git"
+              ]
+            ]
+          },
+          "prerequisite_status": {
+            "type": "string",
+            "title": "Prerequisite Status",
+            "description": "Readiness status ('Ready' or 'Locked').",
+            "default": "Ready",
+            "examples": [
+              "Ready"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason",
+            "description": "Explainable recommendation reason emphasizing gap coverage.",
+            "examples": [
+              "Develops 2 critical missing skills while practicing known Python and Git proficiencies."
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "project_id",
+          "project_name",
+          "difficulty",
+          "github_url",
+          "relevance_score",
+          "reason"
+        ],
+        "title": "ProjectItem"
+      },
+      "ProjectRequest": {
+        "properties": {
+          "student_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Student Id",
+            "description": "Optional unique student identifier.",
+            "examples": [
+              "STU_1001"
+            ]
+          },
+          "skills": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Skills",
+            "description": "Current learner skills.",
+            "default": [],
+            "examples": [
+              [
+                "Python",
+                "SQL"
+              ]
+            ]
+          },
+          "current_skills": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Skills",
+            "description": "Alias for 'skills'.",
+            "examples": [
+              [
+                "Python",
+                "SQL"
+              ]
+            ]
+          },
+          "interests": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            ],
+            "title": "Interests",
+            "description": "Learner interests (free text or list).",
+            "default": "",
+            "examples": [
+              "Computer Vision, Autonomous Systems"
+            ]
+          },
+          "target_role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Role",
+            "description": "Target career \u2014 skill gaps are derived automatically from this.",
+            "examples": [
+              "AI Engineer"
+            ]
+          },
+          "target_career": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Career",
+            "description": "Alias for 'target_role'.",
+            "examples": [
+              "AI Engineer"
+            ]
+          },
+          "difficulty": {
+            "type": "string",
+            "title": "Difficulty",
+            "description": "Difficulty filter: Any Level | Beginner | Intermediate | Advanced.",
+            "default": "Any Level",
+            "examples": [
+              "Intermediate"
+            ]
+          },
+          "preferred_difficulty": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferred Difficulty",
+            "description": "Alias for 'difficulty'.",
+            "examples": [
+              "Intermediate"
+            ]
+          },
+          "number_of_results": {
+            "type": "integer",
+            "maximum": 50.0,
+            "minimum": 1.0,
+            "title": "Number Of Results",
+            "description": "Number of projects to return (1\u201350).",
+            "default": 5,
+            "examples": [
+              5
+            ]
+          }
+        },
+        "type": "object",
+        "title": "ProjectRequest",
+        "description": "Request schema for POST /ai/recommend-projects."
+      },
+      "ProjectResponse": {
+        "properties": {
+          "target_role": {
+            "type": "string",
+            "title": "Target Role",
+            "description": "Target career evaluated.",
+            "examples": [
+              "AI Engineer"
+            ]
+          },
+          "projects": {
+            "items": {
+              "$ref": "#/components/schemas/ProjectItem"
+            },
+            "type": "array",
+            "title": "Projects",
+            "description": "Ranked list of engineering projects."
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "description": "Total count of projects returned.",
+            "examples": [
+              5
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "target_role",
+          "projects",
+          "total"
+        ],
+        "title": "ProjectResponse",
+        "description": "Response schema for POST /ai/recommend-projects."
+      },
+      "ReadinessResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "examples": [
+              "ready",
+              "degraded"
+            ]
+          },
+          "checks": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Checks"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "checks"
+        ],
+        "title": "ReadinessResponse"
+      },
+      "RecommendationProfile": {
+        "properties": {
+          "student_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Student Id",
+            "description": "Student ID if provided."
+          },
+          "skills": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Skills",
+            "description": "Active skills recognized in student profile."
+          },
+          "interests": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            ],
+            "title": "Interests",
+            "description": "Interests recognized in student profile."
+          }
+        },
+        "type": "object",
+        "required": [
+          "skills",
+          "interests"
+        ],
+        "title": "RecommendationProfile"
+      },
+      "RecommendationRequest": {
+        "properties": {
+          "student_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Student Id",
+            "description": "Optional unique student identifier.",
+            "examples": [
+              "STU_1001"
+            ]
+          },
+          "skills": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Skills",
+            "description": "Current learner skills.",
+            "default": [],
+            "examples": [
+              [
+                "Python",
+                "SQL",
+                "Git"
+              ]
+            ]
+          },
+          "current_skills": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Skills",
+            "description": "Alias for 'skills'.",
+            "examples": [
+              [
+                "Python",
+                "SQL",
+                "Git"
+              ]
+            ]
+          },
+          "interests": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            ],
+            "title": "Interests",
+            "description": "Learner interests.",
+            "default": "",
+            "examples": [
+              "Artificial Intelligence, Generative AI"
+            ]
+          },
+          "target_role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Role",
+            "description": "Target career. If omitted, the top career recommendation is automatically selected.",
+            "examples": [
+              "AI Engineer"
+            ]
+          },
+          "target_career": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Career",
+            "description": "Alias for 'target_role'.",
+            "examples": [
+              "AI Engineer"
+            ]
+          },
+          "difficulty": {
+            "type": "string",
+            "title": "Difficulty",
+            "description": "Difficulty preference.",
+            "default": "Any Level",
+            "examples": [
+              "Intermediate"
+            ]
+          },
+          "preferred_difficulty": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferred Difficulty",
+            "description": "Alias for 'difficulty'.",
+            "examples": [
+              "Intermediate"
+            ]
+          },
+          "completed_courses": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Completed Courses",
+            "description": "Course names to exclude from recommendations.",
+            "default": [],
+            "examples": [
+              [
+                "Introduction to Python"
+              ]
+            ]
+          },
+          "learning_preferences": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Learning Preferences",
+            "description": "Extensible learning style preferences dictionary (optional).",
+            "examples": [
+              {
+                "pacing": "self-paced"
+              }
+            ]
+          },
+          "number_of_results": {
+            "type": "integer",
+            "maximum": 50.0,
+            "minimum": 1.0,
+            "title": "Number Of Results",
+            "description": "Number of course/project results.",
+            "default": 5,
+            "examples": [
+              5
+            ]
+          },
+          "courses_per_skill": {
+            "type": "integer",
+            "maximum": 10.0,
+            "minimum": 0.0,
+            "title": "Courses Per Skill",
+            "description": "Max courses per roadmap skill node.",
+            "default": 3,
+            "examples": [
+              3
+            ]
+          },
+          "projects_per_skill": {
+            "type": "integer",
+            "maximum": 10.0,
+            "minimum": 0.0,
+            "title": "Projects Per Skill",
+            "description": "Max projects per roadmap skill node.",
+            "default": 2,
+            "examples": [
+              2
+            ]
+          },
+          "top_k_careers": {
+            "type": "integer",
+            "maximum": 10.0,
+            "minimum": 1.0,
+            "title": "Top K Careers",
+            "description": "Number of career recommendations considered if target_role is not provided.",
+            "default": 1,
+            "examples": [
+              1
+            ]
+          }
+        },
+        "type": "object",
+        "title": "RecommendationRequest",
+        "description": "Request schema for POST /ai/recommend (full orchestration pipeline)."
+      },
+      "RecommendationResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "'success' if all components succeeded, 'partial' if any non-fatal component degraded.",
+            "default": "success",
+            "examples": [
+              "success"
+            ]
+          },
+          "profile": {
+            "$ref": "#/components/schemas/RecommendationProfile",
+            "description": "Standardized student profile snapshot."
+          },
+          "career": {
+            "$ref": "#/components/schemas/CareerRecommendationItem",
+            "description": "Target or top recommended career path."
+          },
+          "skill_gap": {
+            "$ref": "#/components/schemas/RecommendationSkillGap",
+            "description": "Skill gap analysis summary."
+          },
+          "courses": {
+            "items": {
+              "$ref": "#/components/schemas/CourseItem"
+            },
+            "type": "array",
+            "title": "Courses",
+            "description": "Top ranked course recommendations."
+          },
+          "projects": {
+            "items": {
+              "$ref": "#/components/schemas/ProjectItem"
+            },
+            "type": "array",
+            "title": "Projects",
+            "description": "Top ranked engineering project recommendations."
+          },
+          "roadmap": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RecommendationRoadmap"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Full personalized learning roadmap graph."
+          },
+          "warnings": {
+            "items": {
+              "$ref": "#/components/schemas/Warning"
+            },
+            "type": "array",
+            "title": "Warnings",
+            "description": "Structured warnings if partial fallback occurred.",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "profile",
+          "career",
+          "skill_gap",
+          "courses",
+          "projects"
+        ],
+        "title": "RecommendationResponse",
+        "description": "Response schema for POST /ai/recommend."
+      },
+      "RecommendationRoadmap": {
+        "properties": {
+          "career": {
+            "$ref": "#/components/schemas/RoadmapCareer",
+            "description": "Target career details."
+          },
+          "summary": {
+            "$ref": "#/components/schemas/RoadmapSummary",
+            "description": "Roadmap progression metrics."
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/components/schemas/RoadmapNode"
+            },
+            "type": "array",
+            "title": "Nodes",
+            "description": "React Flow nodes list."
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/components/schemas/RoadmapEdge"
+            },
+            "type": "array",
+            "title": "Edges",
+            "description": "React Flow edges list."
+          }
+        },
+        "type": "object",
+        "required": [
+          "career",
+          "summary",
+          "nodes",
+          "edges"
+        ],
+        "title": "RecommendationRoadmap"
+      },
+      "RecommendationSkillGap": {
+        "properties": {
+          "current_skills": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Current Skills",
+            "description": "Student's known skills."
+          },
+          "matched_skills": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Matched Skills",
+            "description": "Career skills student already mastered."
+          },
+          "missing_skills": {
+            "items": {
+              "$ref": "#/components/schemas/MissingSkill"
+            },
+            "type": "array",
+            "title": "Missing Skills",
+            "description": "Direct missing technical skills."
+          },
+          "readiness_score": {
+            "type": "number",
+            "title": "Readiness Score",
+            "description": "Career readiness percentage (0.0\u2013100.0%).",
+            "examples": [
+              22.5
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "current_skills",
+          "matched_skills",
+          "missing_skills",
+          "readiness_score"
+        ],
+        "title": "RecommendationSkillGap"
+      },
+      "RoadmapCareer": {
+        "properties": {
+          "career_id": {
+            "type": "string",
+            "title": "Career Id",
+            "description": "Canonical ID of the target career.",
+            "examples": [
+              "CA_042"
+            ]
+          },
+          "career_title": {
+            "type": "string",
+            "title": "Career Title",
+            "description": "Display title of the target career.",
+            "examples": [
+              "AI Engineer"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "career_id",
+          "career_title"
+        ],
+        "title": "RoadmapCareer"
+      },
+      "RoadmapCourse": {
+        "properties": {
+          "course_id": {
+            "type": "string",
+            "title": "Course Id",
+            "description": "Unique course identifier.",
+            "examples": [
+              "C_1042"
+            ]
+          },
+          "course_name": {
+            "type": "string",
+            "title": "Course Name",
+            "description": "Course title.",
+            "examples": [
+              "Machine Learning Specialization"
+            ]
+          },
+          "organization": {
+            "type": "string",
+            "title": "Organization",
+            "description": "Provider organization.",
+            "default": "",
+            "examples": [
+              "DeepLearning.AI"
+            ]
+          },
+          "difficulty": {
+            "type": "string",
+            "title": "Difficulty",
+            "description": "Course difficulty level.",
+            "examples": [
+              "Intermediate"
+            ]
+          },
+          "rating": {
+            "type": "number",
+            "title": "Rating",
+            "description": "Average rating score.",
+            "default": 0.0,
+            "examples": [
+              4.9
+            ]
+          },
+          "url": {
+            "type": "string",
+            "title": "Url",
+            "description": "Course URL.",
+            "examples": [
+              "https://coursera.org/..."
+            ]
+          },
+          "relevance_score": {
+            "type": "number",
+            "title": "Relevance Score",
+            "description": "Relevance score (0.0\u20131.0).",
+            "examples": [
+              0.9142
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "course_id",
+          "course_name",
+          "difficulty",
+          "url",
+          "relevance_score"
+        ],
+        "title": "RoadmapCourse"
+      },
+      "RoadmapEdge": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Unique edge identifier (e.g. 'edge-SK_00360-SK_00264').",
+            "examples": [
+              "edge-SK_00360-SK_00264"
+            ]
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "description": "Source predecessor node ID.",
+            "examples": [
+              "skill-SK_00360"
+            ]
+          },
+          "target": {
+            "type": "string",
+            "title": "Target",
+            "description": "Target successor node ID.",
+            "examples": [
+              "skill-SK_00264"
+            ]
+          },
+          "relationship": {
+            "type": "string",
+            "title": "Relationship",
+            "description": "Dependency relationship type.",
+            "default": "prerequisite",
+            "examples": [
+              "prerequisite"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "source",
+          "target"
+        ],
+        "title": "RoadmapEdge"
+      },
+      "RoadmapNode": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "React Flow node identifier (e.g. 'skill-SK_00264').",
+            "examples": [
+              "skill-SK_00264"
+            ]
+          },
+          "skill_id": {
+            "type": "string",
+            "title": "Skill Id",
+            "description": "Canonical taxonomy skill ID.",
+            "examples": [
+              "SK_00264"
+            ]
+          },
+          "skill_name": {
+            "type": "string",
+            "title": "Skill Name",
+            "description": "Display name of the skill.",
+            "examples": [
+              "Machine Learning"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Learning status: 'completed' (mastered), 'next' (unlocked, ready to learn), or 'locked' (missing prereqs).",
+            "examples": [
+              "next"
+            ]
+          },
+          "priority": {
+            "type": "string",
+            "title": "Priority",
+            "description": "Skill importance tier (Critical | High | Medium | Low).",
+            "examples": [
+              "Critical"
+            ]
+          },
+          "sequence": {
+            "type": "integer",
+            "title": "Sequence",
+            "description": "Topological sequence order rank.",
+            "examples": [
+              1
+            ]
+          },
+          "prerequisites": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Prerequisites",
+            "description": "List of immediate predecessor node IDs.",
+            "default": [],
+            "examples": [
+              [
+                "skill-SK_00360"
+              ]
+            ]
+          },
+          "courses": {
+            "items": {
+              "$ref": "#/components/schemas/RoadmapCourse"
+            },
+            "type": "array",
+            "title": "Courses",
+            "description": "Top recommended courses attached to this node.",
+            "default": []
+          },
+          "projects": {
+            "items": {
+              "$ref": "#/components/schemas/RoadmapProject"
+            },
+            "type": "array",
+            "title": "Projects",
+            "description": "Top recommended projects attached to this node.",
+            "default": []
+          },
+          "data": {
+            "$ref": "#/components/schemas/RoadmapNodeData",
+            "description": "React Flow standard custom node data payload."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "skill_id",
+          "skill_name",
+          "status",
+          "priority",
+          "sequence",
+          "data"
+        ],
+        "title": "RoadmapNode"
+      },
+      "RoadmapNodeData": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label",
+            "description": "Display label for React Flow node.",
+            "examples": [
+              "Machine Learning"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "State: completed | next | locked",
+            "examples": [
+              "next"
+            ]
+          },
+          "priority": {
+            "type": "string",
+            "title": "Priority",
+            "description": "Priority: Critical | High | Medium | Low",
+            "examples": [
+              "Critical"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason",
+            "description": "Pedagogical rationale for this node.",
+            "examples": [
+              "Core skill required for AI Engineer."
+            ]
+          },
+          "learning_action": {
+            "type": "string",
+            "title": "Learning Action",
+            "description": "Action: learn_and_practice | learn_only | practice_only",
+            "examples": [
+              "learn_and_practice"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "status",
+          "priority",
+          "reason",
+          "learning_action"
+        ],
+        "title": "RoadmapNodeData"
+      },
+      "RoadmapProject": {
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "title": "Project Id",
+            "description": "Unique project identifier.",
+            "examples": [
+              "PROJ_042"
+            ]
+          },
+          "project_name": {
+            "type": "string",
+            "title": "Project Name",
+            "description": "Project title.",
+            "examples": [
+              "Predictive Maintenance System"
+            ]
+          },
+          "difficulty": {
+            "type": "string",
+            "title": "Difficulty",
+            "description": "Project difficulty.",
+            "examples": [
+              "Intermediate"
+            ]
+          },
+          "github_url": {
+            "type": "string",
+            "title": "Github Url",
+            "description": "Source code URL.",
+            "examples": [
+              "https://github.com/..."
+            ]
+          },
+          "relevance_score": {
+            "type": "number",
+            "title": "Relevance Score",
+            "description": "Relevance score (0.0\u20131.0).",
+            "examples": [
+              0.875
+            ]
+          },
+          "skills_to_develop": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Skills To Develop",
+            "description": "Skills targeted by this project.",
+            "default": [],
+            "examples": [
+              [
+                "Machine Learning",
+                "Scikit-learn"
+              ]
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "project_id",
+          "project_name",
+          "difficulty",
+          "github_url",
+          "relevance_score"
+        ],
+        "title": "RoadmapProject"
+      },
+      "RoadmapRequest": {
+        "properties": {
+          "student_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Student Id",
+            "description": "Optional unique student identifier.",
+            "examples": [
+              "STU_1001"
+            ]
+          },
+          "skills": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Skills",
+            "description": "Current learner skills.",
+            "default": [],
+            "examples": [
+              [
+                "Python",
+                "SQL",
+                "Git"
+              ]
+            ]
+          },
+          "current_skills": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Skills",
+            "description": "Alias for 'skills'.",
+            "examples": [
+              [
+                "Python",
+                "SQL",
+                "Git"
+              ]
+            ]
+          },
+          "interests": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            ],
+            "title": "Interests",
+            "description": "Learner interests.",
+            "default": "",
+            "examples": [
+              "Generative AI, LLMs"
+            ]
+          },
+          "target_role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Role",
+            "description": "Target career title or canonical ID.",
+            "examples": [
+              "AI Engineer"
+            ]
+          },
+          "target_career": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Career",
+            "description": "Alias for 'target_role'.",
+            "examples": [
+              "AI Engineer"
+            ]
+          },
+          "difficulty": {
+            "type": "string",
+            "title": "Difficulty",
+            "description": "Difficulty preference.",
+            "default": "Any Level",
+            "examples": [
+              "Intermediate"
+            ]
+          },
+          "preferred_difficulty": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferred Difficulty",
+            "description": "Alias for 'difficulty'.",
+            "examples": [
+              "Intermediate"
+            ]
+          },
+          "completed_courses": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Completed Courses",
+            "description": "Course names already completed \u2014 excluded from recommendations.",
+            "default": [],
+            "examples": [
+              [
+                "Introduction to Python"
+              ]
+            ]
+          },
+          "courses_per_skill": {
+            "type": "integer",
+            "maximum": 10.0,
+            "minimum": 0.0,
+            "title": "Courses Per Skill",
+            "description": "Max course recommendations per skill node (0\u201310).",
+            "default": 3,
+            "examples": [
+              3
+            ]
+          },
+          "projects_per_skill": {
+            "type": "integer",
+            "maximum": 10.0,
+            "minimum": 0.0,
+            "title": "Projects Per Skill",
+            "description": "Max project recommendations per skill node (0\u201310).",
+            "default": 2,
+            "examples": [
+              2
+            ]
+          }
+        },
+        "type": "object",
+        "title": "RoadmapRequest",
+        "description": "Request schema for POST /ai/generate-roadmap."
+      },
+      "RoadmapResponse": {
+        "properties": {
+          "career": {
+            "$ref": "#/components/schemas/RoadmapCareer",
+            "description": "Target career overview."
+          },
+          "summary": {
+            "$ref": "#/components/schemas/RoadmapSummary",
+            "description": "Summary statistics for learner's roadmap progression."
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/components/schemas/RoadmapNode"
+            },
+            "type": "array",
+            "title": "Nodes",
+            "description": "React Flow nodes list."
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/components/schemas/RoadmapEdge"
+            },
+            "type": "array",
+            "title": "Edges",
+            "description": "React Flow edges list."
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings",
+            "description": "Any cycle-breaking or graph resolution warnings.",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "career",
+          "summary",
+          "nodes",
+          "edges"
+        ],
+        "title": "RoadmapResponse",
+        "description": "Response schema for POST /ai/generate-roadmap (React Flow compatible)."
+      },
+      "RoadmapSummary": {
+        "properties": {
+          "total_required_skills": {
+            "type": "integer",
+            "title": "Total Required Skills",
+            "description": "Total nodes in the personalized roadmap subgraph.",
+            "examples": [
+              18
+            ]
+          },
+          "completed_skills": {
+            "type": "integer",
+            "title": "Completed Skills",
+            "description": "Number of required skills already mastered.",
+            "examples": [
+              2
+            ]
+          },
+          "remaining_skills": {
+            "type": "integer",
+            "title": "Remaining Skills",
+            "description": "Number of skills still needing mastery.",
+            "examples": [
+              16
+            ]
+          },
+          "progress_percentage": {
+            "type": "number",
+            "title": "Progress Percentage",
+            "description": "Milestone completion rate (0.0\u2013100.0%).",
+            "examples": [
+              11.1
+            ]
+          },
+          "critical_skills_remaining": {
+            "type": "integer",
+            "title": "Critical Skills Remaining",
+            "description": "Count of unmastered Critical-priority skills.",
+            "examples": [
+              5
+            ]
+          },
+          "career_readiness_score": {
+            "type": "number",
+            "title": "Career Readiness Score",
+            "description": "Readiness percentage score (0.0\u2013100.0).",
+            "examples": [
+              14.3
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_required_skills",
+          "completed_skills",
+          "remaining_skills",
+          "progress_percentage",
+          "critical_skills_remaining",
+          "career_readiness_score"
+        ],
+        "title": "RoadmapSummary"
+      },
+      "SkillGapCareer": {
+        "properties": {
+          "career_id": {
+            "type": "string",
+            "title": "Career Id",
+            "description": "Canonical ID of the target career.",
+            "examples": [
+              "CA_042"
+            ]
+          },
+          "career_title": {
+            "type": "string",
+            "title": "Career Title",
+            "description": "Display title of the target career.",
+            "examples": [
+              "AI Engineer"
+            ]
+          },
+          "career_domain": {
+            "type": "string",
+            "title": "Career Domain",
+            "description": "Domain category.",
+            "default": "",
+            "examples": [
+              "Artificial Intelligence"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "career_id",
+          "career_title"
+        ],
+        "title": "SkillGapCareer"
+      },
+      "SkillGapRequest": {
+        "properties": {
+          "student_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Student Id",
+            "description": "Optional unique student identifier.",
+            "examples": [
+              "STU_1001"
+            ]
+          },
+          "skills": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Skills",
+            "description": "Current learner skills (raw text \u2014 normalized internally).",
+            "default": [],
+            "examples": [
+              [
+                "Python",
+                "SQL",
+                "Git"
+              ]
+            ]
+          },
+          "current_skills": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Skills",
+            "description": "Alias for 'skills'.",
+            "examples": [
+              [
+                "Python",
+                "SQL",
+                "Git"
+              ]
+            ]
+          },
+          "target_role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Role",
+            "description": "Target career title or canonical ID (e.g. 'AI Engineer' or 'CA_042').",
+            "examples": [
+              "AI Engineer"
+            ]
+          },
+          "target_career": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Career",
+            "description": "Alias for 'target_role'.",
+            "examples": [
+              "AI Engineer"
+            ]
+          }
+        },
+        "type": "object",
+        "title": "SkillGapRequest",
+        "description": "Request schema for POST /ai/skill-gap."
+      },
+      "SkillGapResponse": {
+        "properties": {
+          "career": {
+            "$ref": "#/components/schemas/SkillGapCareer",
+            "description": "Target career overview."
+          },
+          "readiness_score": {
+            "type": "number",
+            "title": "Readiness Score",
+            "description": "Overall career readiness score (0\u2013100 scale).",
+            "examples": [
+              25.0
+            ]
+          },
+          "technical_match_pct": {
+            "type": "number",
+            "title": "Technical Match Pct",
+            "description": "Direct technical skill coverage percentage (0\u2013100 scale).",
+            "examples": [
+              20.0
+            ]
+          },
+          "current_skills": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Current Skills",
+            "description": "Input skills provided by student.",
+            "default": []
+          },
+          "matched_skills": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Matched Skills",
+            "description": "Skills already mastered by student.",
+            "default": []
+          },
+          "missing_skills": {
+            "items": {
+              "$ref": "#/components/schemas/MissingSkill"
+            },
+            "type": "array",
+            "title": "Missing Skills",
+            "description": "Direct required skills currently missing.",
+            "default": []
+          },
+          "prerequisite_gaps": {
+            "items": {
+              "$ref": "#/components/schemas/PrerequisiteGap"
+            },
+            "type": "array",
+            "title": "Prerequisite Gaps",
+            "description": "Transitive prerequisite dependencies identified.",
+            "default": []
+          },
+          "learning_sequence": {
+            "items": {
+              "$ref": "#/components/schemas/LearningStep"
+            },
+            "type": "array",
+            "title": "Learning Sequence",
+            "description": "Prerequisite-ordered topological learning sequence.",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "career",
+          "readiness_score",
+          "technical_match_pct"
+        ],
+        "title": "SkillGapResponse",
+        "description": "Response schema for POST /ai/skill-gap."
+      },
+      "Warning": {
+        "properties": {
+          "component": {
+            "type": "string",
+            "title": "Component",
+            "description": "Subsystem that generated the warning (e.g., career, courses, projects)"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code",
+            "description": "Machine-readable warning code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "Description of the degraded component"
+          }
+        },
+        "type": "object",
+        "required": [
+          "component",
+          "code",
+          "message"
+        ],
+        "title": "Warning"
+      }
+    }
+  }
+}

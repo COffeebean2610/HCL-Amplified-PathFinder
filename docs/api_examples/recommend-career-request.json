@@ -1,0 +1,10 @@
+{
+  "student_id": "STU_84920",
+  "skills": [
+    "Python",
+    "SQL",
+    "Git"
+  ],
+  "interests": "Artificial Intelligence, Machine Learning",
+  "top_k": 3
+}

@@ -1,0 +1,49 @@
+{
+  "target_role": "AI Engineer",
+  "courses": [
+    {
+      "course_id": "CRS_0520",
+      "course_name": "Mathematical Thinking in Computer Science",
+      "organization": "University of California San Diego",
+      "difficulty": "Intermediate",
+      "rating": 4.2,
+      "url": "https://www.coursera.org/learn/what-is-a-proof",
+      "relevance_score": 0.5072,
+      "matched_skills": [],
+      "missing_skills_covered": [
+        "Mathematics"
+      ],
+      "prerequisite_status": "Ready",
+      "reason": "This course is recommended because it teaches critical gaps: Mathematics, and it prerequisites are fully satisfied, and it matches your preferred difficulty (Intermediate)."
+    },
+    {
+      "course_id": "CRS_0407",
+      "course_name": "Preparing for the Google Cloud Professional Cloud Architect Exam",
+      "organization": "Google Cloud",
+      "difficulty": "Intermediate",
+      "rating": 4.6,
+      "url": "https://www.coursera.org/learn/preparing-cloud-professional-cloud-architect-exam",
+      "relevance_score": 0.496,
+      "matched_skills": [],
+      "missing_skills_covered": [
+        "Cloud Computing"
+      ],
+      "prerequisite_status": "Ready",
+      "reason": "This course is recommended because it teaches critical gaps: Cloud Computing, and it prerequisites are fully satisfied, and it matches your preferred difficulty (Intermediate)."
+    },
+    {
+      "course_id": "CRS_2075",
+      "course_name": "VLSI CAD Part II: Layout",
+      "organization": "University of Illinois at Urbana-Champaign",
+      "difficulty": "Intermediate",
+      "rating": 4.7,
+      "url": "https://www.coursera.org/learn/vlsi-cad-layout",
+      "relevance_score": 0.4934,
+      "matched_skills": [],
+      "missing_skills_covered": [],
+      "prerequisite_status": "Ready",
+      "reason": "This course is recommended because it prerequisites are fully satisfied, and it matches your preferred difficulty (Intermediate)."
+    }
+  ],
+  "total": 3
+}

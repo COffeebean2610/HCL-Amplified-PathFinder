@@ -1,0 +1,1014 @@
+{
+  "career": {
+    "career_id": "CAR_003",
+    "career_title": "AI Engineer"
+  },
+  "summary": {
+    "total_required_skills": 24,
+    "completed_skills": 2,
+    "remaining_skills": 22,
+    "progress_percentage": 8.3,
+    "critical_skills_remaining": 2,
+    "career_readiness_score": 13.0
+  },
+  "nodes": [
+    {
+      "id": "skill-SK_00435",
+      "skill_id": "SK_00435",
+      "skill_name": "SQL",
+      "status": "next",
+      "priority": "Medium",
+      "sequence": 1,
+      "prerequisites": [],
+      "courses": [
+        {
+          "course_id": "CRS_0957",
+          "course_name": "Performing Data Aggregation using SQL Aggregate Functions",
+          "organization": "Coursera Project Network",
+          "difficulty": "Intermediate",
+          "rating": 4.8,
+          "url": "https://www.coursera.org/learn/performing-data-aggregation-using-sql-aggregate-functions",
+          "relevance_score": 0.976
+        },
+        {
+          "course_id": "CRS_1507",
+          "course_name": "Foundations for Big Data Analysis with SQL",
+          "organization": "Cloudera",
+          "difficulty": "Intermediate",
+          "rating": 4.8,
+          "url": "https://www.coursera.org/learn/foundations-big-data-analysis-sql",
+          "relevance_score": 0.976
+        }
+      ],
+      "projects": [
+        {
+          "project_id": "PROJ_003",
+          "project_name": "Student Portal System",
+          "difficulty": "Intermediate",
+          "github_url": "https://github.com/mkkhedawat/student-management-system",
+          "relevance_score": 1.0,
+          "skills_to_develop": [
+            "JavaScript",
+            "CRUD Operations",
+            "Database Design",
+            "Authentication",
+            "SQL"
+          ]
+        }
+      ],
+      "data": {
+        "label": "SQL",
+        "status": "next",
+        "priority": "Medium",
+        "reason": "This skill is ready to learn! All prerequisites are met and it is required for AI Engineer.",
+        "learning_action": "learn_and_practice"
+      }
+    },
+    {
+      "id": "skill-SK_00360",
+      "skill_id": "SK_00360",
+      "skill_name": "Python",
+      "status": "completed",
+      "priority": "Critical",
+      "sequence": 2,
+      "prerequisites": [],
+      "courses": [],
+      "projects": [],
+      "data": {
+        "label": "Python",
+        "status": "completed",
+        "priority": "Critical",
+        "reason": "You have already completed and mastered this skill.",
+        "learning_action": "learn_only"
+      }
+    },
+    {
+      "id": "skill-SK_00189",
+      "skill_id": "SK_00189",
+      "skill_name": "Git",
+      "status": "next",
+      "priority": "High",
+      "sequence": 3,
+      "prerequisites": [],
+      "courses": [],
+      "projects": [
+        {
+          "project_id": "PROJ_102",
+          "project_name": "Autonomous Code Review Agent",
+          "difficulty": "Advanced",
+          "github_url": "https://github.com/topics/code-review-automation",
+          "relevance_score": 0.75,
+          "skills_to_develop": [
+            "Python",
+            "LLM",
+            "Code Analysis",
+            "Software Testing",
+            "Git"
+          ]
+        }
+      ],
+      "data": {
+        "label": "Git",
+        "status": "next",
+        "priority": "High",
+        "reason": "This skill is ready to learn! All prerequisites are met and it is required for AI Engineer.",
+        "learning_action": "practice_only"
+      }
+    },
+    {
+      "id": "skill-SK_00257",
+      "skill_id": "SK_00257",
+      "skill_name": "Linux",
+      "status": "next",
+      "priority": "High",
+      "sequence": 4,
+      "prerequisites": [],
+      "courses": [],
+      "projects": [
+        {
+          "project_id": "PROJ_231",
+          "project_name": "Infrastructure Monitoring System",
+          "difficulty": "Advanced",
+          "github_url": "https://github.com/prometheus/prometheus",
+          "relevance_score": 0.75,
+          "skills_to_develop": [
+            "Cloud Computing",
+            "Monitoring",
+            "Linux",
+            "Networking"
+          ]
+        }
+      ],
+      "data": {
+        "label": "Linux",
+        "status": "next",
+        "priority": "High",
+        "reason": "This skill is ready to learn! All prerequisites are met and it is required for AI Engineer.",
+        "learning_action": "practice_only"
+      }
+    },
+    {
+      "id": "skill-SK_00212",
+      "skill_id": "SK_00212",
+      "skill_name": "HTML",
+      "status": "next",
+      "priority": "High",
+      "sequence": 5,
+      "prerequisites": [],
+      "courses": [
+        {
+          "course_id": "CRS_1477",
+          "course_name": "Interactivity with JavaScript",
+          "organization": "University of Michigan",
+          "difficulty": "Intermediate",
+          "rating": 4.7,
+          "url": "https://www.coursera.org/learn/javascript",
+          "relevance_score": 0.964
+        },
+        {
+          "course_id": "CRS_2823",
+          "course_name": "Programming Mobile Applications for Android Handheld Systems: Part 1",
+          "organization": "University of Maryland, College Park",
+          "difficulty": "Intermediate",
+          "rating": 4.5,
+          "url": "https://www.coursera.org/learn/android-programming",
+          "relevance_score": 0.94
+        }
+      ],
+      "projects": [
+        {
+          "project_id": "PROJ_075",
+          "project_name": "Portfolio Builder",
+          "difficulty": "Beginner",
+          "github_url": "https://github.com/cobidev/gatsby-simplefolio",
+          "relevance_score": 0.75,
+          "skills_to_develop": [
+            "HTML",
+            "CSS",
+            "JavaScript",
+            "Responsive Design",
+            "UI Development"
+          ]
+        }
+      ],
+      "data": {
+        "label": "HTML",
+        "status": "next",
+        "priority": "High",
+        "reason": "This skill is ready to learn! All prerequisites are met and it is required for AI Engineer.",
+        "learning_action": "learn_and_practice"
+      }
+    },
+    {
+      "id": "skill-SK_00270",
+      "skill_id": "SK_00270",
+      "skill_name": "Mathematics",
+      "status": "completed",
+      "priority": "Medium",
+      "sequence": 6,
+      "prerequisites": [],
+      "courses": [],
+      "projects": [],
+      "data": {
+        "label": "Mathematics",
+        "status": "completed",
+        "priority": "Medium",
+        "reason": "You have already completed and mastered this skill.",
+        "learning_action": "learn_only"
+      }
+    },
+    {
+      "id": "skill-SK_00302",
+      "skill_id": "SK_00302",
+      "skill_name": "Natural Language Processing",
+      "status": "next",
+      "priority": "High",
+      "sequence": 7,
+      "prerequisites": [],
+      "courses": [
+        {
+          "course_id": "CRS_1777",
+          "course_name": "AI Workflow: Feature Engineering and Bias Detection",
+          "organization": "IBM",
+          "difficulty": "Intermediate",
+          "rating": 4.5,
+          "url": "https://www.coursera.org/learn/ibm-ai-workflow-feature-engineering-bias-detection",
+          "relevance_score": 0.94
+        },
+        {
+          "course_id": "CRS_0799",
+          "course_name": "Sequence Models for Time Series and Natural Language Processing",
+          "organization": "Google Cloud",
+          "difficulty": "Intermediate",
+          "rating": 4.3,
+          "url": "https://www.coursera.org/learn/sequence-models-tensorflow-gcp",
+          "relevance_score": 0.916
+        }
+      ],
+      "projects": [],
+      "data": {
+        "label": "Natural Language Processing",
+        "status": "next",
+        "priority": "High",
+        "reason": "This skill is ready to learn! All prerequisites are met and it is required for AI Engineer.",
+        "learning_action": "learn_only"
+      }
+    },
+    {
+      "id": "skill-SK_00255",
+      "skill_id": "SK_00255",
+      "skill_name": "Large Language Models",
+      "status": "next",
+      "priority": "Medium",
+      "sequence": 8,
+      "prerequisites": [],
+      "courses": [],
+      "projects": [],
+      "data": {
+        "label": "Large Language Models",
+        "status": "next",
+        "priority": "Medium",
+        "reason": "This skill is ready to learn! All prerequisites are met and it is required for AI Engineer.",
+        "learning_action": "learn_only"
+      }
+    },
+    {
+      "id": "skill-SK_00082",
+      "skill_id": "SK_00082",
+      "skill_name": "Cloud Computing",
+      "status": "next",
+      "priority": "High",
+      "sequence": 9,
+      "prerequisites": [],
+      "courses": [
+        {
+          "course_id": "CRS_3351",
+          "course_name": "Networking and Security Architecture with VMware NSX",
+          "organization": "VMware",
+          "difficulty": "Intermediate",
+          "rating": 4.8,
+          "url": "https://www.coursera.org/learn/networking-security-architecture-vmware-nsx",
+          "relevance_score": 0.976
+        },
+        {
+          "course_id": "CRS_0482",
+          "course_name": "Palo Alto Networks Academy Cybersecurity Foundation",
+          "organization": "Palo Alto Networks",
+          "difficulty": "Intermediate",
+          "rating": 4.7,
+          "url": "https://www.coursera.org/learn/cybersecurity-foundation",
+          "relevance_score": 0.964
+        }
+      ],
+      "projects": [
+        {
+          "project_id": "PROJ_228",
+          "project_name": "Environmental Monitoring IoT",
+          "difficulty": "Intermediate",
+          "github_url": "https://github.com/topics/environmental-sensing",
+          "relevance_score": 1.0,
+          "skills_to_develop": [
+            "IoT",
+            "Sensors",
+            "Data Analysis",
+            "Cloud Computing"
+          ]
+        }
+      ],
+      "data": {
+        "label": "Cloud Computing",
+        "status": "next",
+        "priority": "High",
+        "reason": "This skill is ready to learn! All prerequisites are met and it is required for AI Engineer.",
+        "learning_action": "learn_and_practice"
+      }
+    },
+    {
+      "id": "skill-SK_00179",
+      "skill_id": "SK_00179",
+      "skill_name": "Flask",
+      "status": "next",
+      "priority": "High",
+      "sequence": 10,
+      "prerequisites": [
+        "SK_00360"
+      ],
+      "courses": [
+        {
+          "course_id": "CRS_0991",
+          "course_name": "Django Features and Libraries",
+          "organization": "University of Michigan",
+          "difficulty": "Beginner",
+          "rating": 4.8,
+          "url": "https://www.coursera.org/learn/django-features-libraries",
+          "relevance_score": 0.776
+        },
+        {
+          "course_id": "CRS_2096",
+          "course_name": "Using JavaScript, JQuery, and JSON in Django",
+          "organization": "University of Michigan",
+          "difficulty": "Beginner",
+          "rating": 4.8,
+          "url": "https://www.coursera.org/learn/django-javascript-jquery-json",
+          "relevance_score": 0.776
+        }
+      ],
+      "projects": [],
+      "data": {
+        "label": "Flask",
+        "status": "next",
+        "priority": "High",
+        "reason": "This skill is ready to learn! All prerequisites are met and it is required for AI Engineer.",
+        "learning_action": "learn_only"
+      }
+    },
+    {
+      "id": "skill-SK_00145",
+      "skill_id": "SK_00145",
+      "skill_name": "Docker",
+      "status": "locked",
+      "priority": "High",
+      "sequence": 11,
+      "prerequisites": [
+        "SK_00257"
+      ],
+      "courses": [],
+      "projects": [
+        {
+          "project_id": "PROJ_233",
+          "project_name": "Container Security Scanner",
+          "difficulty": "Intermediate",
+          "github_url": "https://github.com/aquasecurity/trivy",
+          "relevance_score": 1.0,
+          "skills_to_develop": [
+            "Docker",
+            "Cybersecurity",
+            "DevOps",
+            "Security Testing"
+          ]
+        }
+      ],
+      "data": {
+        "label": "Docker",
+        "status": "locked",
+        "priority": "High",
+        "reason": "This skill is locked. Complete the following prerequisites first: Linux.",
+        "learning_action": "practice_only"
+      }
+    },
+    {
+      "id": "skill-SK_00106",
+      "skill_id": "SK_00106",
+      "skill_name": "CSS",
+      "status": "locked",
+      "priority": "High",
+      "sequence": 12,
+      "prerequisites": [
+        "SK_00212"
+      ],
+      "courses": [
+        {
+          "course_id": "CRS_0516",
+          "course_name": "Responsive Website Basics: Code with HTML, CSS, and JavaScript",
+          "organization": "University of London",
+          "difficulty": "Intermediate",
+          "rating": 4.5,
+          "url": "https://www.coursera.org/learn/website-coding",
+          "relevance_score": 0.94
+        },
+        {
+          "course_id": "CRS_2229",
+          "course_name": "Become a JavaScript Pro with these 7 Skills",
+          "organization": "Coursera Project Network",
+          "difficulty": "Intermediate",
+          "rating": 4.5,
+          "url": "https://www.coursera.org/learn/become-a-js-pro-7-skills",
+          "relevance_score": 0.94
+        }
+      ],
+      "projects": [
+        {
+          "project_id": "PROJ_075",
+          "project_name": "Portfolio Builder",
+          "difficulty": "Beginner",
+          "github_url": "https://github.com/cobidev/gatsby-simplefolio",
+          "relevance_score": 0.75,
+          "skills_to_develop": [
+            "HTML",
+            "CSS",
+            "JavaScript",
+            "Responsive Design",
+            "UI Development"
+          ]
+        }
+      ],
+      "data": {
+        "label": "CSS",
+        "status": "locked",
+        "priority": "High",
+        "reason": "This skill is locked. Complete the following prerequisites first: HTML.",
+        "learning_action": "learn_and_practice"
+      }
+    },
+    {
+      "id": "skill-SK_00264",
+      "skill_id": "SK_00264",
+      "skill_name": "Machine Learning",
+      "status": "next",
+      "priority": "Critical",
+      "sequence": 13,
+      "prerequisites": [
+        "SK_00270",
+        "SK_00360"
+      ],
+      "courses": [
+        {
+          "course_id": "CRS_2400",
+          "course_name": "The Power of Machine Learning: Boost Business, Accumulate Clicks, Fight Fraud, and Deny Deadbeats",
+          "organization": "SAS",
+          "difficulty": "Intermediate",
+          "rating": 5.0,
+          "url": "https://www.coursera.org/learn/the-power-of-machine-learning",
+          "relevance_score": 1.0
+        },
+        {
+          "course_id": "CRS_1840",
+          "course_name": "Exploratory Data Analysis for Machine Learning",
+          "organization": "IBM",
+          "difficulty": "Intermediate",
+          "rating": 4.8,
+          "url": "https://www.coursera.org/learn/ibm-exploratory-data-analysis-for-machine-learning",
+          "relevance_score": 0.976
+        }
+      ],
+      "projects": [
+        {
+          "project_id": "PROJ_086",
+          "project_name": "Chatbot Platform",
+          "difficulty": "Intermediate",
+          "github_url": "https://github.com/botpress/botpress",
+          "relevance_score": 1.0,
+          "skills_to_develop": [
+            "Python",
+            "Natural Language Processing",
+            "Machine Learning",
+            "Conversational AI"
+          ]
+        }
+      ],
+      "data": {
+        "label": "Machine Learning",
+        "status": "next",
+        "priority": "Critical",
+        "reason": "This skill is ready to learn! All prerequisites are met and it is required for AI Engineer.",
+        "learning_action": "learn_and_practice"
+      }
+    },
+    {
+      "id": "skill-SK_00260",
+      "skill_id": "SK_00260",
+      "skill_name": "LLMs",
+      "status": "locked",
+      "priority": "High",
+      "sequence": 14,
+      "prerequisites": [
+        "SK_00302"
+      ],
+      "courses": [],
+      "projects": [],
+      "data": {
+        "label": "LLMs",
+        "status": "locked",
+        "priority": "High",
+        "reason": "This skill is locked. Complete the following prerequisites first: Natural Language Processing.",
+        "learning_action": "learn_only"
+      }
+    },
+    {
+      "id": "skill-SK_00046",
+      "skill_id": "SK_00046",
+      "skill_name": "Amazon Web Services",
+      "status": "locked",
+      "priority": "High",
+      "sequence": 15,
+      "prerequisites": [
+        "SK_00082"
+      ],
+      "courses": [],
+      "projects": [],
+      "data": {
+        "label": "Amazon Web Services",
+        "status": "locked",
+        "priority": "High",
+        "reason": "This skill is locked. Complete the following prerequisites first: Cloud Computing.",
+        "learning_action": "learn_only"
+      }
+    },
+    {
+      "id": "skill-SK_00240",
+      "skill_id": "SK_00240",
+      "skill_name": "JavaScript",
+      "status": "locked",
+      "priority": "High",
+      "sequence": 16,
+      "prerequisites": [
+        "SK_00106"
+      ],
+      "courses": [
+        {
+          "course_id": "CRS_1350",
+          "course_name": "Front-End Web UI Frameworks and Tools: Bootstrap 4",
+          "organization": "The Hong Kong University of Science and Technology",
+          "difficulty": "Intermediate",
+          "rating": 4.7,
+          "url": "https://www.coursera.org/learn/bootstrap-4",
+          "relevance_score": 0.964
+        },
+        {
+          "course_id": "CRS_3098",
+          "course_name": "Browser-based Models with TensorFlow.js",
+          "organization": "DeepLearning.AI",
+          "difficulty": "Intermediate",
+          "rating": 4.7,
+          "url": "https://www.coursera.org/learn/browser-based-models-tensorflow",
+          "relevance_score": 0.964
+        }
+      ],
+      "projects": [
+        {
+          "project_id": "PROJ_002",
+          "project_name": "Online Course Platform",
+          "difficulty": "Intermediate",
+          "github_url": "https://github.com/PacktPublishing/MERN-Stack-Course",
+          "relevance_score": 1.0,
+          "skills_to_develop": [
+            "React",
+            "JavaScript",
+            "REST APIs",
+            "Authentication",
+            "Database Design"
+          ]
+        }
+      ],
+      "data": {
+        "label": "JavaScript",
+        "status": "locked",
+        "priority": "High",
+        "reason": "This skill is locked. Complete the following prerequisites first: CSS.",
+        "learning_action": "learn_and_practice"
+      }
+    },
+    {
+      "id": "skill-SK_00132",
+      "skill_id": "SK_00132",
+      "skill_name": "Deep Learning",
+      "status": "locked",
+      "priority": "Critical",
+      "sequence": 17,
+      "prerequisites": [
+        "SK_00264"
+      ],
+      "courses": [
+        {
+          "course_id": "CRS_2457",
+          "course_name": "TensorFlow for AI: Neural Network Representation",
+          "organization": "Coursera Project Network",
+          "difficulty": "Intermediate",
+          "rating": 5.0,
+          "url": "https://www.coursera.org/learn/tensorflow-for-ai-neural-network-representation",
+          "relevance_score": 1.0
+        },
+        {
+          "course_id": "CRS_2474",
+          "course_name": "Introduction to Applied Machine Learning",
+          "organization": "Alberta Machine Intelligence Institute",
+          "difficulty": "Intermediate",
+          "rating": 4.7,
+          "url": "https://www.coursera.org/learn/machine-learning-applied",
+          "relevance_score": 0.964
+        }
+      ],
+      "projects": [
+        {
+          "project_id": "PROJ_087",
+          "project_name": "Image Recognition App",
+          "difficulty": "Intermediate",
+          "github_url": "https://github.com/tensorflow/tfjs-examples",
+          "relevance_score": 1.0,
+          "skills_to_develop": [
+            "Python",
+            "Computer Vision",
+            "Deep Learning",
+            "Image Classification"
+          ]
+        }
+      ],
+      "data": {
+        "label": "Deep Learning",
+        "status": "locked",
+        "priority": "Critical",
+        "reason": "This skill is locked. Complete the following prerequisites first: Machine Learning.",
+        "learning_action": "learn_and_practice"
+      }
+    },
+    {
+      "id": "skill-SK_00188",
+      "skill_id": "SK_00188",
+      "skill_name": "Generative AI",
+      "status": "locked",
+      "priority": "Medium",
+      "sequence": 18,
+      "prerequisites": [
+        "SK_00260"
+      ],
+      "courses": [],
+      "projects": [
+        {
+          "project_id": "PROJ_125",
+          "project_name": "Smart Presentation Builder",
+          "difficulty": "Intermediate",
+          "github_url": "https://github.com/topics/ai-presentation",
+          "relevance_score": 1.0,
+          "skills_to_develop": [
+            "Python",
+            "LLM",
+            "Natural Language Processing",
+            "Generative AI",
+            "Content Generation"
+          ]
+        }
+      ],
+      "data": {
+        "label": "Generative AI",
+        "status": "locked",
+        "priority": "Medium",
+        "reason": "This skill is locked. Complete the following prerequisites first: LLMs.",
+        "learning_action": "practice_only"
+      }
+    },
+    {
+      "id": "skill-SK_00314",
+      "skill_id": "SK_00314",
+      "skill_name": "Node.js",
+      "status": "locked",
+      "priority": "High",
+      "sequence": 19,
+      "prerequisites": [
+        "SK_00240"
+      ],
+      "courses": [
+        {
+          "course_id": "CRS_2229",
+          "course_name": "Become a JavaScript Pro with these 7 Skills",
+          "organization": "Coursera Project Network",
+          "difficulty": "Intermediate",
+          "rating": 4.5,
+          "url": "https://www.coursera.org/learn/become-a-js-pro-7-skills",
+          "relevance_score": 0.94
+        },
+        {
+          "course_id": "CRS_3108",
+          "course_name": "AWS Fundamentals: Migrating to the Cloud",
+          "organization": "Amazon Web Services",
+          "difficulty": "Intermediate",
+          "rating": 4.5,
+          "url": "https://www.coursera.org/learn/aws-fundamentals-cloud-migration",
+          "relevance_score": 0.94
+        }
+      ],
+      "projects": [],
+      "data": {
+        "label": "Node.js",
+        "status": "locked",
+        "priority": "High",
+        "reason": "This skill is locked. Complete the following prerequisites first: JavaScript.",
+        "learning_action": "learn_only"
+      }
+    },
+    {
+      "id": "skill-SK_00244",
+      "skill_id": "SK_00244",
+      "skill_name": "JSON",
+      "status": "locked",
+      "priority": "High",
+      "sequence": 20,
+      "prerequisites": [
+        "SK_00240"
+      ],
+      "courses": [
+        {
+          "course_id": "CRS_3107",
+          "course_name": "API Security on Google Cloud's Apigee API Platform",
+          "organization": "Google Cloud",
+          "difficulty": "Intermediate",
+          "rating": 4.6,
+          "url": "https://www.coursera.org/learn/api-security-apigee-gcp",
+          "relevance_score": 0.952
+        },
+        {
+          "course_id": "CRS_3286",
+          "course_name": "Front-End Web Development with React",
+          "organization": "The Hong Kong University of Science and Technology",
+          "difficulty": "Intermediate",
+          "rating": 4.5,
+          "url": "https://www.coursera.org/learn/front-end-react",
+          "relevance_score": 0.94
+        }
+      ],
+      "projects": [],
+      "data": {
+        "label": "JSON",
+        "status": "locked",
+        "priority": "High",
+        "reason": "This skill is locked. Complete the following prerequisites first: JavaScript.",
+        "learning_action": "learn_only"
+      }
+    },
+    {
+      "id": "skill-SK_00361",
+      "skill_id": "SK_00361",
+      "skill_name": "PyTorch",
+      "status": "locked",
+      "priority": "High",
+      "sequence": 21,
+      "prerequisites": [
+        "SK_00132"
+      ],
+      "courses": [
+        {
+          "course_id": "CRS_3046",
+          "course_name": "TensorFlow Serving with Docker for Model Deployment",
+          "organization": "Coursera Project Network",
+          "difficulty": "Advanced",
+          "rating": 4.9,
+          "url": "https://www.coursera.org/learn/tensorflow-serving-docker-model-deployment",
+          "relevance_score": 0.788
+        },
+        {
+          "course_id": "CRS_0148",
+          "course_name": "Analyze Website Visitors with Google Analytics Segments",
+          "organization": "Coursera Project Network",
+          "difficulty": "Beginner",
+          "rating": 4.8,
+          "url": "https://www.coursera.org/learn/analyze-visitors-google-analytics-segments",
+          "relevance_score": 0.776
+        }
+      ],
+      "projects": [],
+      "data": {
+        "label": "PyTorch",
+        "status": "locked",
+        "priority": "High",
+        "reason": "This skill is locked. Complete the following prerequisites first: Deep Learning.",
+        "learning_action": "learn_only"
+      }
+    },
+    {
+      "id": "skill-SK_00457",
+      "skill_id": "SK_00457",
+      "skill_name": "TensorFlow",
+      "status": "locked",
+      "priority": "High",
+      "sequence": 22,
+      "prerequisites": [
+        "SK_00132"
+      ],
+      "courses": [
+        {
+          "course_id": "CRS_2457",
+          "course_name": "TensorFlow for AI: Neural Network Representation",
+          "organization": "Coursera Project Network",
+          "difficulty": "Intermediate",
+          "rating": 5.0,
+          "url": "https://www.coursera.org/learn/tensorflow-for-ai-neural-network-representation",
+          "relevance_score": 1.0
+        },
+        {
+          "course_id": "CRS_3098",
+          "course_name": "Browser-based Models with TensorFlow.js",
+          "organization": "DeepLearning.AI",
+          "difficulty": "Intermediate",
+          "rating": 4.7,
+          "url": "https://www.coursera.org/learn/browser-based-models-tensorflow",
+          "relevance_score": 0.964
+        }
+      ],
+      "projects": [],
+      "data": {
+        "label": "TensorFlow",
+        "status": "locked",
+        "priority": "High",
+        "reason": "This skill is locked. Complete the following prerequisites first: Deep Learning.",
+        "learning_action": "learn_only"
+      }
+    },
+    {
+      "id": "skill-SK_00173",
+      "skill_id": "SK_00173",
+      "skill_name": "Express.js",
+      "status": "locked",
+      "priority": "High",
+      "sequence": 23,
+      "prerequisites": [
+        "SK_00314"
+      ],
+      "courses": [],
+      "projects": [],
+      "data": {
+        "label": "Express.js",
+        "status": "locked",
+        "priority": "High",
+        "reason": "This skill is locked. Complete the following prerequisites first: Node.js.",
+        "learning_action": "learn_only"
+      }
+    },
+    {
+      "id": "skill-SK_00382",
+      "skill_id": "SK_00382",
+      "skill_name": "REST APIs",
+      "status": "locked",
+      "priority": "Medium",
+      "sequence": 24,
+      "prerequisites": [
+        "SK_00173",
+        "SK_00179",
+        "SK_00244"
+      ],
+      "courses": [],
+      "projects": [
+        {
+          "project_id": "PROJ_002",
+          "project_name": "Online Course Platform",
+          "difficulty": "Intermediate",
+          "github_url": "https://github.com/PacktPublishing/MERN-Stack-Course",
+          "relevance_score": 1.0,
+          "skills_to_develop": [
+            "React",
+            "JavaScript",
+            "REST APIs",
+            "Authentication",
+            "Database Design"
+          ]
+        }
+      ],
+      "data": {
+        "label": "REST APIs",
+        "status": "locked",
+        "priority": "Medium",
+        "reason": "This skill is locked. Complete the following prerequisites first: Express.js, Flask, JSON.",
+        "learning_action": "practice_only"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-SK_00360-SK_00264",
+      "source": "skill-SK_00360",
+      "target": "skill-SK_00264",
+      "relationship": "prerequisite"
+    },
+    {
+      "id": "edge-SK_00360-SK_00179",
+      "source": "skill-SK_00360",
+      "target": "skill-SK_00179",
+      "relationship": "prerequisite"
+    },
+    {
+      "id": "edge-SK_00264-SK_00132",
+      "source": "skill-SK_00264",
+      "target": "skill-SK_00132",
+      "relationship": "prerequisite"
+    },
+    {
+      "id": "edge-SK_00257-SK_00145",
+      "source": "skill-SK_00257",
+      "target": "skill-SK_00145",
+      "relationship": "prerequisite"
+    },
+    {
+      "id": "edge-SK_00179-SK_00382",
+      "source": "skill-SK_00179",
+      "target": "skill-SK_00382",
+      "relationship": "prerequisite"
+    },
+    {
+      "id": "edge-SK_00106-SK_00240",
+      "source": "skill-SK_00106",
+      "target": "skill-SK_00240",
+      "relationship": "prerequisite"
+    },
+    {
+      "id": "edge-SK_00244-SK_00382",
+      "source": "skill-SK_00244",
+      "target": "skill-SK_00382",
+      "relationship": "prerequisite"
+    },
+    {
+      "id": "edge-SK_00212-SK_00106",
+      "source": "skill-SK_00212",
+      "target": "skill-SK_00106",
+      "relationship": "prerequisite"
+    },
+    {
+      "id": "edge-SK_00270-SK_00264",
+      "source": "skill-SK_00270",
+      "target": "skill-SK_00264",
+      "relationship": "prerequisite"
+    },
+    {
+      "id": "edge-SK_00173-SK_00382",
+      "source": "skill-SK_00173",
+      "target": "skill-SK_00382",
+      "relationship": "prerequisite"
+    },
+    {
+      "id": "edge-SK_00314-SK_00173",
+      "source": "skill-SK_00314",
+      "target": "skill-SK_00173",
+      "relationship": "prerequisite"
+    },
+    {
+      "id": "edge-SK_00260-SK_00188",
+      "source": "skill-SK_00260",
+      "target": "skill-SK_00188",
+      "relationship": "prerequisite"
+    },
+    {
+      "id": "edge-SK_00240-SK_00314",
+      "source": "skill-SK_00240",
+      "target": "skill-SK_00314",
+      "relationship": "prerequisite"
+    },
+    {
+      "id": "edge-SK_00240-SK_00244",
+      "source": "skill-SK_00240",
+      "target": "skill-SK_00244",
+      "relationship": "prerequisite"
+    },
+    {
+      "id": "edge-SK_00302-SK_00260",
+      "source": "skill-SK_00302",
+      "target": "skill-SK_00260",
+      "relationship": "prerequisite"
+    },
+    {
+      "id": "edge-SK_00132-SK_00361",
+      "source": "skill-SK_00132",
+      "target": "skill-SK_00361",
+      "relationship": "prerequisite"
+    },
+    {
+      "id": "edge-SK_00132-SK_00457",
+      "source": "skill-SK_00132",
+      "target": "skill-SK_00457",
+      "relationship": "prerequisite"
+    },
+    {
+      "id": "edge-SK_00082-SK_00046",
+      "source": "skill-SK_00082",
+      "target": "skill-SK_00046",
+      "relationship": "prerequisite"
+    }
+  ],
+  "warnings": []
+}

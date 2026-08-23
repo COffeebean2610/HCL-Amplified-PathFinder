@@ -1,0 +1,49 @@
+{
+  "target_role": "AI Engineer",
+  "projects": [
+    {
+      "project_id": "PROJ_178",
+      "project_name": "AI Portfolio Builder",
+      "domain": "AI/ML",
+      "difficulty": "Intermediate",
+      "github_url": "https://github.com/topics/portfolio-website",
+      "relevance_score": 0.4708,
+      "skills_to_develop": [],
+      "matched_existing_skills": [
+        "Python"
+      ],
+      "prerequisite_status": "Ready",
+      "reason": "This project is recommended because it practices your existing skills: Python, plus it you possess all prerequisites, plus it perfectly fits your preferred Intermediate level."
+    },
+    {
+      "project_id": "PROJ_164",
+      "project_name": "Autonomous Robot Navigation",
+      "domain": "AI/ML",
+      "difficulty": "Advanced",
+      "github_url": "https://github.com/topics/robot-navigation",
+      "relevance_score": 0.415,
+      "skills_to_develop": [],
+      "matched_existing_skills": [
+        "Python"
+      ],
+      "prerequisite_status": "Ready",
+      "reason": "This project is recommended because it practices your existing skills: Python, plus it you possess all prerequisites, plus it is offered at a different Advanced level."
+    },
+    {
+      "project_id": "PROJ_002",
+      "project_name": "Online Course Platform",
+      "domain": "Software Engineering",
+      "difficulty": "Intermediate",
+      "github_url": "https://github.com/PacktPublishing/MERN-Stack-Course",
+      "relevance_score": 0.2984,
+      "skills_to_develop": [
+        "JavaScript",
+        "REST APIs"
+      ],
+      "matched_existing_skills": [],
+      "prerequisite_status": "Locked",
+      "reason": "This project is recommended because it helps you develop: JavaScript, REST APIs, plus it prerequisites are locked (readiness: 12%), plus it perfectly fits your preferred Intermediate level."
+    }
+  ],
+  "total": 3
+}
