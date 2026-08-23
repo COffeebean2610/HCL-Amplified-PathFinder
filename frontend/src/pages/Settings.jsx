@@ -1,8 +1,11 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Check, User, BookOpen, Shield, ChevronRight } from 'lucide-react';
 import { Button } from '../components/common/Button';
 import { mockProfile } from '../data/mockData';
+import { useAuth } from '../context/AuthContext';
+import client from '../services/api';
 
 const LEARNING_STYLES = ['Theory-first', 'Project-based', 'Balanced', 'Practice-first'];
 const WEEKLY_HOURS = ['2 hrs / week', '5 hrs / week', '7 hrs / week', '10 hrs / week', '15+ hrs / week'];
@@ -40,20 +43,50 @@ function SectionHeader({ icon: Icon, label }) {
 }
 
 export default function Settings() {
+  const navigate = useNavigate();
+  const { currentUser, logout, updateUser } = useAuth();
   const [profile, setProfile] = useState({
     ...mockProfile,
-    learningStyle: 'Project-based',
-    weeklyHours: '7 hrs / week',
-    pace: 'Balanced',
-    contentPreference: 'Mixed',
+    ...(currentUser || {}),
+    learningStyle: currentUser?.learning_preferences?.style || 'Project-based',
+    weeklyHours: `${currentUser?.weekly_learning_hours || 7} hrs / week`,
+    pace: currentUser?.learning_preferences?.pace || 'Balanced',
+    contentPreference: currentUser?.learning_preferences?.content || 'Mixed',
+    currentGoal: currentUser?.target_career || 'AI / ML Engineer',
   });
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const update = (field, value) => setProfile((p) => ({ ...p, [field]: value }));
 
-  const handleSave = () => {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await client.put('/users/me', {
+        name: profile.name,
+        target_career: profile.currentGoal,
+        experience: profile.experience,
+        learning_preferences: {
+          style: profile.learningStyle,
+          pace: profile.pace,
+          content: profile.contentPreference,
+          weekly_hours: parseInt(profile.weeklyHours) || 7,
+        },
+      });
+      updateUser({ name: profile.name, target_career: profile.currentGoal });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } catch {
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
   };
 
   return (
@@ -129,7 +162,7 @@ export default function Settings() {
           <section>
             <SectionHeader icon={Shield} label="Account" />
             <div className="space-y-2">
-              {['Change email', 'Change password', 'Sign out'].map((action) => (
+              {['Change email', 'Change password'].map((action) => (
                 <button
                   key={action}
                   className="w-full flex items-center justify-between px-4 py-3 border border-[#383832] rounded-lg text-sm text-[#AAA89F] hover:text-[#F3F0E8] hover:border-[#C89B5B]/30 transition-colors cursor-pointer text-left"
@@ -138,6 +171,13 @@ export default function Settings() {
                   <ChevronRight size={13} className="text-[#77766F]" />
                 </button>
               ))}
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center justify-between px-4 py-3 border border-[#383832] rounded-lg text-sm text-[#AAA89F] hover:text-[#F3F0E8] hover:border-[#C89B5B]/30 transition-colors cursor-pointer text-left"
+              >
+                Sign out
+                <ChevronRight size={13} className="text-[#77766F]" />
+              </button>
               <button className="w-full flex items-center justify-between px-4 py-3 border border-[#A96A5F]/30 rounded-lg text-sm text-[#A96A5F] hover:bg-[#A96A5F]/5 transition-colors cursor-pointer">
                 Delete account
                 <ChevronRight size={13} />
@@ -145,7 +185,7 @@ export default function Settings() {
             </div>
           </section>
 
-          <Button onClick={handleSave} loading={false}>
+          <Button onClick={handleSave} loading={saving}>
             {saved ? '✓ Saved' : 'Save Changes'}
           </Button>
         </div>

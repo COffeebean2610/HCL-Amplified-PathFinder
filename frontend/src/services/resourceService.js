@@ -4,51 +4,33 @@ import { mockResources } from '../data/mockData';
 const delay = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export const resourceService = {
-  async getResources(filters = {}) {
+  async getResources(filter) {
     try {
-      const res = await client.get('/api/resources', { params: filters });
-      return res.data;
-    } catch {
-      await delay(400);
-      let results = [...mockResources];
-      if (filters.type && filters.type !== 'all') {
-        results = results.filter((r) => r.type === filters.type);
-      }
-      if (filters.q) {
-        const q = filters.q.toLowerCase();
-        results = results.filter((r) => r.title.toLowerCase().includes(q));
-      }
-      return results;
-    }
-  },
-
-  async getResourceById(resourceId) {
-    try {
-      const res = await client.get(`/api/resources/${resourceId}`);
+      const res = await client.get('/resources', { params: filter });
       return res.data;
     } catch {
       await delay(300);
-      return mockResources.find((r) => r.id === resourceId);
+      return mockResources;
     }
   },
 
-  async getRecommendedResources() {
+  async getRecommended() {
     try {
-      const res = await client.get('/api/resources/recommended');
+      const res = await client.get('/resources/recommended');
       return res.data;
     } catch {
-      await delay(400);
-      return mockResources.filter((r) => r.isCurrent || r.relevance >= 85);
+      await delay(300);
+      return mockResources.filter((r) => r.is_current || r.relevance >= 85);
     }
   },
 
-  async saveResource(resourceId) {
+  async getResourceById(id) {
     try {
-      const res = await client.post(`/api/resources/${resourceId}/save`);
+      const res = await client.get(`/resources/${id}`);
       return res.data;
     } catch {
       await delay(200);
-      return { success: true };
+      return mockResources.find((r) => r.id === id) || mockResources[0];
     }
   },
 };

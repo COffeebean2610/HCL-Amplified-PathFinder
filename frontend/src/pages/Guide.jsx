@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, Send, ArrowRight } from 'lucide-react';
 import { Button } from '../components/common/Button';
+import client from '../services/api';
 
 const SUGGESTED = [
   'Why is this my next step?',
@@ -24,6 +25,11 @@ export default function Guide() {
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   const sendMessage = async (text) => {
     const msg = text || input.trim();
@@ -31,11 +37,20 @@ export default function Guide() {
     setInput('');
     setMessages((m) => [...m, { role: 'user', content: msg }]);
     setLoading(true);
-
-    await new Promise((r) => setTimeout(r, 800));
-    const response = MOCK_RESPONSES[msg] || `That's a great question about "${msg}". Based on your current route, I'd suggest focusing on Model Evaluation first — it's directly blocking your progression to the Deep Learning stage. Once you clear that gap, your next 3 skills will unlock automatically.`;
-    setMessages((m) => [...m, { role: 'assistant', content: response }]);
-    setLoading(false);
+    try {
+      const res = await client.post('/ai-guide/chat', {
+        message: msg,
+        history: messages.slice(-6),
+      });
+      setMessages((m) => [...m, { role: 'assistant', content: res.data.response }]);
+    } catch {
+      // Fallback mock response
+      await new Promise((r) => setTimeout(r, 600));
+      const fallback = MOCK_RESPONSES[msg] || `Based on your current route, I'd recommend focusing on Model Evaluation — it's directly blocking your progression to the Deep Learning stage. Once you clear that gap, your next 3 skills will unlock automatically.`;
+      setMessages((m) => [...m, { role: 'assistant', content: fallback }]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -63,7 +78,7 @@ export default function Guide() {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 space-y-4 mb-6 overflow-y-auto">
+      <div className="flex-1 space-y-4 mb-6 overflow-y-auto" style={{ maxHeight: '60vh' }}>
         {messages.map((msg, i) => (
           <motion.div
             key={i}

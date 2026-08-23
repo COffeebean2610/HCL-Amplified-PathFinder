@@ -9,6 +9,7 @@ import { routeService } from '../services/routeService';
 import { skillService } from '../services/skillService';
 import { mockProgress, mockSkillGaps, mockProjects } from '../data/mockData';
 import { greetingByHour } from '../lib/utils';
+import { useAuth } from '../context/AuthContext';
 
 function SectionLabel({ children }) {
   return <div className="label mb-4">{children}</div>;
@@ -44,6 +45,7 @@ function MiniRouteStage({ stage, isLast }) {
 
 export default function Overview() {
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
   const [route, setRoute] = useState(null);
   const [skills, setSkills] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -75,12 +77,12 @@ export default function Overview() {
   const weakSkills = skills.filter((s) => s.status === 'needs_attention').slice(0, 2);
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-8">
+    <div className="max-w-5xl mx-auto px-6 py-10">
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mb-10">
         <div className="label mb-3">Learning Overview</div>
-        <h1 className="font-serif text-3xl text-[#F3F0E8] mb-2">
-          {greetingByHour()}, {route ? 'Abhishek' : 'Learner'}.
+        <h1 className="font-serif text-3xl text-[#F3F0E8] mb-2" style={{ fontFamily: 'DM Serif Display, Georgia, serif' }}>
+          {greetingByHour()}, {currentUser?.name?.split(' ')[0] || 'Learner'}.
         </h1>
         <p className="text-[#AAA89F]">Here's where your learning journey stands.</p>
       </motion.div>

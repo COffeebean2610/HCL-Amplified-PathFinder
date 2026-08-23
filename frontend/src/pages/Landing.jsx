@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, ChevronRight } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const ROUTE_STAGES = [
   { label: 'Current Skills', desc: 'Where you are today', done: true },
@@ -19,6 +20,11 @@ const FEATURES = [
 
 export default function Landing() {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+
+  const handleStartJourney = () => {
+    navigate(isAuthenticated ? '/home' : '/register');
+  };
 
   return (
     <div className="min-h-screen bg-[#171714] text-[#F3F0E8]">
@@ -27,16 +33,25 @@ export default function Landing() {
         <span className="text-sm font-semibold tracking-[0.12em] uppercase text-[#C89B5B]">RouteMaster</span>
         <div className="flex items-center gap-6">
           <button
-            onClick={() => navigate('/home')}
-            className="text-sm text-[#AAA89F] hover:text-[#F3F0E8] transition-colors cursor-pointer"
+            onClick={() => {
+              const el = document.getElementById('how-it-works');
+              el?.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="text-sm text-[#AAA89F] hover:text-[#F3F0E8] transition-colors cursor-pointer hidden md:block"
           >
-            Sign In
+            How it works
           </button>
           <button
-            onClick={() => navigate('/profile')}
+            onClick={() => navigate('/login')}
+            className="text-sm text-[#AAA89F] hover:text-[#F3F0E8] transition-colors cursor-pointer"
+          >
+            Sign in
+          </button>
+          <button
+            onClick={handleStartJourney}
             className="px-4 py-2 text-sm font-medium bg-[#C89B5B] text-[#171714] rounded-lg hover:bg-[#D4AA6C] transition-colors cursor-pointer"
           >
-            Get Started
+            {isAuthenticated ? 'Continue' : 'Get Started'}
           </button>
         </div>
       </header>
@@ -51,31 +66,32 @@ export default function Landing() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <div className="label mb-6">A Route, Not a List</div>
-              <h1 className="font-serif text-5xl lg:text-6xl leading-tight text-[#F3F0E8] mb-6">
+              <div className="label mb-4 text-[#C89B5B]">AI Career PathFinder</div>
+              <h1 className="font-serif text-5xl lg:text-6xl leading-tight text-[#F3F0E8] mb-6" style={{ fontFamily: 'DM Serif Display, Georgia, serif' }}>
                 Mastering the Sequence of Complex
                 <span className="text-[#C89B5B]"> Educational Goals</span>
               </h1>
               <p className="text-lg text-[#AAA89F] leading-relaxed mb-10 max-w-lg">
-                Discover your ideal career. Identify your skill gaps. Follow an adaptive learning
-                route containing skills, resources, courses and projects.
+                Discover your ideal career. Build your personalized learning roadmap.
               </p>
 
               <div className="flex flex-wrap items-center gap-4">
                 <button
-                  onClick={() => navigate('/profile')}
+                  onClick={handleStartJourney}
                   className="inline-flex items-center gap-2 px-6 py-3 bg-[#C89B5B] text-[#171714] text-sm font-semibold rounded-lg hover:bg-[#D4AA6C] transition-colors cursor-pointer"
                 >
-                  Start Your Journey
+                  {isAuthenticated ? 'Continue Your Journey' : 'Start Your Journey'}
                   <ArrowRight size={16} />
                 </button>
-                <button
-                  onClick={() => navigate('/home')}
-                  className="inline-flex items-center gap-2 text-sm text-[#AAA89F] hover:text-[#F3F0E8] transition-colors cursor-pointer"
-                >
-                  See How It Works
-                  <ChevronRight size={14} />
-                </button>
+                {!isAuthenticated && (
+                  <button
+                    onClick={() => navigate('/login')}
+                    className="inline-flex items-center gap-1 text-sm text-[#AAA89F] hover:text-[#F3F0E8] transition-colors cursor-pointer"
+                  >
+                    Already have an account? Sign in
+                    <ChevronRight size={14} />
+                  </button>
+                )}
               </div>
             </motion.div>
           </div>
@@ -96,7 +112,6 @@ export default function Landing() {
                   transition={{ delay: 0.4 + i * 0.12 }}
                   className="flex items-start gap-4"
                 >
-                  {/* Line + node */}
                   <div className="flex flex-col items-center">
                     <div
                       className="w-3 h-3 rounded-full border-2 flex-shrink-0 mt-1"
@@ -109,13 +124,8 @@ export default function Landing() {
                       <div className="w-px flex-1 min-h-[52px]" style={{ backgroundColor: '#383832' }} />
                     )}
                   </div>
-
-                  {/* Content */}
                   <div className="pb-8">
-                    <div
-                      className="text-sm font-semibold"
-                      style={{ color: i === 0 || i === 4 ? '#C89B5B' : '#F3F0E8' }}
-                    >
+                    <div className="text-sm font-semibold" style={{ color: i === 0 || i === 4 ? '#C89B5B' : '#F3F0E8' }}>
                       {stage.label}
                     </div>
                     <div className="text-xs text-[#77766F] mt-0.5">{stage.desc}</div>
@@ -131,7 +141,7 @@ export default function Landing() {
       <div className="border-t border-[#383832]/60 max-w-6xl mx-auto" />
 
       {/* Features */}
-      <section className="py-20 px-8 max-w-6xl mx-auto">
+      <section id="how-it-works" className="py-20 px-8 max-w-6xl mx-auto">
         <div className="label mb-10 text-center">How It Works</div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-[#383832]">
           {FEATURES.map((f, i) => (
@@ -149,17 +159,17 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Demo preview */}
+      {/* Route preview */}
       <section className="py-16 px-8 max-w-6xl mx-auto border-t border-[#383832]/60">
         <div className="grid lg:grid-cols-3 gap-8 items-center">
           <div className="lg:col-span-1">
             <div className="label mb-4">Product Preview</div>
-            <h2 className="font-serif text-3xl text-[#F3F0E8] mb-4">Know exactly where you stand</h2>
+            <h2 className="font-serif text-3xl text-[#F3F0E8] mb-4" style={{ fontFamily: 'DM Serif Display, Georgia, serif' }}>Know exactly where you stand</h2>
             <p className="text-sm text-[#AAA89F] leading-relaxed mb-6">
               Your route shows every stage, current position, skill gaps, and what to build next — all in one view.
             </p>
             <button
-              onClick={() => navigate('/profile')}
+              onClick={handleStartJourney}
               className="inline-flex items-center gap-2 text-sm text-[#C89B5B] hover:text-[#D4AA6C] font-medium cursor-pointer transition-colors"
             >
               Build Your Route <ArrowRight size={14} />
@@ -177,8 +187,6 @@ export default function Landing() {
                 <div className="text-xs text-[#77766F]">Complete</div>
               </div>
             </div>
-
-            {/* Mini route */}
             <div className="space-y-0">
               {[
                 { label: 'Python Fundamentals', status: 'completed' },
@@ -222,9 +230,9 @@ export default function Landing() {
       {/* CTA */}
       <section className="py-20 px-8 max-w-6xl mx-auto border-t border-[#383832]/60 text-center">
         <div className="label mb-6">Ready to start?</div>
-        <h2 className="font-serif text-4xl text-[#F3F0E8] mb-6">Your route begins here.</h2>
+        <h2 className="font-serif text-4xl text-[#F3F0E8] mb-6" style={{ fontFamily: 'DM Serif Display, Georgia, serif' }}>Your route begins here.</h2>
         <button
-          onClick={() => navigate('/profile')}
+          onClick={handleStartJourney}
           className="inline-flex items-center gap-2 px-8 py-4 bg-[#C89B5B] text-[#171714] font-semibold rounded-lg hover:bg-[#D4AA6C] transition-colors cursor-pointer"
         >
           Start Your Journey <ArrowRight size={16} />

@@ -6,31 +6,31 @@ const delay = (ms) => new Promise((r) => setTimeout(r, ms));
 export const projectService = {
   async getProjects() {
     try {
-      const res = await client.get('/api/projects');
+      const res = await client.get('/projects');
       return res.data;
     } catch {
-      await delay(400);
+      await delay(300);
       return mockProjects;
     }
   },
 
-  async getProjectById(projectId) {
+  async getProjectById(id) {
     try {
-      const res = await client.get(`/api/projects/${projectId}`);
+      const res = await client.get(`/projects/${id}`);
       return res.data;
     } catch {
-      await delay(300);
-      return mockProjects.find((p) => p.id === projectId);
+      await delay(200);
+      return mockProjects.find((p) => p.id === id) || mockProjects[0];
     }
   },
 
-  async startProject(projectId) {
+  async getRecommended() {
     try {
-      const res = await client.post(`/api/projects/${projectId}/start`);
+      const res = await client.get('/projects/recommended');
       return res.data;
     } catch {
-      await delay(300);
-      return { success: true };
+      await delay(200);
+      return mockProjects.filter((p) => p.status === 'recommended');
     }
   },
 };
