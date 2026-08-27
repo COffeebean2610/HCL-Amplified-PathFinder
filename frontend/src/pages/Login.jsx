@@ -4,7 +4,6 @@ import { Eye, EyeOff, ArrowRight, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import AuthLayout from '../components/auth/AuthLayout';
-import { Button } from '../components/common/Button';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -53,21 +52,20 @@ export default function Login() {
       title="Welcome back"
       subtitle="Continue your learning journey."
     >
-      <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+      <form onSubmit={handleSubmit} className="rm-auth-form" noValidate>
         {error && (
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-start gap-2 p-4 bg-[#A96A5F]/10 border border-[#A96A5F]/30 rounded-lg"
+            className="rm-auth-error"
           >
-            <AlertCircle size={14} className="text-[#A96A5F] flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-[#A96A5F]">{error}</p>
+            <AlertCircle size={14} className="rm-auth-error__icon" />
+            <p>{error}</p>
           </motion.div>
         )}
 
-        {/* Email */}
-        <div>
-          <label htmlFor="email" className="block text-xs font-medium text-[#AAA89F] mb-2 tracking-wide uppercase">
+        <div className="rm-auth-field">
+          <label htmlFor="email" className="rm-auth-label">
             Email
           </label>
           <input
@@ -77,26 +75,25 @@ export default function Login() {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
             autoComplete="email"
-            className={fieldErrors.email ? 'border-[#A96A5F]' : ''}
+            className={`rm-auth-input ${fieldErrors.email ? 'is-error' : ''}`}
           />
           {fieldErrors.email && (
-            <p className="mt-1.5 text-xs text-[#A96A5F] flex items-center gap-1">
+            <p className="rm-auth-field-error">
               <AlertCircle size={11} /> {fieldErrors.email}
             </p>
           )}
         </div>
 
-        {/* Password */}
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <label htmlFor="password" className="block text-xs font-medium text-[#AAA89F] tracking-wide uppercase">
+        <div className="rm-auth-field">
+          <div className="rm-auth-field__row">
+            <label htmlFor="password" className="rm-auth-label">
               Password
             </label>
-            <span className="text-xs text-[#77766F] cursor-not-allowed" title="Password recovery coming soon">
+            <span className="rm-auth-muted-link" title="Password recovery coming soon">
               Forgot password?
             </span>
           </div>
-          <div className="relative">
+          <div className="rm-auth-input-wrap">
             <input
               id="password"
               type={showPw ? 'text' : 'password'}
@@ -104,36 +101,36 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Your password"
               autoComplete="current-password"
-              className={fieldErrors.password ? 'border-[#A96A5F]' : ''}
+              className={`rm-auth-input ${fieldErrors.password ? 'is-error' : ''}`}
             />
             <button
               type="button"
               onClick={() => setShowPw((v) => !v)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#77766F] hover:text-[#AAA89F] transition-colors cursor-pointer"
+              className="rm-auth-visibility"
             >
               {showPw ? <EyeOff size={15} /> : <Eye size={15} />}
             </button>
           </div>
           {fieldErrors.password && (
-            <p className="mt-1.5 text-xs text-[#A96A5F] flex items-center gap-1">
+            <p className="rm-auth-field-error">
               <AlertCircle size={11} /> {fieldErrors.password}
             </p>
           )}
         </div>
 
-        <Button
-          type="submit"
-          fullWidth
-          loading={loading}
-          icon={!loading && <ArrowRight size={15} />}
-          size="lg"
-        >
-          {loading ? 'Signing in...' : 'Sign In'}
-        </Button>
+        <button type="submit" className="rm-btn rm-btn--primary rm-btn--full rm-auth-submit" disabled={loading}>
+          {loading ? (
+            <span className="rm-auth-spinner" aria-hidden="true" />
+          ) : (
+            <>
+              Sign In <ArrowRight size={15} />
+            </>
+          )}
+        </button>
 
-        <p className="text-center text-sm text-[#77766F]">
+        <p className="rm-auth-switch">
           Don't have an account?{' '}
-          <Link to="/register" className="text-[#C89B5B] hover:text-[#D4AA6C] transition-colors font-medium">
+          <Link to="/register">
             Create an account
           </Link>
         </p>

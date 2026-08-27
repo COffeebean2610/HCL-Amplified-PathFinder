@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Send, ArrowRight } from 'lucide-react';
+import { Sparkles, Send } from 'lucide-react';
 import { Button } from '../components/common/Button';
 import client from '../services/api';
 
@@ -25,6 +25,7 @@ export default function Guide() {
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -43,7 +44,9 @@ export default function Guide() {
         history: messages.slice(-6),
       });
       setMessages((m) => [...m, { role: 'assistant', content: res.data.response }]);
-    } catch {
+    } catch (err) {
+      setError(err.message || 'Unable to contact the AI Guide.');
+      return;
       // Fallback mock response
       await new Promise((r) => setTimeout(r, 600));
       const fallback = MOCK_RESPONSES[msg] || `Based on your current route, I'd recommend focusing on Model Evaluation — it's directly blocking your progression to the Deep Learning stage. Once you clear that gap, your next 3 skills will unlock automatically.`;
@@ -54,7 +57,7 @@ export default function Guide() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-8 h-full flex flex-col">
+    <div className="page h-full flex flex-col">
       <div className="mb-6">
         <div className="label mb-3">AI Guide</div>
         <h1 className="font-serif text-3xl text-[#F3F0E8] mb-2">RouteMaster Guide</h1>
@@ -78,6 +81,7 @@ export default function Guide() {
       </div>
 
       {/* Messages */}
+      {error && <p className="text-sm text-[#A96A5F] mb-3" role="alert">{error}</p>}
       <div className="flex-1 space-y-4 mb-6 overflow-y-auto" style={{ maxHeight: '60vh' }}>
         {messages.map((msg, i) => (
           <motion.div

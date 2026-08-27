@@ -1,0 +1,930 @@
+/* =========================================================
+   ROUTEMASTER — MY ROUTES
+========================================================= */
+
+.routes-page {
+    min-height: 100%;
+    padding: 32px 30px 38px;
+    background: var(--bg, #171714);
+    color: var(--text-primary, #f3f0e8);
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.routes-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 30px;
+    margin-bottom: 18px;
+}
+
+.routes-eyebrow {
+    display: block;
+    margin-bottom: 4px;
+    color: #d49a37;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.routes-header h1 {
+    margin: 0;
+    color: #eee7db;
+    font-family: "DM Serif Display", Georgia, serif;
+    font-size: 47px;
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -1px;
+}
+
+.routes-header p {
+    margin: 8px 0 0;
+    color: #929089;
+    font-size: 11px;
+}
+
+.create-route-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border: 1px solid #9a6b27;
+    border-radius: 6px;
+    background: transparent;
+    color: #d49a37;
+    font-size: 10px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.create-route-button:hover {
+    background: rgba(212, 154, 55, 0.08);
+    border-color: #c18a32;
+}
+
+/* =========================================================
+   SUMMARY
+========================================================= */
+
+.route-summary {
+    display: flex;
+    align-items: center;
+    min-height: 55px;
+    margin-bottom: 18px;
+}
+
+.summary-stat {
+    min-width: 100px;
+    display: flex;
+    flex-direction: column;
+}
+
+.summary-stat strong {
+    color: #e1dbce;
+    font-family: "DM Serif Display", Georgia, serif;
+    font-size: 21px;
+    font-weight: 400;
+}
+
+.summary-stat span {
+    margin-top: 2px;
+    color: #7c7a73;
+    font-size: 8px;
+    letter-spacing: 0.5px;
+}
+
+.summary-divider {
+    width: 1px;
+    height: 38px;
+    margin: 0 20px;
+    background: #363631;
+}
+
+.summary-description {
+    margin-left: 5px;
+    color: #89877f;
+    font-size: 9px;
+    line-height: 1.6;
+}
+
+/* =========================================================
+   CONTENT LAYOUT
+========================================================= */
+
+.routes-content {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 218px;
+    gap: 22px;
+}
+
+.routes-main {
+    min-width: 0;
+}
+
+/* =========================================================
+   CURRENT FOCUS
+========================================================= */
+
+.current-focus-card {
+    position: relative;
+    overflow: hidden;
+    padding: 15px 18px 17px;
+    border: 1px solid #986b28;
+    border-radius: 7px;
+    background:
+        linear-gradient(135deg,
+            rgba(65, 52, 28, 0.17),
+            rgba(26, 26, 23, 0.65));
+}
+
+.focus-label {
+    margin-bottom: 7px;
+    color: #d49a37;
+    font-size: 9px;
+    letter-spacing: 0.7px;
+}
+
+.focus-content {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 1px 255px;
+    gap: 24px;
+}
+
+.focus-left {
+    min-width: 0;
+}
+
+.focus-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.focus-icon {
+    width: 47px;
+    height: 47px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 47px;
+    border: 1px solid #75541f;
+    border-radius: 50%;
+    background: rgba(155, 107, 35, 0.14);
+    color: #d49a37;
+}
+
+.focus-title h2 {
+    margin: 0;
+    color: #e9e1d4;
+    font-family: "DM Serif Display", Georgia, serif;
+    font-size: 28px;
+    font-weight: 400;
+}
+
+.focus-progress-text {
+    display: block;
+    margin-top: 3px;
+    color: #d49a37;
+    font-size: 11px;
+}
+
+.focus-progress {
+    height: 4px;
+    margin: 11px 38px 20px 59px;
+    overflow: hidden;
+    border-radius: 5px;
+    background: #383833;
+}
+
+.focus-progress-fill {
+    height: 100%;
+    border-radius: inherit;
+    background: #d49a37;
+}
+
+.focus-stages {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin: 0 8px;
+}
+
+.focus-stage {
+    position: relative;
+    min-width: 55px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.focus-stage-dot {
+    width: 15px;
+    height: 15px;
+    margin-bottom: 7px;
+    border: 1px solid #696861;
+    border-radius: 50%;
+    background: #171714;
+}
+
+.focus-stage.completed .focus-stage-dot {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-color: #78935a;
+    background: #697c4e;
+    color: #e1ebd3;
+}
+
+.focus-stage.active .focus-stage-dot {
+    border: 2px solid #d49a37;
+    background: #272015;
+    box-shadow: 0 0 0 3px rgba(212, 154, 55, 0.09);
+}
+
+.focus-stage span {
+    color: #88867e;
+    font-size: 8px;
+    line-height: 1.35;
+}
+
+.focus-stage.completed span {
+    color: #a9a795;
+}
+
+.focus-stage.active span {
+    color: #d49a37;
+}
+
+.focus-divider {
+    width: 1px;
+    background: #3a3933;
+}
+
+.focus-right {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.focus-detail>span,
+.next-checkpoint>span {
+    display: block;
+    margin-bottom: 4px;
+    color: #7e7c74;
+    font-size: 8px;
+}
+
+.focus-detail strong {
+    display: block;
+    color: #d9d2c5;
+    font-family: "DM Serif Display", Georgia, serif;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.focus-detail small {
+    display: block;
+    margin-top: 3px;
+    color: #8a887f;
+    font-size: 9px;
+}
+
+.next-checkpoint {
+    margin-top: 17px;
+}
+
+.checkpoint-row {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.checkpoint-icon {
+    width: 31px;
+    height: 31px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    background: rgba(117, 83, 30, 0.22);
+    color: #d1a253;
+}
+
+.checkpoint-row strong {
+    display: block;
+    color: #d5cfc3;
+    font-family: "DM Serif Display", Georgia, serif;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.checkpoint-row small {
+    color: #88867e;
+    font-size: 9px;
+}
+
+.continue-route-button {
+    width: max-content;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 13px;
+    padding: 7px 13px;
+    border: 0;
+    border-radius: 5px;
+    background: #d49a37;
+    color: #211b12;
+    font-size: 9px;
+    cursor: pointer;
+}
+
+/* =========================================================
+   OTHER JOURNEYS
+========================================================= */
+
+.other-journeys-title {
+    margin: 17px 0 8px 10px;
+    color: #d49a37;
+    font-size: 9px;
+    letter-spacing: 0.7px;
+}
+
+.journeys-list {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.journey-card {
+    min-height: 73px;
+    display: grid;
+    grid-template-columns: 38px 1.25fr 1.65fr 0.8fr auto 20px;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid #33332e;
+    border-radius: 7px;
+    background: rgba(34, 34, 30, 0.62);
+    transition: background 0.2s ease;
+}
+
+.journey-card:hover {
+    background: rgba(45, 44, 39, 0.72);
+}
+
+.journey-icon {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+}
+
+.route-icon-code {
+    background: rgba(89, 104, 57, 0.2);
+    color: #a7bb83;
+}
+
+.route-icon-ai {
+    background: rgba(76, 68, 95, 0.3);
+    color: #b0a6c7;
+}
+
+.route-icon-data {
+    background: rgba(63, 69, 83, 0.3);
+    color: #a7afc3;
+}
+
+.journey-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.journey-title-row h3 {
+    margin: 0;
+    color: #ddd6ca;
+    font-family: "DM Serif Display", Georgia, serif;
+    font-size: 13px;
+    font-weight: 400;
+}
+
+.journey-status {
+    display: block;
+    margin-top: 4px;
+    color: #7f9961;
+    font-size: 8px;
+}
+
+.journey-progress-number {
+    color: #c4bfb4;
+    font-size: 10px;
+}
+
+.journey-main {
+    min-width: 0;
+}
+
+.journey-progress-bar {
+    width: 45px;
+    height: 3px;
+    margin-top: 7px;
+    overflow: hidden;
+    border-radius: 5px;
+    background: #3c3b35;
+}
+
+.journey-progress-fill {
+    height: 100%;
+    background: #80945f;
+}
+
+.journey-stages {
+    min-width: 0;
+}
+
+.route-stage-progress {
+    width: 100%;
+}
+
+.stage-line {
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.stage-item {
+    min-width: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.stage-dot {
+    width: 12px;
+    height: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #5d5b54;
+    border-radius: 50%;
+    background: #191917;
+    color: #d7dfc9;
+}
+
+.stage-item.completed .stage-dot {
+    border-color: #80945f;
+    background: #718154;
+}
+
+.stage-item.current .stage-dot {
+    border: 2px solid #d49a37;
+    background: #282117;
+}
+
+.stage-item span {
+    max-width: 55px;
+    margin-top: 5px;
+    color: #77756e;
+    font-size: 7px;
+    line-height: 1.25;
+}
+
+.stage-item.current span {
+    color: #d49a37;
+}
+
+.stage-connector {
+    flex: 1;
+    height: 1px;
+    margin-top: 6px;
+    background: #44433d;
+}
+
+.stage-connector.completed {
+    background: #788a5b;
+}
+
+.journey-current {
+    display: flex;
+    flex-direction: column;
+    min-width: 100px;
+}
+
+.journey-current span {
+    color: #77756e;
+    font-size: 7px;
+}
+
+.journey-current strong {
+    margin-top: 3px;
+    color: #aaa69d;
+    font-size: 9px;
+    font-weight: 400;
+}
+
+.journey-current small {
+    margin-top: 3px;
+    color: #85827a;
+    font-size: 8px;
+}
+
+.journey-action {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 0;
+    border: 0;
+    background: transparent;
+    color: #d49a37;
+    font-size: 8px;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.more-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #77756e;
+    cursor: pointer;
+}
+
+/* =========================================================
+   EXPLORE CARD
+========================================================= */
+
+.explore-card {
+    min-height: 93px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 8px;
+    padding: 14px 18px;
+    border: 1px solid #765622;
+    border-radius: 7px;
+    background: rgba(54, 44, 26, 0.12);
+}
+
+.explore-icon {
+    width: 47px;
+    height: 47px;
+    flex: 0 0 47px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #71501d;
+    border-radius: 50%;
+    color: #d49a37;
+}
+
+.explore-content {
+    flex: 1;
+}
+
+.explore-content>span {
+    display: block;
+    margin-bottom: 5px;
+    color: #d49a37;
+    font-size: 9px;
+    letter-spacing: 0.7px;
+}
+
+.explore-content h3 {
+    margin: 0;
+    color: #ded7cb;
+    font-family: "DM Serif Display", Georgia, serif;
+    font-size: 15px;
+    font-weight: 400;
+}
+
+.explore-content p {
+    margin: 4px 0 0;
+    color: #7e7c74;
+    font-size: 8px;
+    line-height: 1.45;
+}
+
+/* =========================================================
+   RIGHT SIDEBAR
+========================================================= */
+
+.routes-right-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+}
+
+.side-card {
+    padding: 14px;
+    border: 1px solid #34342f;
+    border-radius: 7px;
+    background: rgba(34, 34, 30, 0.72);
+}
+
+.side-card h3 {
+    margin: 0 0 16px;
+    color: #d49a37;
+    font-size: 8px;
+    font-weight: 500;
+    letter-spacing: 0.7px;
+}
+
+/* =========================================================
+   GLANCE
+========================================================= */
+
+.glance-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.glance-item>div:first-child {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.glance-item span {
+    color: #aaa79e;
+    font-size: 9px;
+}
+
+.glance-item strong {
+    color: #c8c3b9;
+    font-size: 9px;
+    font-weight: 400;
+}
+
+.glance-bar {
+    height: 3px;
+    margin-top: 5px;
+    overflow: hidden;
+    border-radius: 5px;
+    background: #3b3a35;
+}
+
+.glance-bar div {
+    height: 100%;
+    border-radius: inherit;
+    background: #8a9c69;
+}
+
+/* =========================================================
+   SHARED SKILLS
+========================================================= */
+
+.shared-skills {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.shared-skill {
+    display: flex;
+    gap: 9px;
+}
+
+.shared-skill-icon {
+    width: 28px;
+    height: 28px;
+    flex: 0 0 28px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background: #515848;
+    color: #e1e3d8;
+    font-size: 9px;
+}
+
+.shared-skill:nth-child(2) .shared-skill-icon {
+    background: #4d4755;
+}
+
+.shared-skill:nth-child(3) .shared-skill-icon {
+    background: #46505a;
+}
+
+.shared-skill strong {
+    display: block;
+    color: #c8c3b8;
+    font-family: "DM Serif Display", Georgia, serif;
+    font-size: 11px;
+    font-weight: 400;
+}
+
+.shared-skill span {
+    display: block;
+    margin-top: 3px;
+    color: #77756e;
+    font-size: 7px;
+}
+
+.shared-skill p {
+    margin: 2px 0 0;
+    color: #89867e;
+    font-size: 7px;
+    line-height: 1.4;
+}
+
+.side-link {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 16px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #d49a37;
+    font-size: 8px;
+    cursor: pointer;
+}
+
+/* =========================================================
+   OBSERVATION
+========================================================= */
+
+.observation-card {
+    background:
+        linear-gradient(145deg,
+            rgba(64, 52, 29, 0.22),
+            rgba(34, 34, 30, 0.72));
+}
+
+.observation-header {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 10px;
+}
+
+.observation-header h3 {
+    margin: 0;
+}
+
+.observation-icon {
+    color: #d49a37;
+}
+
+.observation-card p {
+    margin: 7px 0;
+    color: #99968e;
+    font-size: 8px;
+    line-height: 1.5;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1150px) {
+    .routes-content {
+        grid-template-columns: minmax(0, 1fr) 195px;
+        gap: 15px;
+    }
+
+    .focus-content {
+        grid-template-columns: minmax(0, 1fr) 210px;
+        gap: 17px;
+    }
+
+    .journey-card {
+        grid-template-columns: 34px 1fr 1.4fr auto 18px;
+    }
+
+    .journey-current {
+        display: none;
+    }
+}
+
+@media (max-width: 950px) {
+    .routes-content {
+        grid-template-columns: 1fr;
+    }
+
+    .routes-right-sidebar {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .observation-card {
+        grid-column: span 2;
+    }
+}
+
+@media (max-width: 750px) {
+    .routes-page {
+        padding: 22px 16px 30px;
+    }
+
+    .routes-header {
+        flex-direction: column;
+    }
+
+    .route-summary {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .summary-divider {
+        margin: 0 8px;
+    }
+
+    .summary-description {
+        width: 100%;
+        margin: 5px 0 0;
+    }
+
+    .focus-content {
+        grid-template-columns: 1fr;
+    }
+
+    .focus-divider {
+        width: 100%;
+        height: 1px;
+    }
+
+    .focus-right {
+        padding-top: 4px;
+    }
+
+    .journey-card {
+        grid-template-columns: 34px 1fr auto;
+        gap: 10px;
+    }
+
+    .journey-stages {
+        grid-column: 1 / -1;
+    }
+
+    .journey-action {
+        grid-column: 2;
+    }
+
+    .more-button {
+        grid-column: 3;
+    }
+
+    .routes-right-sidebar {
+        grid-template-columns: 1fr;
+    }
+
+    .observation-card {
+        grid-column: auto;
+    }
+
+    .explore-card {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .explore-card .create-route-button {
+        margin-left: 62px;
+    }
+}
+
+@media (max-width: 520px) {
+    .routes-header h1 {
+        font-size: 39px;
+    }
+
+    .focus-title h2 {
+        font-size: 24px;
+    }
+
+    .focus-stages {
+        overflow-x: auto;
+        justify-content: flex-start;
+        gap: 20px;
+        padding-bottom: 7px;
+    }
+
+    .focus-stage {
+        flex: 0 0 65px;
+    }
+
+    .journey-card {
+        grid-template-columns: 34px 1fr auto;
+    }
+
+    .stage-line {
+        min-width: 330px;
+    }
+
+    .journey-stages {
+        overflow-x: auto;
+    }
+}

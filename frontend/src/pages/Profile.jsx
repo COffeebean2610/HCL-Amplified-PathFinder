@@ -117,7 +117,7 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen bg-[#171714] flex items-center justify-center p-6">
-      <div className="w-full max-w-xl">
+      <div className="w-full max-w-2xl">
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-10 text-center">
           <div className="label mb-3">Step {step + 1} of {STEPS.length}</div>

@@ -1,0 +1,771 @@
+/* =========================================================
+   ROUTEMASTER — SKILLS PAGE
+========================================================= */
+
+.skills-page {
+  min-height: 100%;
+  padding: 25px 24px 40px;
+  background: var(--bg, #171714);
+  color: var(--text-primary, #f3f0e8);
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.skills-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.page-eyebrow {
+  display: block;
+  margin-bottom: 3px;
+  color: #d49a37;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.skills-header h1 {
+  margin: 0;
+  color: #eee7db;
+  font-family: "DM Serif Display", Georgia, serif;
+  font-size: 43px;
+  line-height: 1;
+  font-weight: 400;
+  letter-spacing: -1px;
+}
+
+.skills-header p {
+  margin: 7px 0 0;
+  color: #929089;
+  font-size: 11px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 17px;
+  padding-top: 3px;
+}
+
+.header-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #bcb8ae;
+  cursor: pointer;
+}
+
+.header-icon:hover {
+  color: #d49a37;
+}
+
+.notification span {
+  position: absolute;
+  top: -7px;
+  right: -8px;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #d49a37;
+  color: #211b12;
+  font-size: 8px;
+}
+
+.profile-avatar {
+  width: 37px;
+  height: 37px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #d49a37;
+  color: #211b12;
+  font-family: "DM Serif Display", Georgia, serif;
+  font-size: 17px;
+}
+
+/* =========================================================
+   MAIN LAYOUT
+========================================================= */
+
+.skills-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 365px;
+  gap: 14px;
+}
+
+.skills-main {
+  min-width: 0;
+}
+
+/* =========================================================
+   SHARED PANEL
+========================================================= */
+
+.profile-card,
+.target-card,
+.side-panel {
+  border: 1px solid #37352f;
+  border-radius: 9px;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(38, 37, 32, 0.78),
+      rgba(26, 26, 23, 0.84)
+    );
+}
+
+.section-label {
+  color: #d49a37;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.8px;
+}
+
+/* =========================================================
+   PROFILE
+========================================================= */
+
+.profile-card {
+  padding: 17px 21px 14px;
+}
+
+.profile-description {
+  max-width: 750px;
+  margin: 8px 0 11px;
+  color: #c0bbb1;
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid #302f2a;
+}
+
+.profile-stat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stat-icon {
+  width: 37px;
+  height: 37px;
+  flex: 0 0 37px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.stat-icon.green {
+  color: #8bae4f;
+  background: rgba(139, 174, 79, 0.13);
+}
+
+.stat-icon.gold {
+  color: #d49a37;
+  background: rgba(212, 154, 55, 0.13);
+}
+
+.stat-icon.red {
+  color: #d95b48;
+  background: rgba(217, 91, 72, 0.13);
+}
+
+.profile-stat strong {
+  display: block;
+  color: #e5dfd4;
+  font-family: "DM Serif Display", Georgia, serif;
+  font-size: 22px;
+  font-weight: 400;
+}
+
+.profile-stat span {
+  display: block;
+  margin-top: 1px;
+  color: #85827a;
+  font-size: 8px;
+}
+
+/* =========================================================
+   FILTERS
+========================================================= */
+
+.landscape {
+  padding-top: 9px;
+  border-top: 1px solid #302f2a;
+}
+
+.filter-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 8px;
+}
+
+.filter {
+  padding: 6px 13px;
+  border: 1px solid #413d32;
+  border-radius: 15px;
+  background: transparent;
+  color: #aaa69c;
+  font-size: 9px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.filter:hover {
+  border-color: #8b6528;
+  color: #d49a37;
+}
+
+.filter.active {
+  border-color: #d49a37;
+  background: #d49a37;
+  color: #211b12;
+}
+
+/* =========================================================
+   MASTERY
+========================================================= */
+
+.mastery-section {
+  margin-top: 14px;
+}
+
+.skill-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 7px;
+  margin-top: 7px;
+}
+
+/* =========================================================
+   SKILL CATEGORY CARD
+========================================================= */
+
+.skill-category-card {
+  min-height: 195px;
+  padding: 11px 12px;
+  border: 1px solid #34332e;
+  border-radius: 8px;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(37, 36, 32, 0.82),
+      rgba(27, 27, 24, 0.9)
+    );
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.skill-category-card:hover {
+  transform: translateY(-2px);
+  border-color: #565044;
+}
+
+.skill-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.skill-category-icon {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.skill-card-header h3 {
+  margin: 0;
+  color: #ddd7cc;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+/* =========================================================
+   RING
+========================================================= */
+
+.skill-ring-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 1px;
+}
+
+.skill-ring {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.skill-ring svg {
+  display: block;
+  transform: rotate(-90deg);
+}
+
+.ring-background {
+  fill: none;
+  stroke: #2e2e2a;
+  stroke-width: 8;
+}
+
+.ring-progress {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition:
+    stroke-dashoffset 0.7s ease;
+}
+
+.ring-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.ring-content strong {
+  color: #e5dfd4;
+  font-family: "DM Serif Display", Georgia, serif;
+  font-size: 17px;
+  font-weight: 400;
+}
+
+.ring-content span {
+  margin-top: -1px;
+  color: #99958c;
+  font-size: 7px;
+}
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.skill-status {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  margin-top: -2px;
+  color: #b2ada3;
+  font-size: 8px;
+}
+
+.skill-status span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+/* =========================================================
+   SUB SKILLS
+========================================================= */
+
+.sub-skills {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 9px;
+}
+
+.sub-skill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: #c2bdb3;
+  font-size: 8px;
+}
+
+.sub-skill-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.sub-skill-name span {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  border-radius: 50%;
+}
+
+.sub-skill strong {
+  color: #d6d0c6;
+  font-size: 8px;
+  font-weight: 400;
+}
+
+/* =========================================================
+   CURRENT VS TARGET
+========================================================= */
+
+.target-card {
+  margin-top: 8px;
+  padding: 11px 18px 13px;
+}
+
+.target-header,
+.target-row {
+  display: grid;
+  grid-template-columns: 1.05fr 1.35fr 1.35fr 55px;
+  align-items: center;
+  gap: 14px;
+}
+
+.target-header {
+  margin-top: 11px;
+  padding-bottom: 6px;
+  color: #77746c;
+  font-size: 8px;
+}
+
+.target-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.target-row {
+  min-height: 18px;
+}
+
+.target-name {
+  color: #d5d0c6;
+  font-size: 10px;
+}
+
+.target-level {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  align-items: center;
+  gap: 7px;
+}
+
+.target-level strong {
+  color: #bcb8ae;
+  font-size: 9px;
+  font-weight: 400;
+}
+
+.target-progress {
+  height: 3px;
+  overflow: hidden;
+  border-radius: 5px;
+  background: #2f2f2b;
+}
+
+.target-progress div {
+  height: 100%;
+  border-radius: inherit;
+}
+
+.gap-positive {
+  color: #8bae4f;
+  font-size: 9px;
+  font-weight: 400;
+}
+
+.gap-negative {
+  color: #d95b48;
+  font-size: 9px;
+  font-weight: 400;
+}
+
+/* =========================================================
+   RIGHT SIDEBAR
+========================================================= */
+
+.skills-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.side-panel {
+  padding: 15px 17px;
+}
+
+/* =========================================================
+   SKILL GAPS
+========================================================= */
+
+.gap-list {
+  margin-top: 9px;
+}
+
+.gap-card {
+  display: flex;
+  gap: 11px;
+  padding: 10px 0;
+  border-top: 1px solid #302f2b;
+}
+
+.gap-card:first-child {
+  border-top: 0;
+}
+
+.gap-icon {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.gap-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.gap-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.gap-title-row h3 {
+  margin: 0;
+  color: #ddd7cd;
+  font-family: "DM Serif Display", Georgia, serif;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.gap-title-row span {
+  font-size: 8px;
+  font-weight: 500;
+}
+
+.gap-row {
+  display: grid;
+  grid-template-columns: 42px 1fr 30px;
+  align-items: center;
+  gap: 7px;
+  margin-top: 7px;
+}
+
+.gap-row span {
+  color: #8a877f;
+  font-size: 8px;
+}
+
+.gap-row strong {
+  color: #c4c0b6;
+  font-size: 8px;
+  font-weight: 400;
+  text-align: right;
+}
+
+.gap-progress {
+  height: 3px;
+  overflow: hidden;
+  border-radius: 5px;
+  background: #33322e;
+}
+
+.gap-progress div {
+  height: 100%;
+  border-radius: inherit;
+}
+
+.gap-progress.required div {
+  background: #89867d !important;
+}
+
+.gap-content p {
+  margin: 8px 0 4px;
+  color: #9a968c;
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+.find-resource {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  margin-top: 5px;
+  padding: 7px 0 0;
+  border: 0;
+  border-top: 1px solid #302f2b;
+  background: transparent;
+  color: #d49a37;
+  font-size: 9px;
+  cursor: pointer;
+}
+
+.arrow-icon {
+  font-size: 15px;
+}
+
+/* =========================================================
+   INSIGHTS
+========================================================= */
+
+.insights-panel {
+  padding-bottom: 12px;
+}
+
+.insight-list {
+  margin-top: 8px;
+}
+
+.insight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  border-top: 1px solid #302f2b;
+}
+
+.insight-icon {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.insight strong {
+  display: block;
+  color: #d9d4ca;
+  font-family: "DM Serif Display", Georgia, serif;
+  font-size: 10px;
+  font-weight: 400;
+}
+
+.insight span {
+  display: block;
+  margin-top: 3px;
+  color: #8c8981;
+  font-size: 8px;
+}
+
+.view-insights {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 5px;
+  padding: 5px 0 0;
+  border: 0;
+  background: transparent;
+  color: #d49a37;
+  font-size: 9px;
+  cursor: pointer;
+}
+
+.view-insights span {
+  font-size: 15px;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1250px) {
+  .skills-layout {
+    grid-template-columns: minmax(0, 1fr) 300px;
+  }
+
+  .skill-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 1000px) {
+  .skills-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .skills-sidebar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .skill-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 800px) {
+  .skill-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .profile-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .skills-sidebar {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .skills-page {
+    padding: 20px 14px 30px;
+  }
+
+  .skills-header {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .skills-header h1 {
+    font-size: 36px;
+  }
+
+  .header-actions {
+    align-self: flex-end;
+  }
+
+  .skill-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .target-card {
+    overflow-x: auto;
+  }
+
+  .target-header,
+  .target-row {
+    min-width: 600px;
+  }
+}

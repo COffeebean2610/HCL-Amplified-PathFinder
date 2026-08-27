@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from app.dependencies import get_current_user
 from app.database import get_collection
-from app.services.route_service import generate_route
+from app.services.ai_service import AIServiceError, ai_service
 from bson import ObjectId
 from datetime import datetime
 from typing import Optional
@@ -59,7 +59,10 @@ async def generate_user_route(
     user_id = str(current_user["_id"])
     career_title = req.career_title or req.goal or current_user.get("target_career") or "AI / ML Engineer"
 
-    route_data = generate_route(current_user, career_title)
+    try:
+        route_data = ai_service.route(current_user, career_title)
+    except AIServiceError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
 
     await routes_col.update_many({"user_id": user_id}, {"$set": {"is_current": False}})
 

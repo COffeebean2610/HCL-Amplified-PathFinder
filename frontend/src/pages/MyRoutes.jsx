@@ -1,203 +1,172 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Plus, ArrowRight, ChevronRight, Pause, Play } from 'lucide-react';
-import { Button } from '../components/common/Button';
-import { LoadingState, ErrorState, EmptyState } from '../components/common/States';
-import { Modal } from '../components/common/Modal';
+import { ArrowRight, Brain, Check, ChevronRight, Circle, Code2, Database, MoreVertical, Plus, Sparkles } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { profileService } from '../services/profileService';
 import { routeService } from '../services/routeService';
-import { mockSharedSkills } from '../data/mockData';
+import './MyRoutes.css';
 
-function RouteProgressLine({ progress }) {
+const routeIcons = [Code2, Brain, Database];
+const progress = (route) => Math.round(Number(route?.progress) || 0);
+const stageLabel = (route) => route?.current_stage || route?.currentStage || route?.next_checkpoint || route?.nextCheckpoint || 'Next milestone';
+const stages = (route) => (route?.stages || []).slice(0, 5).map((stage) => ({
+  label: stage.title || stage.name || 'Untitled stage',
+  status: stage.status === 'completed' ? 'completed' : stage.status === 'current' ? 'current' : 'upcoming',
+}));
+
+function StageLine({ route }) {
+  const items = stages(route);
+  if (!items.length) return null;
+
   return (
-    <div className="flex items-center gap-2 mt-3">
-      <div className="flex-1 h-px bg-[#383832] relative">
-        <div
-          className="absolute top-0 left-0 h-full bg-[#C89B5B]"
-          style={{ width: `${progress}%` }}
-        />
-        {/* Stage dots */}
-        {[0, 25, 50, 75, 100].map((pos) => (
-          <div
-            key={pos}
-            className="absolute top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full border"
-            style={{
-              left: `${pos}%`,
-              borderColor: pos <= progress ? '#C89B5B' : '#383832',
-              backgroundColor: pos <= progress ? '#C89B5B' : 'transparent',
-              marginLeft: pos === 0 ? 0 : '-3px',
-            }}
-          />
+    <div className="route-stage-progress">
+      <div className="stage-line">
+        {items.map((stage, index) => (
+          <div className={`stage-item ${stage.status}`} key={stage.label}>
+            <div className="stage-dot">{stage.status === 'completed' && <Check size={8} />}</div>
+            <span>{stage.label}</span>
+            {index < items.length - 1 && <div className={`stage-connector ${stage.status === 'completed' ? 'completed' : ''}`} />}
+          </div>
         ))}
       </div>
-      <span className="text-xs font-medium text-[#C89B5B] flex-shrink-0">{progress}%</span>
     </div>
   );
 }
 
-function RouteCard({ route, isCurrent, onNavigate }) {
+function JourneyCard({ route, index, onOpen, onTogglePause, updating }) {
+  const Icon = routeIcons[index % routeIcons.length];
+  const paused = route.status === 'paused';
+  const iconClass = ['route-icon-code', 'route-icon-ai', 'route-icon-data'][index % 3];
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      className={`border rounded-xl p-6 ${isCurrent ? 'border-[#C89B5B]/30' : 'border-[#383832]'}`}
-    >
-      {isCurrent && (
-        <div className="label text-[#C89B5B] mb-3">Current Focus</div>
-      )}
-      <div className="flex items-start justify-between mb-1">
-        <h3 className="text-base font-semibold text-[#F3F0E8]">{route.title}</h3>
-        <span className="text-xs font-semibold text-[#8C9A7A] ml-4 flex-shrink-0">ACTIVE</span>
+    <article className="journey-card">
+      <div className={`journey-icon ${iconClass}`}><Icon size={16} /></div>
+      <div className="journey-main">
+        <div className="journey-title-row"><h3>{route.title || 'Untitled route'}</h3><span className="journey-progress-number">{progress(route)}%</span></div>
+        <span className="journey-status">{paused ? 'PAUSED' : 'ACTIVE'}</span>
+        <div className="journey-progress-bar"><div className="journey-progress-fill" style={{ width: `${progress(route)}%` }} /></div>
       </div>
+      <div className="journey-stages"><StageLine route={route} /></div>
+      <div className="journey-current"><span>CURRENT STAGE</span><strong>{stageLabel(route)}</strong><small>{route.estimated_weeks || route.estimatedWeeks || 'Flexible'} week route</small></div>
+      <button type="button" className="journey-action" onClick={() => onOpen(route)}>{paused ? 'View Route' : 'Continue'} <ArrowRight size={12} /></button>
+      <button type="button" className="more-button" onClick={() => onTogglePause(route)} disabled={updating} title={paused ? 'Resume route' : 'Pause route'} aria-label={paused ? 'Resume route' : 'Pause route'}><MoreVertical size={16} /></button>
+    </article>
+  );
+}
 
-      <RouteProgressLine progress={route.progress} />
+function FocusCard({ route, onOpen }) {
+  const items = stages(route);
 
-      <div className="mt-4 space-y-1.5">
-        <div className="flex gap-2 text-xs text-[#77766F]">
-          <span className="text-[#AAA89F]">Current stage:</span> {route.currentStage}
-        </div>
-        {isCurrent && (
-          <div className="flex gap-2 text-xs text-[#77766F]">
-            <span className="text-[#AAA89F]">Next checkpoint:</span> {route.nextCheckpoint}
-            <span className="text-[#383832]">·</span>
-            <span className="text-[#77766F]">~45 min</span>
+  return (
+    <section className="current-focus-card">
+      <div className="focus-label">CURRENT FOCUS</div>
+      <div className="focus-content">
+        <div className="focus-left">
+          <div className="focus-title">
+            <div className="focus-icon"><Brain size={20} /></div>
+            <div><h2>{route.title}</h2><span className="focus-progress-text">{progress(route)}% complete</span></div>
           </div>
-        )}
+          <div className="focus-progress">
+            <div className="focus-progress-fill" style={{ width: `${progress(route)}%` }} />
+            <div className="focus-stages">
+              {items.map((stage) => (
+                <div className={`focus-stage ${stage.status === 'current' ? 'active' : stage.status}`} key={stage.label}>
+                  <div className="focus-stage-dot">{stage.status === 'completed' && <Check size={9} />}</div>
+                  <span>{stage.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="focus-divider" />
+        <div className="focus-right">
+          <div className="focus-detail"><span>CURRENT STAGE</span><strong>{stageLabel(route)}</strong><small>{route.estimated_weeks || route.estimatedWeeks || 'Flexible'} week route</small></div>
+          <div className="next-checkpoint"><span>NEXT CHECKPOINT</span><div className="checkpoint-row"><div className="checkpoint-icon"><Circle size={13} /></div><div><strong>{route.next_checkpoint || route.nextCheckpoint || 'Continue learning'}</strong><small>Keep your momentum going</small></div></div></div>
+          <button type="button" className="continue-route-button" onClick={onOpen}>Continue Route <ArrowRight size={13} /></button>
+        </div>
       </div>
-
-      <div className="flex gap-3 mt-5">
-        <Button size="sm" onClick={() => onNavigate(route.id)} icon={<ArrowRight size={13} />}>
-          {isCurrent ? 'Continue Route' : 'Open Route'}
-        </Button>
-      </div>
-    </motion.div>
+    </section>
   );
 }
 
 export default function MyRoutes() {
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
   const [routes, setRoutes] = useState([]);
+  const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [createOpen, setCreateOpen] = useState(false);
-  const [goal, setGoal] = useState('');
   const [creating, setCreating] = useState(false);
+  const [updating, setUpdating] = useState(null);
+  const [error, setError] = useState('');
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const data = await routeService.getRoutes();
-        setRoutes(data);
-      } catch (e) {
-        setError(e.message);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
-
-  const handleCreate = async () => {
-    if (!goal.trim()) return;
-    setCreating(true);
-    const newRoute = await routeService.createRoute({ goal });
-    setRoutes((r) => [...r, newRoute]);
-    setCreating(false);
-    setCreateOpen(false);
-    setGoal('');
-    navigate(`/routes/${newRoute.id}`);
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const [routeData, profileData] = await Promise.all([routeService.getRoutes(), profileService.getProfile()]);
+      setRoutes(Array.isArray(routeData) ? routeData : []);
+      setProfile(profileData);
+      setError('');
+    } catch {
+      setError('Unable to load your routes. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  if (loading) return <LoadingState message="Loading your routes..." />;
-  if (error) return <ErrorState message={error} onRetry={() => window.location.reload()} />;
+  useEffect(() => { loadData(); }, []);
 
-  const currentRoute = routes.find((r) => r.isCurrent);
-  const otherRoutes = routes.filter((r) => !r.isCurrent);
+  const createRoute = async () => {
+    setCreating(true);
+    try {
+      const route = await routeService.generateRoute({ career_title: profile?.target_career || currentUser?.target_career });
+      if (route?.id) navigate('/progress');
+      else await loadData();
+    } catch {
+      setError('We could not build a route right now. Please try again.');
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const togglePause = async (route) => {
+    setUpdating(route.id);
+    try {
+      if (route.status === 'paused') await routeService.resumeRoute(route.id);
+      else await routeService.pauseRoute(route.id);
+      await loadData();
+    } catch {
+      setError('We could not update this route. Please try again.');
+    } finally {
+      setUpdating(null);
+    }
+  };
+
+  const currentRoute = routes.find((route) => route.is_current || route.isCurrent) || routes.find((route) => route.status !== 'paused') || routes[0];
+  const otherRoutes = routes.filter((route) => route.id !== currentRoute?.id);
+  const sharedSkills = (profile?.skills || []).slice(0, 3);
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-8">
-      {/* Header */}
-      <div className="flex items-start justify-between mb-10">
-        <div>
-          <div className="label mb-3">Your Learning Journeys</div>
-          <h1 className="font-serif text-3xl text-[#F3F0E8] mb-2">My Routes</h1>
-          <p className="text-[#AAA89F] text-sm">Different goals. Different journeys. One place to keep moving forward.</p>
-        </div>
-        <Button onClick={() => setCreateOpen(true)} icon={<Plus size={14} />} size="sm">
-          Create New Route
-        </Button>
-      </div>
-
-      {routes.length === 0 ? (
-        <EmptyState
-          title="No learning routes yet."
-          description="Tell RouteMaster what you want to become and we'll build your first route."
-          action={<Button onClick={() => setCreateOpen(true)} icon={<Plus size={14} />}>Create New Route</Button>}
-        />
+    <main className="routes-page">
+      <header className="routes-header">
+        <div><span className="routes-eyebrow">YOUR LEARNING JOURNEYS</span><h1>My Routes</h1><p>Different goals. Different journeys. One place to keep moving forward.</p></div>
+        <button type="button" className="create-route-button" onClick={createRoute} disabled={creating}><Plus size={15} /> {creating ? 'Building...' : 'Create New Route'}</button>
+      </header>
+      {error && <p className="summary-description" role="alert">{error}</p>}
+      {loading ? <p className="summary-description">Loading your routes...</p> : routes.length === 0 ? (
+        <section className="explore-card"><div className="explore-icon"><Sparkles size={20} /></div><div className="explore-content"><span>YOUR NEXT JOURNEY</span><h3>Build your first learning route</h3><p>RouteMaster will shape it around the career goal in your profile.</p></div><button type="button" className="create-route-button" onClick={createRoute} disabled={creating}><Plus size={15} /> Create Route</button></section>
       ) : (
-        <div className="space-y-6">
-          {/* Current route */}
-          {currentRoute && (
-            <RouteCard route={currentRoute} isCurrent onNavigate={(id) => navigate(`/routes/${id}`)} />
-          )}
-
-          {/* Other routes */}
-          {otherRoutes.length > 0 && (
-            <div>
-              <div className="label mb-4">Other Routes</div>
-              <div className="grid md:grid-cols-2 gap-4">
-                {otherRoutes.map((r) => (
-                  <RouteCard key={r.id} route={r} isCurrent={false} onNavigate={(id) => navigate(`/routes/${id}`)} />
-                ))}
-              </div>
+        <>
+          <section className="route-summary"><div className="summary-stat"><strong>{routes.filter((route) => route.status !== 'paused').length}</strong><span>ACTIVE ROUTES</span></div><div className="summary-divider" /><div className="summary-stat"><strong>{routes.length}</strong><span>TOTAL JOURNEYS</span></div><p className="summary-description">Your routes update as your skills, goals, and progress evolve.</p></section>
+          <div className="routes-content">
+            <div className="routes-main">
+              {currentRoute && <FocusCard route={currentRoute} onOpen={() => navigate('/progress')} />}
+              {otherRoutes.length > 0 && <><div className="other-journeys-title">OTHER JOURNEYS</div><div className="journeys-list">{otherRoutes.map((route, index) => <JourneyCard key={route.id} route={route} index={index} onOpen={() => navigate('/progress')} onTogglePause={togglePause} updating={updating === route.id} />)}</div></>}
+              <section className="explore-card"><div className="explore-icon"><Sparkles size={20} /></div><div className="explore-content"><span>EXPLORE A NEW PATH</span><h3>Ready for another route?</h3><p>Build a new learning journey around your next career goal.</p></div><button type="button" className="create-route-button" onClick={createRoute} disabled={creating}><Plus size={15} /> Create Route</button></section>
             </div>
-          )}
-
-          {/* Shared skills */}
-          <div className="border-t border-[#383832] pt-8 mt-8">
-            <div className="label mb-4">Shared Skills</div>
-            <div className="grid md:grid-cols-2 gap-4 mb-6">
-              {mockSharedSkills.slice(0, 4).map((item) => (
-                <div key={item.skill} className="border border-[#383832] rounded-lg px-4 py-3">
-                  <div className="text-sm font-medium text-[#F3F0E8] mb-1">{item.skill}</div>
-                  <div className="text-xs text-[#77766F]">Used in: {item.routes.join(', ')}</div>
-                </div>
-              ))}
-            </div>
-            <div className="bg-[#22221E] border border-[#383832] rounded-xl p-5">
-              <div className="label mb-2 text-[#C89B5B]">RouteMaster Observation</div>
-              <p className="text-sm text-[#AAA89F] leading-relaxed mb-3">
-                Your AI / ML and Generative AI routes share <span className="text-[#F3F0E8]">6 skills</span>.
-                Completing Machine Learning will advance both journeys.
-              </p>
-              <button className="text-xs text-[#C89B5B] hover:text-[#D4AA6C] flex items-center gap-1 cursor-pointer transition-colors">
-                View Shared Skills <ChevronRight size={12} />
-              </button>
-            </div>
+            <aside className="routes-right-sidebar"><section className="side-card"><h3>ROUTES AT A GLANCE</h3><div className="glance-list">{routes.map((route) => <div className="glance-item" key={route.id}><div><span>{route.title}</span><strong>{progress(route)}%</strong></div><div className="glance-bar"><div style={{ width: `${progress(route)}%` }} /></div></div>)}</div></section><section className="side-card"><h3>SHARED SKILLS</h3><div className="shared-skills">{sharedSkills.length ? sharedSkills.map((skill) => <div className="shared-skill" key={skill}><div className="shared-skill-icon">{skill.slice(0, 1)}</div><div><strong>{skill}</strong><span>From your profile</span></div></div>) : <p>Add skills to your profile to see them here.</p>}</div><button type="button" className="side-link" onClick={() => navigate('/skills')}>View skills <ChevronRight size={12} /></button></section><section className="side-card observation-card"><div className="observation-header"><Sparkles className="observation-icon" size={14} /><h3>ROUTEMASTER OBSERVATION</h3></div><p>Your route will adapt as you complete milestones and build new skills.</p></section></aside>
           </div>
-        </div>
+        </>
       )}
-
-      {/* Create Route Modal */}
-      <Modal isOpen={createOpen} onClose={() => setCreateOpen(false)} title="Create New Route">
-        <div className="space-y-5">
-          <div>
-            <label className="label block mb-2">What do you want to become?</label>
-            <input
-              value={goal}
-              onChange={(e) => setGoal(e.target.value)}
-              placeholder="e.g. I want to become a Generative AI Engineer"
-              onKeyDown={(e) => { if (e.key === 'Enter') handleCreate(); }}
-            />
-          </div>
-          <p className="text-xs text-[#77766F] leading-relaxed">
-            RouteMaster will analyze your current skills and create a personalized learning route to reach your goal.
-          </p>
-          <div className="flex gap-3">
-            <Button onClick={handleCreate} loading={creating} fullWidth>Build This Route</Button>
-            <Button variant="secondary" onClick={() => setCreateOpen(false)}>Cancel</Button>
-          </div>
-        </div>
-      </Modal>
-    </div>
+    </main>
   );
 }

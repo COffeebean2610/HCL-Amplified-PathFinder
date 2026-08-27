@@ -1,247 +1,216 @@
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { ArrowRight, ChevronRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const ROUTE_STAGES = [
-  { label: 'Current Skills', desc: 'Where you are today', done: true },
-  { label: 'Skill Gaps', desc: 'What you are missing', done: false },
-  { label: 'Learning Route', desc: 'Your personalized sequence', done: false },
-  { label: 'Projects', desc: 'Practical application', done: false },
-  { label: 'Career Goal', desc: 'Where you are going', done: false },
+  { label: 'Current Skills', desc: 'Where you are today', state: 'active' },
+  { label: 'Skill Gaps', desc: 'What you are missing', state: 'default' },
+  { label: 'Learning Route', desc: 'Your personalized sequence', state: 'default' },
+  { label: 'Projects', desc: 'Practical application', state: 'default' },
+  { label: 'Career Goal', desc: 'Where you are going', state: 'default' },
 ];
 
 const FEATURES = [
-  { label: 'Adaptive routes', desc: 'Your path adjusts as your skills change.' },
-  { label: 'Skill intelligence', desc: 'Know exactly what you are missing and why.' },
-  { label: 'Project milestones', desc: 'Build real things at every stage.' },
-  { label: 'Route continuity', desc: 'Multiple goals, one coherent journey.' },
+  { title: 'Adaptive routes', desc: 'Your path adjusts as your skills change.' },
+  { title: 'Skill intelligence', desc: 'Know exactly what you are missing and why.' },
+  { title: 'Project milestones', desc: 'Build real things at every stage.' },
+  { title: 'Route continuity', desc: 'Multiple goals, one coherent journey.' },
 ];
+
+const PREVIEW_STEPS = [
+  { label: 'Python Fundamentals', state: 'done' },
+  { label: 'Python & Data Handling', state: 'done' },
+  { label: 'Statistics', state: 'done' },
+  { label: 'Machine Learning', state: 'current' },
+  { label: 'Deep Learning', state: 'upcoming' },
+  { label: 'MLOps', state: 'upcoming' },
+];
+
+function RouteFlowCard({ stages }) {
+  return (
+    <article className="rm-route-card">
+      <header className="rm-route-card__header">
+        <div>
+          <p className="rm-label">Journey</p>
+          <h3 className="rm-route-card__title">RouteMaster flow</h3>
+        </div>
+        <span className="rm-badge">Active</span>
+      </header>
+
+      <ol className="rm-step-list">
+        {stages.map((stage, index) => (
+          <li key={stage.label} className="rm-step">
+            <div className="rm-step__rail" aria-hidden="true">
+              <span className={`rm-step__dot ${stage.state === 'active' ? 'is-active' : ''}`} />
+              {index < stages.length - 1 && <span className="rm-step__line" />}
+            </div>
+            <div className="rm-step__content">
+              <p className={`rm-step__title ${stage.state === 'active' ? 'is-active' : ''}`}>{stage.label}</p>
+              <p className="rm-step__desc">{stage.desc}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </article>
+  );
+}
+
+function RoutePreviewCard() {
+  return (
+    <article className="rm-route-card rm-route-card--preview">
+      <header className="rm-preview-header">
+        <div>
+          <p className="rm-label">Current route</p>
+          <h3 className="rm-preview-title">AI / ML Engineer</h3>
+        </div>
+        <div className="rm-complete">
+          <div className="rm-complete__value">68%</div>
+          <div className="rm-complete__label">Complete</div>
+        </div>
+      </header>
+
+      <ol className="rm-step-list">
+        {PREVIEW_STEPS.map((step, index) => (
+          <li key={step.label} className="rm-step">
+            <div className="rm-step__rail" aria-hidden="true">
+              <span
+                className={`rm-step__dot ${
+                  step.state === 'done' ? 'is-done' : step.state === 'current' ? 'is-active' : ''
+                }`}
+              />
+              {index < PREVIEW_STEPS.length - 1 && <span className="rm-step__line" />}
+            </div>
+            <div className="rm-step__content">
+              <p className={`rm-step__title ${step.state === 'done' ? 'is-done' : step.state === 'current' ? 'is-active' : ''}`}>
+                {step.label}
+                {step.state === 'current' && <span className="rm-current-tag">Current</span>}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </article>
+  );
+}
+
+function LandingHeader({ isAuthenticated, onStart, onSignIn, onHowItWorks, onBrandClick }) {
+  return (
+    <header className="rm-header">
+      <div className="rm-container rm-header__inner">
+        <button onClick={onBrandClick} className="rm-brand" type="button">
+          RouteMaster
+        </button>
+
+        <nav className="rm-header__actions" aria-label="Primary">
+          <button type="button" className="rm-link rm-link--muted rm-hide-mobile" onClick={onHowItWorks}>
+            How it works
+          </button>
+          <button type="button" className="rm-link rm-link--muted" onClick={onSignIn}>
+            Sign in
+          </button>
+          <button type="button" className="rm-btn rm-btn--primary rm-btn--sm" onClick={onStart}>
+            {isAuthenticated ? 'Continue' : 'Get Started'}
+          </button>
+        </nav>
+      </div>
+    </header>
+  );
+}
 
 export default function Landing() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
-  const handleStartJourney = () => {
+  const handleStart = () => {
     navigate(isAuthenticated ? '/home' : '/register');
   };
 
   return (
-    <div className="min-h-screen bg-[#171714] text-[#F3F0E8]">
-      {/* Nav */}
-      <header className="fixed top-0 inset-x-0 z-20 flex items-center justify-between px-8 py-4 border-b border-[#383832]/60 bg-[#171714]/90 backdrop-blur-sm">
-        <span className="text-sm font-semibold tracking-[0.12em] uppercase text-[#C89B5B]">RouteMaster</span>
-        <div className="flex items-center gap-6">
-          <button
-            onClick={() => {
-              const el = document.getElementById('how-it-works');
-              el?.scrollIntoView({ behavior: 'smooth' });
-            }}
-            className="text-sm text-[#AAA89F] hover:text-[#F3F0E8] transition-colors cursor-pointer hidden md:block"
-          >
-            How it works
-          </button>
-          <button
-            onClick={() => navigate('/login')}
-            className="text-sm text-[#AAA89F] hover:text-[#F3F0E8] transition-colors cursor-pointer"
-          >
-            Sign in
-          </button>
-          <button
-            onClick={handleStartJourney}
-            className="px-4 py-2 text-sm font-medium bg-[#C89B5B] text-[#171714] rounded-lg hover:bg-[#D4AA6C] transition-colors cursor-pointer"
-          >
-            {isAuthenticated ? 'Continue' : 'Get Started'}
-          </button>
-        </div>
-      </header>
+    <div className="rm-landing">
+      <LandingHeader
+        isAuthenticated={isAuthenticated}
+        onStart={handleStart}
+        onSignIn={() => navigate('/login')}
+        onHowItWorks={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
+        onBrandClick={() => navigate('/')}
+      />
 
-      {/* Hero */}
-      <section className="pt-36 pb-24 px-8 max-w-6xl mx-auto">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Left */}
-          <div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <div className="label mb-4 text-[#C89B5B]">AI Career PathFinder</div>
-              <h1 className="font-serif text-5xl lg:text-6xl leading-tight text-[#F3F0E8] mb-6" style={{ fontFamily: 'DM Serif Display, Georgia, serif' }}>
-                Mastering the Sequence of Complex
-                <span className="text-[#C89B5B]"> Educational Goals</span>
+      <main>
+        <section className="rm-container rm-hero">
+          <div className="rm-hero__grid">
+            <div className="rm-hero__content">
+              <p className="rm-label rm-label--accent">AI Career PathFinder</p>
+              <h1 className="rm-hero__title">
+                Mastering the
+                <span>Sequence of</span>
+                <span>Complex</span>
+                <span className="rm-accent">Educational Goals</span>
               </h1>
-              <p className="text-lg text-[#AAA89F] leading-relaxed mb-10 max-w-lg">
+              <p className="rm-hero__copy">
                 Discover your ideal career. Build your personalized learning roadmap.
               </p>
 
-              <div className="flex flex-wrap items-center gap-4">
-                <button
-                  onClick={handleStartJourney}
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-[#C89B5B] text-[#171714] text-sm font-semibold rounded-lg hover:bg-[#D4AA6C] transition-colors cursor-pointer"
-                >
+              <div className="rm-hero__actions">
+                <button type="button" className="rm-btn rm-btn--primary" onClick={handleStart}>
                   {isAuthenticated ? 'Continue Your Journey' : 'Start Your Journey'}
-                  <ArrowRight size={16} />
+                  <ArrowRight size={15} />
                 </button>
                 {!isAuthenticated && (
-                  <button
-                    onClick={() => navigate('/login')}
-                    className="inline-flex items-center gap-1 text-sm text-[#AAA89F] hover:text-[#F3F0E8] transition-colors cursor-pointer"
-                  >
-                    Already have an account? Sign in
-                    <ChevronRight size={14} />
+                  <button type="button" className="rm-link" onClick={() => navigate('/login')}>
+                    Already have an account? <span className="rm-link__strong">Sign in</span> <ChevronRight size={14} />
                   </button>
                 )}
               </div>
-            </motion.div>
-          </div>
-
-          {/* Right — Route visualization */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="hidden lg:flex flex-col items-center"
-          >
-            <div className="relative">
-              {ROUTE_STAGES.map((stage, i) => (
-                <motion.div
-                  key={stage.label}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.4 + i * 0.12 }}
-                  className="flex items-start gap-4"
-                >
-                  <div className="flex flex-col items-center">
-                    <div
-                      className="w-3 h-3 rounded-full border-2 flex-shrink-0 mt-1"
-                      style={{
-                        borderColor: i === 0 ? '#C89B5B' : i === 4 ? '#C89B5B' : '#383832',
-                        backgroundColor: i === 0 ? '#C89B5B' : 'transparent',
-                      }}
-                    />
-                    {i < ROUTE_STAGES.length - 1 && (
-                      <div className="w-px flex-1 min-h-[52px]" style={{ backgroundColor: '#383832' }} />
-                    )}
-                  </div>
-                  <div className="pb-8">
-                    <div className="text-sm font-semibold" style={{ color: i === 0 || i === 4 ? '#C89B5B' : '#F3F0E8' }}>
-                      {stage.label}
-                    </div>
-                    <div className="text-xs text-[#77766F] mt-0.5">{stage.desc}</div>
-                  </div>
-                </motion.div>
-              ))}
             </div>
-          </motion.div>
-        </div>
-      </section>
 
-      {/* Divider */}
-      <div className="border-t border-[#383832]/60 max-w-6xl mx-auto" />
-
-      {/* Features */}
-      <section id="how-it-works" className="py-20 px-8 max-w-6xl mx-auto">
-        <div className="label mb-10 text-center">How It Works</div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-[#383832]">
-          {FEATURES.map((f, i) => (
-            <motion.div
-              key={f.label}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 + i * 0.1 }}
-              className="bg-[#171714] p-8"
-            >
-              <div className="text-base font-semibold text-[#F3F0E8] mb-2">{f.label}</div>
-              <div className="text-sm text-[#77766F] leading-relaxed">{f.desc}</div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* Route preview */}
-      <section className="py-16 px-8 max-w-6xl mx-auto border-t border-[#383832]/60">
-        <div className="grid lg:grid-cols-3 gap-8 items-center">
-          <div className="lg:col-span-1">
-            <div className="label mb-4">Product Preview</div>
-            <h2 className="font-serif text-3xl text-[#F3F0E8] mb-4" style={{ fontFamily: 'DM Serif Display, Georgia, serif' }}>Know exactly where you stand</h2>
-            <p className="text-sm text-[#AAA89F] leading-relaxed mb-6">
-              Your route shows every stage, current position, skill gaps, and what to build next — all in one view.
-            </p>
-            <button
-              onClick={handleStartJourney}
-              className="inline-flex items-center gap-2 text-sm text-[#C89B5B] hover:text-[#D4AA6C] font-medium cursor-pointer transition-colors"
-            >
-              Build Your Route <ArrowRight size={14} />
-            </button>
-          </div>
-
-          <div className="lg:col-span-2 bg-[#22221E] border border-[#383832] rounded-xl p-6">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <div className="label mb-1">Current Route</div>
-                <div className="text-base font-semibold">AI / ML Engineer</div>
-              </div>
-              <div className="text-right">
-                <div className="text-2xl font-semibold text-[#C89B5B]">68%</div>
-                <div className="text-xs text-[#77766F]">Complete</div>
-              </div>
-            </div>
-            <div className="space-y-0">
-              {[
-                { label: 'Python Fundamentals', status: 'completed' },
-                { label: 'Python & Data Handling', status: 'completed' },
-                { label: 'Statistics', status: 'completed' },
-                { label: 'Machine Learning', status: 'current' },
-                { label: 'Deep Learning', status: 'upcoming' },
-                { label: 'MLOps', status: 'upcoming' },
-              ].map((s, i) => (
-                <div key={s.label} className="flex items-start gap-3">
-                  <div className="flex flex-col items-center">
-                    <div
-                      className={`w-2 h-2 rounded-full mt-1 flex-shrink-0 ${
-                        s.status === 'completed' ? 'bg-[#8C9A7A]' :
-                        s.status === 'current' ? 'bg-[#C89B5B]' : 'border border-[#383832]'
-                      }`}
-                    />
-                    {i < 5 && <div className="w-px h-7" style={{ backgroundColor: '#383832' }} />}
-                  </div>
-                  <div className="pb-0 pt-0.5">
-                    <span
-                      className="text-sm"
-                      style={{
-                        color: s.status === 'completed' ? '#8C9A7A' :
-                               s.status === 'current' ? '#C89B5B' : '#77766F'
-                      }}
-                    >
-                      {s.label}
-                    </span>
-                    {s.status === 'current' && (
-                      <span className="ml-2 text-[10px] font-medium tracking-wider uppercase text-[#C89B5B]/70">Current</span>
-                    )}
-                  </div>
-                </div>
-              ))}
+            <div className="rm-hero__card-wrap">
+              <RouteFlowCard stages={ROUTE_STAGES} />
             </div>
           </div>
+        </section>
+
+        <section id="how-it-works" className="rm-container rm-section rm-section--bordered">
+          <p className="rm-label rm-label--accent rm-center">How it works</p>
+          <div className="rm-feature-grid">
+            {FEATURES.map((feature) => (
+              <article key={feature.title} className="rm-feature-item">
+                <h3>{feature.title}</h3>
+                <p>{feature.desc}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="rm-container rm-section rm-section--bordered">
+          <div className="rm-preview-grid">
+            <div>
+              <p className="rm-label rm-label--accent">Product preview</p>
+              <h2 className="rm-section__title">Know exactly where you stand</h2>
+              <p className="rm-section__copy">
+                Your route shows every stage, current position, skill gaps, and what to build next — all in one view.
+              </p>
+              <button type="button" className="rm-link rm-link--accent" onClick={handleStart}>
+                Build Your Route <ArrowRight size={14} />
+              </button>
+            </div>
+
+            <RoutePreviewCard />
+          </div>
+        </section>
+
+        <section className="rm-container rm-section rm-section--bordered rm-cta">
+          <p className="rm-label rm-label--accent">Ready to start?</p>
+          <h2 className="rm-section__title rm-cta__title">Your route begins here.</h2>
+          <button type="button" className="rm-btn rm-btn--primary" onClick={handleStart}>
+            Start Your Journey <ArrowRight size={15} />
+          </button>
+        </section>
+      </main>
+
+      <footer className="rm-footer">
+        <div className="rm-container rm-footer__inner">
+          <p>© 2024 RouteMaster. Mastering the sequence of complex educational goals.</p>
         </div>
-      </section>
-
-      {/* CTA */}
-      <section className="py-20 px-8 max-w-6xl mx-auto border-t border-[#383832]/60 text-center">
-        <div className="label mb-6">Ready to start?</div>
-        <h2 className="font-serif text-4xl text-[#F3F0E8] mb-6" style={{ fontFamily: 'DM Serif Display, Georgia, serif' }}>Your route begins here.</h2>
-        <button
-          onClick={handleStartJourney}
-          className="inline-flex items-center gap-2 px-8 py-4 bg-[#C89B5B] text-[#171714] font-semibold rounded-lg hover:bg-[#D4AA6C] transition-colors cursor-pointer"
-        >
-          Start Your Journey <ArrowRight size={16} />
-        </button>
-      </section>
-
-      {/* Footer */}
-      <footer className="border-t border-[#383832]/60 px-8 py-6 text-center">
-        <span className="text-xs text-[#77766F]">© 2024 RouteMaster. Mastering the sequence of complex educational goals.</span>
       </footer>
     </div>
   );

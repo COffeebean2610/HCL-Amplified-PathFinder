@@ -1,212 +1,587 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Search, ArrowRight, BookOpen, Video, FileText, Code, FolderOpen, Star } from 'lucide-react';
-import { TypeBadge } from '../components/common/Badge';
-import { Button } from '../components/common/Button';
-import { LoadingState, ErrorState, EmptyState } from '../components/common/States';
-import { resourceService } from '../services/resourceService';
+import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Search,
+  ArrowUpRight,
+  ArrowRight,
+  BookOpen,
+  Play,
+  FileText,
+  Code2,
+  BookMarked,
+  FolderKanban,
+  Clock3,
+  Sparkles,
+  Target,
+  ExternalLink,
+  ChevronRight,
+} from "lucide-react";
 
-const TYPE_FILTERS = ['all', 'course', 'video', 'article', 'documentation', 'book', 'practice'];
-const PURPOSE_FILTERS = ['Recommended for you', 'Skill gap', 'Current stage', 'Upcoming stage', 'Revision'];
+import "./Resources.css";
+import { resourceService } from "../services/resourceService";
+import { ErrorState, LoadingState } from '../components/common/States';
 
-const TYPE_ICON = {
-  course: BookOpen,
-  video: Video,
-  article: FileText,
-  documentation: Code,
-  book: FileText,
-  practice: Code,
-  project: FolderOpen,
-};
 
-function ResourceCard({ resource, onClick, featured }) {
-  const Icon = TYPE_ICON[resource.type] || FileText;
+// --------------------------------------------------
+// RESOURCE DATA
+// --------------------------------------------------
 
-  if (featured) {
-    return (
-      <div className="border border-[#C89B5B]/30 bg-[#C89B5B]/5 rounded-xl p-6">
-        <div className="label text-[#C89B5B] mb-3">Personalized for You</div>
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
-              <TypeBadge type={resource.type} />
-              <span className="text-xs text-[#77766F]">{resource.duration}</span>
-              <span className="text-xs text-[#77766F]">·</span>
-              <span className="text-xs text-[#77766F]">{resource.level}</span>
-            </div>
-            <h3 className="text-base font-semibold text-[#F3F0E8] mb-1">{resource.title}</h3>
-            {resource.subtitle && <p className="text-sm text-[#AAA89F] mb-3">{resource.subtitle}</p>}
-          </div>
-          <div className="ml-6 flex-shrink-0 text-right">
-            <div className="text-xl font-semibold text-[#C89B5B]">{resource.relevance}%</div>
-            <div className="text-[10px] text-[#77766F]">Route Relevance</div>
-          </div>
-        </div>
+const resources = [
+  {
+    id: 1,
+    title: "Cross Validation Explained",
+    type: "Article",
+    icon: FileText,
+    duration: "12 min",
+    difficulty: "Intermediate",
+    description:
+      "Understand cross-validation techniques and how they improve model evaluation.",
+    skills: ["Model Evaluation", "Machine Learning"],
+    relevance: 94,
+  },
+  {
+    id: 2,
+    title: "Classification Metrics Deep Dive",
+    type: "Video",
+    icon: Play,
+    duration: "28 min",
+    difficulty: "Intermediate",
+    description:
+      "Learn precision, recall, F1-score, ROC-AUC and when to use each metric.",
+    skills: ["Classification", "Model Evaluation"],
+    relevance: 91,
+  },
+  {
+    id: 3,
+    title: "Hands-on Model Evaluation",
+    type: "Practice",
+    icon: Code2,
+    duration: "40 min",
+    difficulty: "Intermediate",
+    description:
+      "Apply model evaluation techniques using real datasets and Python.",
+    skills: ["Python", "Model Evaluation"],
+    relevance: 89,
+  },
+  {
+    id: 4,
+    title: "Feature Engineering for ML",
+    type: "Course",
+    icon: BookOpen,
+    duration: "90 min",
+    difficulty: "Intermediate",
+    description:
+      "Build stronger machine learning models through effective feature engineering.",
+    skills: ["Feature Engineering", "Machine Learning"],
+    relevance: 86,
+  },
+  {
+    id: 5,
+    title: "Ensemble Methods Explained",
+    type: "Video",
+    icon: Play,
+    duration: "35 min",
+    difficulty: "Intermediate",
+    description:
+      "Explore bagging, boosting and ensemble learning with practical examples.",
+    skills: ["Machine Learning", "Ensemble Methods"],
+    relevance: 83,
+  },
+  {
+    id: 6,
+    title: "Introduction to Deep Learning",
+    type: "Course",
+    icon: BookOpen,
+    duration: "120 min",
+    difficulty: "Advanced",
+    description:
+      "A practical introduction to neural networks and modern deep learning.",
+    skills: ["Deep Learning", "Neural Networks"],
+    relevance: 79,
+  },
+  {
+    id: 7,
+    title: "Statistics for Machine Learning",
+    type: "Book",
+    icon: BookMarked,
+    duration: "3 hrs",
+    difficulty: "Intermediate",
+    description:
+      "Build the statistical foundation required for machine learning.",
+    skills: ["Statistics", "Machine Learning"],
+    relevance: 76,
+  },
+  {
+    id: 8,
+    title: "Docker for ML Engineers",
+    type: "Documentation",
+    icon: Code2,
+    duration: "60 min",
+    difficulty: "Advanced",
+    description:
+      "Learn how to containerize and deploy machine learning applications.",
+    skills: ["Docker", "MLOps"],
+    relevance: 68,
+  },
+];
 
-        <div className="flex flex-wrap gap-2 mb-4">
-          {resource.skills?.map((s) => (
-            <span key={s} className="tag">{s}</span>
-          ))}
-        </div>
 
-        {resource.description && (
-          <p className="text-sm text-[#77766F] mb-4 leading-relaxed">
-            Recommended because this is currently the primary skill gap blocking your next route stage.
-          </p>
-        )}
+// --------------------------------------------------
+// RESOURCE TYPE DATA
+// --------------------------------------------------
 
-        <div className="flex gap-3">
-          <Button size="sm" onClick={() => onClick(resource.id)} icon={<ArrowRight size={13} />}>
-            Start Learning
-          </Button>
-          <Button size="sm" variant="secondary">Why recommended?</Button>
-        </div>
-      </div>
-    );
-  }
+const resourceTypes = [
+  {
+    title: "Courses",
+    subtitle: "Structured learning",
+    count: 12,
+    icon: BookOpen,
+    className: "course",
+  },
+  {
+    title: "Videos",
+    subtitle: "Visual explanations",
+    count: 18,
+    icon: Play,
+    className: "video",
+  },
+  {
+    title: "Articles",
+    subtitle: "Focused concepts",
+    count: 24,
+    icon: FileText,
+    className: "article",
+  },
+  {
+    title: "Documentation",
+    subtitle: "Deep references",
+    count: 9,
+    icon: Code2,
+    className: "documentation",
+  },
+  {
+    title: "Practice",
+    subtitle: "Hands-on learning",
+    count: 14,
+    icon: Target,
+    className: "practice",
+  },
+  {
+    title: "Projects",
+    subtitle: "Build real things",
+    count: 6,
+    icon: FolderKanban,
+    className: "projects",
+  },
+];
+
+
+// --------------------------------------------------
+// FILTERS
+// --------------------------------------------------
+
+const filters = [
+  "All Types",
+  "Course",
+  "Video",
+  "Article",
+  "Documentation",
+  "Book",
+  "Practice",
+];
+
+const resourceIcons = { course: BookOpen, video: Play, article: FileText, documentation: Code2, practice: Code2, book: BookMarked };
+const normalizeResource = (resource) => ({
+  ...resource,
+  type: `${resource.type || "Article"}`.replace(/^./, (letter) => letter.toUpperCase()),
+  difficulty: resource.difficulty || resource.level || "Intermediate",
+  skills: Array.isArray(resource.skills) ? resource.skills : [],
+  icon: resourceIcons[`${resource.type || "article"}`.toLowerCase()] || FileText,
+});
+
+
+// --------------------------------------------------
+// RESOURCE CARD
+// --------------------------------------------------
+
+function ResourceCard({ resource, onOpen }) {
+  const Icon = resource.icon;
 
   return (
-    <motion.div
-      whileTap={{ scale: 0.99 }}
-      onClick={() => onClick(resource.id)}
-      className="border border-[#383832] rounded-xl p-4 cursor-pointer hover:border-[#C89B5B]/30 transition-all"
-    >
-      <div className="flex items-start gap-3">
-        <div className="w-8 h-8 rounded-lg bg-[#22221E] border border-[#383832] flex items-center justify-center flex-shrink-0">
-          <Icon size={14} className="text-[#77766F]" />
+    <article className="resource-card">
+      <div className="resource-card-left">
+        <div className={`resource-icon ${resource.type.toLowerCase()}`}>
+          <Icon size={18} strokeWidth={1.8} />
         </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1 flex-wrap">
-            <TypeBadge type={resource.type} />
-            <span className="text-[10px] text-[#77766F]">{resource.duration}</span>
+
+        <div className="resource-card-content">
+          <div className="resource-meta">
+            <span className={`resource-type ${resource.type.toLowerCase()}`}>
+              {resource.type}
+            </span>
+
+            <span className="resource-duration">
+              <Clock3 size={13} />
+              {resource.duration}
+            </span>
+
+            <span className="resource-dot">•</span>
+
+            <span className="resource-difficulty">
+              {resource.difficulty}
+            </span>
           </div>
-          <h4 className="text-sm font-medium text-[#F3F0E8] truncate">{resource.title}</h4>
-          <div className="text-xs text-[#77766F] mt-0.5">{resource.level}</div>
-        </div>
-        <div className="flex-shrink-0">
-          <ArrowRight size={13} className="text-[#383832]" />
+
+          <h3>{resource.title}</h3>
+
+          <p>{resource.description}</p>
+
+          <div className="resource-tags">
+            {resource.skills.map((skill) => (
+              <span key={skill}>{skill}</span>
+            ))}
+          </div>
         </div>
       </div>
-    </motion.div>
+
+      <div className="resource-card-right">
+        <div className="relevance">
+          <strong>{resource.relevance}%</strong>
+          <span>Route relevance</span>
+        </div>
+
+        <button className="resource-action" type="button" onClick={() => onOpen(resource.id)}>
+          <ArrowUpRight size={17} />
+        </button>
+      </div>
+    </article>
   );
 }
 
+
+// --------------------------------------------------
+// MAIN PAGE
+// --------------------------------------------------
+
 export default function Resources() {
   const navigate = useNavigate();
-  const [resources, setResources] = useState([]);
+  const [activeFilter, setActiveFilter] = useState("All Types");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [resourceData, setResourceData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [search, setSearch] = useState('');
-  const [typeFilter, setTypeFilter] = useState('all');
-  const [savedIds, setSavedIds] = useState(new Set());
+  const [error, setError] = useState('');
 
   useEffect(() => {
     (async () => {
       try {
-        const data = await resourceService.getResources({ type: typeFilter === 'all' ? '' : typeFilter, q: search });
-        setResources(data);
-      } catch (e) {
-        setError(e.message);
+        const data = await resourceService.getResources();
+        setResourceData((Array.isArray(data) ? data : []).map(normalizeResource));
+        setError('');
+      } catch (err) {
+        setError(err.message || 'Unable to load resources.');
       } finally {
         setLoading(false);
       }
     })();
-  }, [typeFilter, search]);
+  }, []);
 
-  const featured = resources.find((r) => r.isCurrent);
-  const others = resources.filter((r) => !r.isCurrent);
+  const filteredResources = useMemo(() => {
+    return resourceData.filter((resource) => {
+      const matchesFilter =
+        activeFilter === "All Types" ||
+        resource.type === activeFilter;
+
+      const query = searchQuery.toLowerCase().trim();
+
+      const matchesSearch =
+        !query ||
+        resource.title.toLowerCase().includes(query) ||
+        resource.description.toLowerCase().includes(query) ||
+        resource.skills.some((skill) =>
+          skill.toLowerCase().includes(query)
+        );
+
+      return matchesFilter && matchesSearch;
+    });
+  }, [activeFilter, resourceData, searchQuery]);
+  const recommendedResource = resourceData.find((resource) => resource.is_current) || resourceData[0] || null;
 
   if (loading) return <LoadingState message="Loading resources..." />;
   if (error) return <ErrorState message={error} onRetry={() => window.location.reload()} />;
 
+
   return (
-    <div className="max-w-5xl mx-auto px-6 py-8">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="label mb-3">Learning Resources</div>
-        <h1 className="font-serif text-3xl text-[#F3F0E8] mb-2">Resources for your route</h1>
-        <p className="text-[#AAA89F]">The right resource at the right stage — curated around your current skill gaps and goals.</p>
-      </div>
+    <div className="resources-page">
 
-      {/* Search */}
-      <div className="flex items-center gap-3 bg-[#22221E] border border-[#383832] rounded-xl px-4 py-3 mb-6">
-        <Search size={16} className="text-[#77766F] flex-shrink-0" />
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search resources..."
-          className="flex-1 bg-transparent border-none outline-none text-sm text-[#F3F0E8] placeholder-[#77766F] p-0"
-        />
-      </div>
+        {/* -------------------------------- */}
+        {/* HEADER */}
+        {/* -------------------------------- */}
 
-      {/* Type filters */}
-      <div className="flex flex-wrap gap-2 mb-8 overflow-x-auto pb-2">
-        {TYPE_FILTERS.map((t) => (
-          <button
-            key={t}
-            onClick={() => setTypeFilter(t)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium capitalize whitespace-nowrap transition-all cursor-pointer flex-shrink-0 ${
-              typeFilter === t ? 'bg-[#C89B5B] text-[#171714]' : 'bg-[#22221E] border border-[#383832] text-[#77766F] hover:text-[#F3F0E8]'
-            }`}
-          >
-            {t === 'all' ? 'All Types' : t.charAt(0).toUpperCase() + t.slice(1)}
-          </button>
-        ))}
-      </div>
+        <header className="resources-header">
+          <div>
+            <span className="page-eyebrow">LEARNING RESOURCES</span>
 
-      {/* Featured */}
-      {featured && (
-        <div className="mb-8">
-          <ResourceCard
-            resource={featured}
-            featured
-            onClick={(id) => navigate(`/resources/${id}`)}
-          />
-        </div>
-      )}
+            <h1>Resources</h1>
 
-      {/* Other resources */}
-      <div>
-        <div className="label mb-4">All Resources</div>
-        {others.length === 0 ? (
-          <EmptyState
-            title="No resources found."
-            description="Try adjusting your filters or search term."
-          />
-        ) : (
-          <div className="grid md:grid-cols-2 gap-3">
-            {others.map((r) => (
-              <ResourceCard key={r.id} resource={r} onClick={(id) => navigate(`/resources/${id}`)} />
+            <p>
+              Discover the right resources to strengthen your skills
+              and move forward on your learning route.
+            </p>
+          </div>
+
+          <div className="resources-header-stat">
+            <span>PERSONALIZED FOR YOU</span>
+            <strong>{recommendedResource?.relevance || 0}%</strong>
+            <small>average route relevance</small>
+          </div>
+        </header>
+
+
+        {/* -------------------------------- */}
+        {/* SEARCH + FILTERS */}
+        {/* -------------------------------- */}
+
+        <section className="resource-controls">
+
+          <div className="resource-search">
+            <Search size={19} />
+
+            <input
+              type="text"
+              placeholder="Search resources, skills or topics..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+
+            {searchQuery && (
+              <button
+                className="clear-search"
+                onClick={() => setSearchQuery("")}
+                type="button"
+              >
+                ×
+              </button>
+            )}
+          </div>
+
+
+          <div className="resource-filters">
+            {filters.map((filter) => (
+              <button
+                key={filter}
+                type="button"
+                className={
+                  activeFilter === filter
+                    ? "filter-btn active"
+                    : "filter-btn"
+                }
+                onClick={() => setActiveFilter(filter)}
+              >
+                {filter}
+              </button>
             ))}
           </div>
-        )}
-      </div>
 
-      {/* Type overview */}
-      <div className="mt-10 border-t border-[#383832] pt-8">
-        <div className="label mb-4">Resource Types</div>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          {[
-            { type: 'course', label: 'Courses', count: 12, desc: 'Structured learning' },
-            { type: 'video', label: 'Videos', count: 18, desc: 'Visual explanations' },
-            { type: 'article', label: 'Articles', count: 24, desc: 'Focused concepts' },
-            { type: 'documentation', label: 'Documentation', count: 9, desc: 'Deep references' },
-            { type: 'practice', label: 'Practice', count: 14, desc: 'Hands-on learning' },
-            { type: 'project', label: 'Projects', count: 6, desc: 'Build real things' },
-          ].map((item) => (
-            <button
-              key={item.type}
-              onClick={() => setTypeFilter(item.type)}
-              className="border border-[#383832] rounded-xl p-4 text-left hover:border-[#C89B5B]/30 transition-colors cursor-pointer"
-            >
-              <div className="text-sm font-medium text-[#F3F0E8]">{item.label}</div>
-              <div className="text-xs text-[#77766F] mt-0.5">{item.desc}</div>
-              <div className="text-lg font-semibold text-[#C89B5B] mt-2">{item.count}</div>
-            </button>
-          ))}
-        </div>
-      </div>
+        </section>
+
+
+        {/* -------------------------------- */}
+        {/* PERSONALIZED RECOMMENDATION */}
+        {/* -------------------------------- */}
+
+        <section className="recommended-resource">
+
+          <div className="recommended-glow" />
+
+          <div className="recommended-icon">
+            <Sparkles size={21} />
+          </div>
+
+          <div className="recommended-content">
+
+            <div className="recommended-label">
+              <span>PERSONALIZED FOR YOU</span>
+
+              <span className="recommended-score">
+                {recommendedResource?.relevance || 0}% ROUTE MATCH
+              </span>
+            </div>
+
+            <h2>{recommendedResource?.title || 'No recommended resource yet'}</h2>
+
+            <p>
+              {recommendedResource?.description || 'Resources tailored to your current route will appear here.'}
+            </p>
+
+            <div className="recommended-tags">
+              {(recommendedResource?.skills || []).slice(0, 2).map((skill) => <span key={skill}>{skill}</span>)}
+              <span>{recommendedResource?.duration || '—'}</span>
+              <span>{recommendedResource?.difficulty || '—'}</span>
+            </div>
+
+            <div className="recommended-actions">
+
+              <button className="primary-resource-btn" type="button" onClick={() => recommendedResource?.id && navigate(`/resources/${recommendedResource.id}`)}>
+                <Play size={16} />
+                Start Learning
+                <ArrowRight size={16} />
+              </button>
+
+              <button className="secondary-resource-btn" type="button" onClick={() => recommendedResource?.id && navigate(`/resources/${recommendedResource.id}`)}>
+                Why recommended?
+                <ChevronRight size={15} />
+              </button>
+
+            </div>
+
+          </div>
+
+          <div className="recommended-progress">
+
+            <div className="progress-ring">
+              <svg viewBox="0 0 100 100">
+                <circle
+                  className="progress-ring-bg"
+                  cx="50"
+                  cy="50"
+                  r="42"
+                />
+
+                <circle
+                  className="progress-ring-value"
+                  cx="50"
+                  cy="50"
+                  r="42"
+                />
+              </svg>
+
+              <div>
+                <strong>48%</strong>
+                <span>Current</span>
+              </div>
+            </div>
+
+            <div className="target-info">
+              <span>REQUIRED</span>
+              <strong>75%</strong>
+            </div>
+
+          </div>
+
+        </section>
+
+
+        {/* -------------------------------- */}
+        {/* ALL RESOURCES */}
+        {/* -------------------------------- */}
+
+        <section className="all-resources-section">
+
+          <div className="section-heading">
+            <div>
+              <span className="section-eyebrow">EXPLORE</span>
+              <h2>All Resources</h2>
+            </div>
+
+            <span className="resource-count">
+              {filteredResources.length} resources
+            </span>
+          </div>
+
+
+          <div className="resources-grid">
+
+            {filteredResources.map((resource) => (
+              <ResourceCard
+                key={resource.id}
+                resource={resource}
+                onOpen={(resourceId) => navigate(`/resources/${resourceId}`)}
+              />
+            ))}
+
+          </div>
+
+
+          {filteredResources.length === 0 && (
+            <div className="empty-resources">
+              <Search size={30} />
+              <h3>No resources found</h3>
+              <p>
+                Try searching for another skill or resource type.
+              </p>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchQuery("");
+                  setActiveFilter("All Types");
+                }}
+              >
+                Clear filters
+              </button>
+            </div>
+          )}
+
+        </section>
+
+
+        {/* -------------------------------- */}
+        {/* RESOURCE TYPES */}
+        {/* -------------------------------- */}
+
+        <section className="resource-types-section">
+
+          <div className="section-heading">
+            <div>
+              <span className="section-eyebrow">BROWSE BY TYPE</span>
+              <h2>Resource Library</h2>
+            </div>
+          </div>
+
+
+          <div className="resource-types-grid">
+
+            {resourceTypes.map((item) => {
+              const Icon = item.icon;
+
+              return (
+                <button
+                  key={item.title}
+                  className={`resource-type-card ${item.className}`}
+                  type="button"
+                  onClick={() => {
+                    if (filters.includes(item.title.slice(0, -1))) {
+                      setActiveFilter(item.title.slice(0, -1));
+                    }
+                  }}
+                >
+
+                  <div className="type-card-icon">
+                    <Icon size={20} />
+                  </div>
+
+                  <div className="type-card-content">
+                    <h3>{item.title}</h3>
+                    <p>{item.subtitle}</p>
+                  </div>
+
+                  <div className="type-card-count">
+                    {item.count}
+                  </div>
+
+                  <ArrowRight
+                    className="type-card-arrow"
+                    size={17}
+                  />
+
+                </button>
+              );
+            })}
+
+          </div>
+
+        </section>
+
     </div>
   );
 }
