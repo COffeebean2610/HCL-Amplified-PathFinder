@@ -4,29 +4,30 @@ import { Eye, EyeOff, ArrowRight, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import AuthLayout from '../components/auth/AuthLayout';
+import { Button } from '../components/common/Button';
 
 function FormField({ label, id, type = 'text', value, onChange, placeholder, error, rightElement }) {
   return (
-    <div className="rm-auth-field">
-      <label htmlFor={id} className="rm-auth-label">
+    <div>
+      <label htmlFor={id} className="block text-xs font-medium text-[#AAA89F] mb-2 tracking-wide uppercase">
         {label}
       </label>
-      <div className="rm-auth-input-wrap">
+      <div className="relative">
         <input
           id={id}
           type={type}
           value={value}
           onChange={onChange}
           placeholder={placeholder}
-          className={`rm-auth-input ${error ? 'is-error' : ''}`}
+          className={`w-full ${error ? 'border-[#A96A5F] focus:border-[#A96A5F]' : ''}`}
           autoComplete={type === 'password' ? 'new-password' : 'off'}
         />
         {rightElement && (
-          <div className="rm-auth-input-affix">{rightElement}</div>
+          <div className="absolute right-3 top-1/2 -translate-y-1/2">{rightElement}</div>
         )}
       </div>
       {error && (
-        <p className="rm-auth-field-error">
+        <p className="mt-1.5 text-xs text-[#A96A5F] flex items-center gap-1">
           <AlertCircle size={11} /> {error}
         </p>
       )}
@@ -72,7 +73,7 @@ export default function Register() {
     setErrors({});
     setLoading(true);
     try {
-      await register(form);
+      const data = await register(form);
       // Always go to onboarding after registration
       navigate('/onboarding', { replace: true });
     } catch (err) {
@@ -87,15 +88,15 @@ export default function Register() {
       title="Create your RouteMaster account"
       subtitle="Start building a learning route designed around your goals."
     >
-      <form onSubmit={handleSubmit} className="rm-auth-form" noValidate>
+      <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         {serverError && (
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="rm-auth-error"
+            className="flex items-start gap-2 p-4 bg-[#A96A5F]/10 border border-[#A96A5F]/30 rounded-lg"
           >
-            <AlertCircle size={14} className="rm-auth-error__icon" />
-            <p>{serverError}</p>
+            <AlertCircle size={14} className="text-[#A96A5F] flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-[#A96A5F]">{serverError}</p>
           </motion.div>
         )}
 
@@ -128,7 +129,7 @@ export default function Register() {
             <button
               type="button"
               onClick={() => setShowPw((v) => !v)}
-              className="rm-auth-visibility"
+              className="text-[#77766F] hover:text-[#AAA89F] transition-colors cursor-pointer"
             >
               {showPw ? <EyeOff size={15} /> : <Eye size={15} />}
             </button>
@@ -146,26 +147,26 @@ export default function Register() {
             <button
               type="button"
               onClick={() => setShowCpw((v) => !v)}
-              className="rm-auth-visibility"
+              className="text-[#77766F] hover:text-[#AAA89F] transition-colors cursor-pointer"
             >
               {showCpw ? <EyeOff size={15} /> : <Eye size={15} />}
             </button>
           }
         />
 
-        <button type="submit" className="rm-btn rm-btn--primary rm-btn--full rm-auth-submit" disabled={loading}>
-          {loading ? (
-            <span className="rm-auth-spinner" aria-hidden="true" />
-          ) : (
-            <>
-              Create Account <ArrowRight size={15} />
-            </>
-          )}
-        </button>
+        <Button
+          type="submit"
+          fullWidth
+          loading={loading}
+          icon={!loading && <ArrowRight size={15} />}
+          size="lg"
+        >
+          {loading ? 'Creating account...' : 'Create Account'}
+        </Button>
 
-        <p className="rm-auth-switch">
+        <p className="text-center text-sm text-[#77766F]">
           Already have an account?{' '}
-          <Link to="/login">
+          <Link to="/login" className="text-[#C89B5B] hover:text-[#D4AA6C] transition-colors font-medium">
             Sign in
           </Link>
         </p>

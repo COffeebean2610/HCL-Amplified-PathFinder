@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Clock, Check, Circle } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Clock, BarChart2, Check, Circle } from 'lucide-react';
 import { StatusBadge } from '../components/common/Badge';
 import { Button } from '../components/common/Button';
-import { ErrorState, LoadingState } from '../components/common/States';
+import { LoadingState } from '../components/common/States';
 import { projectService } from '../services/projectService';
 
 export default function ProjectDetail() {
@@ -12,35 +12,26 @@ export default function ProjectDetail() {
   const navigate = useNavigate();
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [starting, setStarting] = useState(false);
 
   useEffect(() => {
     (async () => {
-      try {
-        const data = await projectService.getProjectById(projectId);
-        setProject(data);
-        setError('');
-      } catch (err) {
-        setError(err.message || 'Unable to load this project.');
-      } finally {
-        setLoading(false);
-      }
+      const data = await projectService.getProjectById(projectId);
+      setProject(data);
+      setLoading(false);
     })();
   }, [projectId]);
 
   const handleStart = async () => {
     setStarting(true);
-    // The API does not currently expose a project-start endpoint.
-    navigate('/my-routes');
+    await projectService.startProject(projectId);
     setStarting(false);
   };
 
   if (loading) return <LoadingState message="Loading project..." />;
-  if (error || !project) return <ErrorState message={error || 'Project not found.'} onRetry={() => navigate('/projects')} />;
 
   return (
-    <div className="page">
+    <div className="max-w-3xl mx-auto px-6 py-8">
       <button
         onClick={() => navigate('/projects')}
         className="flex items-center gap-2 text-sm text-[#77766F] hover:text-[#F3F0E8] mb-8 cursor-pointer transition-colors"
@@ -69,7 +60,7 @@ export default function ProjectDetail() {
           <div>
             <div className="label mb-1">Estimated</div>
             <div className="text-sm text-[#F3F0E8] flex items-center gap-1">
-              <Clock size={12} />{project?.estimated_hours ?? project?.estimatedHours}h
+              <Clock size={12} />{project?.estimatedHours}h
             </div>
           </div>
           <div>

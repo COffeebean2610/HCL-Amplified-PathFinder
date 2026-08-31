@@ -1,917 +1,212 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import {
-  Search,
-  SlidersHorizontal,
-  Sparkles,
-  ArrowRight,
-  Play,
-  Bookmark,
-  Clock,
-  BarChart3,
-  BookOpen,
-  Video,
-  FileText,
-  BookMarked,
-  Dumbbell,
-  ExternalLink,
-} from 'lucide-react';
-
+import { Search, ArrowRight, BookOpen, Video, FileText, Code, FolderOpen, Star } from 'lucide-react';
+import { TypeBadge } from '../components/common/Badge';
+import { Button } from '../components/common/Button';
+import { LoadingState, ErrorState, EmptyState } from '../components/common/States';
 import { resourceService } from '../services/resourceService';
-import './Resources.css';
 
-const RESOURCE_TYPES = [
-  { label: 'All Types', value: 'all' },
-  { label: 'Course', value: 'course' },
-  { label: 'Video', value: 'video' },
-  { label: 'Article', value: 'article' },
-  { label: 'Documentation', value: 'documentation' },
-  { label: 'Book', value: 'book' },
-  { label: 'Practice', value: 'practice' },
-];
+const TYPE_FILTERS = ['all', 'course', 'video', 'article', 'documentation', 'book', 'practice'];
+const PURPOSE_FILTERS = ['Recommended for you', 'Skill gap', 'Current stage', 'Upcoming stage', 'Revision'];
 
-const TYPE_ICONS = {
+const TYPE_ICON = {
   course: BookOpen,
   video: Video,
   article: FileText,
-  documentation: BookMarked,
-  book: BookOpen,
-  practice: Dumbbell,
+  documentation: Code,
+  book: FileText,
+  practice: Code,
+  project: FolderOpen,
 };
 
-function normalizeType(type) {
-  if (!type) return 'course';
+function ResourceCard({ resource, onClick, featured }) {
+  const Icon = TYPE_ICON[resource.type] || FileText;
 
-  return String(type)
-    .toLowerCase()
-    .replace(/[\s_-]+/g, '');
-}
+  if (featured) {
+    return (
+      <div className="border border-[#C89B5B]/30 bg-[#C89B5B]/5 rounded-xl p-6">
+        <div className="label text-[#C89B5B] mb-3">Personalized for You</div>
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-2">
+              <TypeBadge type={resource.type} />
+              <span className="text-xs text-[#77766F]">{resource.duration}</span>
+              <span className="text-xs text-[#77766F]">·</span>
+              <span className="text-xs text-[#77766F]">{resource.level}</span>
+            </div>
+            <h3 className="text-base font-semibold text-[#F3F0E8] mb-1">{resource.title}</h3>
+            {resource.subtitle && <p className="text-sm text-[#AAA89F] mb-3">{resource.subtitle}</p>}
+          </div>
+          <div className="ml-6 flex-shrink-0 text-right">
+            <div className="text-xl font-semibold text-[#C89B5B]">{resource.relevance}%</div>
+            <div className="text-[10px] text-[#77766F]">Route Relevance</div>
+          </div>
+        </div>
 
-function getTypeIcon(type) {
-  const normalized = normalizeType(type);
+        <div className="flex flex-wrap gap-2 mb-4">
+          {resource.skills?.map((s) => (
+            <span key={s} className="tag">{s}</span>
+          ))}
+        </div>
 
-  if (normalized === 'documentation') return BookMarked;
-  if (normalized === 'practice') return Dumbbell;
+        {resource.description && (
+          <p className="text-sm text-[#77766F] mb-4 leading-relaxed">
+            Recommended because this is currently the primary skill gap blocking your next route stage.
+          </p>
+        )}
 
-  return (
-    TYPE_ICONS[normalized] ||
-    BookOpen
-  );
-}
-
-function normalizeResources(data) {
-  if (Array.isArray(data)) return data;
-
-  if (Array.isArray(data?.resources)) {
-    return data.resources;
-  }
-
-  if (Array.isArray(data?.items)) {
-    return data.items;
-  }
-
-  if (Array.isArray(data?.data)) {
-    return data.data;
-  }
-
-  return [];
-}
-
-function getResourceId(resource) {
-  return (
-    resource?.id ??
-    resource?.resource_id ??
-    resource?.resourceId ??
-    resource?.course_id
-  );
-}
-
-function getResourceSkills(resource) {
-  if (Array.isArray(resource?.skills)) {
-    return resource.skills;
-  }
-
-  if (Array.isArray(resource?.skill_names)) {
-    return resource.skill_names;
-  }
-
-  return [];
-}
-
-function getRelevance(resource) {
-  const value =
-    resource?.relevance ??
-    resource?.route_relevance ??
-    resource?.match ??
-    resource?.match_score ??
-    resource?.route_match;
-
-  if (value === null || value === undefined || value === '') {
-    return null;
-  }
-
-  const number = Number(value);
-
-  if (Number.isNaN(number)) {
-    return null;
-  }
-
-  // Handle APIs returning 0.38 instead of 38.
-  if (number > 0 && number <= 1) {
-    return Math.round(number * 100);
-  }
-
-  return Math.round(number);
-}
-
-function getAverageRelevance(resources) {
-  const values = resources
-    .map(getRelevance)
-    .filter(
-      (value) =>
-        value !== null &&
-        !Number.isNaN(value)
+        <div className="flex gap-3">
+          <Button size="sm" onClick={() => onClick(resource.id)} icon={<ArrowRight size={13} />}>
+            Start Learning
+          </Button>
+          <Button size="sm" variant="secondary">Why recommended?</Button>
+        </div>
+      </div>
     );
+  }
 
-  if (!values.length) return 0;
-
-  return Math.round(
-    values.reduce((sum, value) => sum + value, 0) /
-      values.length
+  return (
+    <motion.div
+      whileTap={{ scale: 0.99 }}
+      onClick={() => onClick(resource.id)}
+      className="border border-[#383832] rounded-xl p-4 cursor-pointer hover:border-[#C89B5B]/30 transition-all"
+    >
+      <div className="flex items-start gap-3">
+        <div className="w-8 h-8 rounded-lg bg-[#22221E] border border-[#383832] flex items-center justify-center flex-shrink-0">
+          <Icon size={14} className="text-[#77766F]" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1 flex-wrap">
+            <TypeBadge type={resource.type} />
+            <span className="text-[10px] text-[#77766F]">{resource.duration}</span>
+          </div>
+          <h4 className="text-sm font-medium text-[#F3F0E8] truncate">{resource.title}</h4>
+          <div className="text-xs text-[#77766F] mt-0.5">{resource.level}</div>
+        </div>
+        <div className="flex-shrink-0">
+          <ArrowRight size={13} className="text-[#383832]" />
+        </div>
+      </div>
+    </motion.div>
   );
 }
 
 export default function Resources() {
   const navigate = useNavigate();
-
   const [resources, setResources] = useState([]);
-  const [recommended, setRecommended] = useState(null);
-
   const [loading, setLoading] = useState(true);
-  const [recommendedLoading, setRecommendedLoading] =
-    useState(true);
-
-  const [error, setError] = useState('');
+  const [error, setError] = useState(null);
   const [search, setSearch] = useState('');
-  const [activeType, setActiveType] = useState('all');
-  const [savedResources, setSavedResources] = useState(
-    []
-  );
+  const [typeFilter, setTypeFilter] = useState('all');
+  const [savedIds, setSavedIds] = useState(new Set());
 
   useEffect(() => {
-    const saved =
-      JSON.parse(
-        localStorage.getItem('routemaster_saved_resources') ||
-          '[]'
-      ) || [];
-
-    setSavedResources(saved);
-  }, []);
-
-  useEffect(() => {
-    let mounted = true;
-
-    async function loadResources() {
+    (async () => {
       try {
-        setLoading(true);
-        setError('');
-
-        const [resourceResponse, recommendedResponse] =
-          await Promise.all([
-            resourceService.getResources(),
-            resourceService.getRecommended(),
-          ]);
-
-        if (!mounted) return;
-
-        const resourceList =
-          normalizeResources(resourceResponse);
-
-        const recommendedList =
-          normalizeResources(recommendedResponse);
-
-        setResources(resourceList);
-
-        /*
-         * The recommendation endpoint should normally return
-         * the personalized resource(s) for the current user.
-         *
-         * We use the first recommendation as the featured
-         * resource instead of hardcoding a specific course.
-         */
-        setRecommended(
-          recommendedList.length
-            ? recommendedList[0]
-            : null
-        );
-      } catch (err) {
-        if (!mounted) return;
-
-        setError(
-          err?.response?.data?.detail ||
-            err?.message ||
-            'Unable to load learning resources.'
-        );
+        const data = await resourceService.getResources({ type: typeFilter === 'all' ? '' : typeFilter, q: search });
+        setResources(data);
+      } catch (e) {
+        setError(e.message);
       } finally {
-        if (mounted) {
-          setLoading(false);
-          setRecommendedLoading(false);
-        }
+        setLoading(false);
       }
-    }
+    })();
+  }, [typeFilter, search]);
 
-    loadResources();
+  const featured = resources.find((r) => r.isCurrent);
+  const others = resources.filter((r) => !r.isCurrent);
 
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  const filteredResources = useMemo(() => {
-    const query = search.trim().toLowerCase();
-
-    return resources.filter((resource) => {
-      const type = normalizeType(resource?.type);
-
-      const matchesType =
-        activeType === 'all' ||
-        type === normalizeType(activeType);
-
-      if (!matchesType) return false;
-
-      if (!query) return true;
-
-      const searchableText = [
-        resource?.title,
-        resource?.subtitle,
-        resource?.description,
-        resource?.provider,
-        ...(getResourceSkills(resource) || []),
-      ]
-        .filter(Boolean)
-        .join(' ')
-        .toLowerCase();
-
-      return searchableText.includes(query);
-    });
-  }, [resources, search, activeType]);
-
-  const averageRelevance = useMemo(
-    () => getAverageRelevance(resources),
-    [resources]
-  );
-
-  const recommendedRelevance = recommended
-    ? getRelevance(recommended)
-    : null;
-
-  const toggleSave = (resource) => {
-    const id = getResourceId(resource);
-
-    if (!id) return;
-
-    setSavedResources((current) => {
-      const exists = current.includes(id);
-
-      const next = exists
-        ? current.filter((item) => item !== id)
-        : [...current, id];
-
-      localStorage.setItem(
-        'routemaster_saved_resources',
-        JSON.stringify(next)
-      );
-
-      return next;
-    });
-  };
-
-  const isSaved = (resource) => {
-    const id = getResourceId(resource);
-
-    return id
-      ? savedResources.includes(id)
-      : false;
-  };
-
-  const openResource = (resource) => {
-    const id = getResourceId(resource);
-
-    if (id) {
-      navigate(`/resources/${id}`);
-      return;
-    }
-
-    if (resource?.url) {
-      window.open(
-        resource.url,
-        '_blank',
-        'noopener,noreferrer'
-      );
-    }
-  };
-
-  const handleStartLearning = (event, resource) => {
-    event.stopPropagation();
-
-    if (resource?.url) {
-      window.open(
-        resource.url,
-        '_blank',
-        'noopener,noreferrer'
-      );
-      return;
-    }
-
-    openResource(resource);
-  };
-
-  if (loading) {
-    return (
-      <div className="resources-page">
-        <div className="resources-loading">
-          <div className="resources-loading-spinner" />
-
-          <p>Loading your learning resources...</p>
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <LoadingState message="Loading resources..." />;
+  if (error) return <ErrorState message={error} onRetry={() => window.location.reload()} />;
 
   return (
-    <div className="resources-page">
-      <div className="resources-container">
+    <div className="max-w-5xl mx-auto px-6 py-8">
+      {/* Header */}
+      <div className="mb-8">
+        <div className="label mb-3">Learning Resources</div>
+        <h1 className="font-serif text-3xl text-[#F3F0E8] mb-2">Resources for your route</h1>
+        <p className="text-[#AAA89F]">The right resource at the right stage — curated around your current skill gaps and goals.</p>
+      </div>
 
-        {/* =====================================================
-            PAGE HEADER
-        ====================================================== */}
+      {/* Search */}
+      <div className="flex items-center gap-3 bg-[#22221E] border border-[#383832] rounded-xl px-4 py-3 mb-6">
+        <Search size={16} className="text-[#77766F] flex-shrink-0" />
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search resources..."
+          className="flex-1 bg-transparent border-none outline-none text-sm text-[#F3F0E8] placeholder-[#77766F] p-0"
+        />
+      </div>
 
-        <header className="resources-header">
-          <div className="resources-header-main">
-            <div className="resources-eyebrow">
-              LEARNING RESOURCES
-            </div>
+      {/* Type filters */}
+      <div className="flex flex-wrap gap-2 mb-8 overflow-x-auto pb-2">
+        {TYPE_FILTERS.map((t) => (
+          <button
+            key={t}
+            onClick={() => setTypeFilter(t)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium capitalize whitespace-nowrap transition-all cursor-pointer flex-shrink-0 ${
+              typeFilter === t ? 'bg-[#C89B5B] text-[#171714]' : 'bg-[#22221E] border border-[#383832] text-[#77766F] hover:text-[#F3F0E8]'
+            }`}
+          >
+            {t === 'all' ? 'All Types' : t.charAt(0).toUpperCase() + t.slice(1)}
+          </button>
+        ))}
+      </div>
 
-            <h1>Resources</h1>
+      {/* Featured */}
+      {featured && (
+        <div className="mb-8">
+          <ResourceCard
+            resource={featured}
+            featured
+            onClick={(id) => navigate(`/resources/${id}`)}
+          />
+        </div>
+      )}
 
-            <p>
-              Discover the right resources to strengthen
-              your skills and move forward on your learning
-              route.
-            </p>
-          </div>
-
-          <div className="resources-header-stat">
-            <span>PERSONALIZED FOR YOU</span>
-
-            <strong>
-              {averageRelevance}%
-            </strong>
-
-            <small>
-              average route relevance
-            </small>
-          </div>
-        </header>
-
-        {/* =====================================================
-            SEARCH
-        ====================================================== */}
-
-        <section className="resources-controls">
-          <div className="resources-search">
-            <Search size={19} />
-
-            <input
-              type="text"
-              value={search}
-              onChange={(event) =>
-                setSearch(event.target.value)
-              }
-              placeholder="Search resources, skills or topics..."
-            />
-
-            {search && (
-              <button
-                type="button"
-                className="search-clear"
-                onClick={() => setSearch('')}
-              >
-                Clear
-              </button>
-            )}
-          </div>
-
-          <div className="resources-filters">
-            <div className="filter-label">
-              <SlidersHorizontal size={15} />
-              <span>FILTER BY TYPE</span>
-            </div>
-
-            <div className="filter-buttons">
-              {RESOURCE_TYPES.map((type) => (
-                <button
-                  key={type.value}
-                  type="button"
-                  className={
-                    activeType === type.value
-                      ? 'filter-button active'
-                      : 'filter-button'
-                  }
-                  onClick={() =>
-                    setActiveType(type.value)
-                  }
-                >
-                  {type.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* =====================================================
-            ERROR
-        ====================================================== */}
-
-        {error && (
-          <div className="resources-error">
-            <div>
-              <strong>
-                Unable to load some resources
-              </strong>
-
-              <p>{error}</p>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => window.location.reload()}
-            >
-              Retry
-            </button>
+      {/* Other resources */}
+      <div>
+        <div className="label mb-4">All Resources</div>
+        {others.length === 0 ? (
+          <EmptyState
+            title="No resources found."
+            description="Try adjusting your filters or search term."
+          />
+        ) : (
+          <div className="grid md:grid-cols-2 gap-3">
+            {others.map((r) => (
+              <ResourceCard key={r.id} resource={r} onClick={(id) => navigate(`/resources/${id}`)} />
+            ))}
           </div>
         )}
+      </div>
 
-        {/* =====================================================
-            PERSONALIZED RECOMMENDATION
-        ====================================================== */}
-
-        <section className="recommended-section">
-          <div className="section-heading-row">
-            <div>
-              <span className="section-eyebrow">
-                YOUR NEXT STEP
-              </span>
-
-              <h2>
-                Recommended for your route
-              </h2>
-            </div>
-
-            {recommendedRelevance !== null && (
-              <div className="section-match">
-                <span>ROUTE MATCH</span>
-
-                <strong>
-                  {recommendedRelevance}%
-                </strong>
-              </div>
-            )}
-          </div>
-
-          {recommendedLoading ? (
-            <div className="recommendation-skeleton">
-              <div />
-              <div />
-              <div />
-            </div>
-          ) : recommended ? (
-            <RecommendedResource
-              resource={recommended}
-              saved={isSaved(recommended)}
-              onSave={() =>
-                toggleSave(recommended)
-              }
-              onOpen={() =>
-                openResource(recommended)
-              }
-              onStart={(event) =>
-                handleStartLearning(
-                  event,
-                  recommended
-                )
-              }
-            />
-          ) : (
-            <div className="empty-recommendation">
-              <Sparkles size={22} />
-
-              <div>
-                <strong>
-                  No personalized recommendation yet
-                </strong>
-
-                <p>
-                  Complete your profile and skill
-                  preferences to receive a resource
-                  recommendation tailored to your route.
-                </p>
-              </div>
-            </div>
-          )}
-        </section>
-
-        {/* =====================================================
-            ALL RESOURCES
-        ====================================================== */}
-
-        <section className="all-resources-section">
-          <div className="section-heading-row">
-            <div>
-              <span className="section-eyebrow">
-                EXPLORE
-              </span>
-
-              <h2>All Resources</h2>
-            </div>
-
-            <span className="resource-count">
-              {filteredResources.length}{' '}
-              {filteredResources.length === 1
-                ? 'resource'
-                : 'resources'}
-            </span>
-          </div>
-
-          {filteredResources.length === 0 ? (
-            <div className="resources-empty">
-              <Search size={26} />
-
-              <h3>No resources found</h3>
-
-              <p>
-                Try another search term or choose a
-                different resource type.
-              </p>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setSearch('');
-                  setActiveType('all');
-                }}
-              >
-                Clear filters
-              </button>
-            </div>
-          ) : (
-            <div className="resources-grid">
-              {filteredResources.map(
-                (resource, index) => (
-                  <ResourceCard
-                    key={
-                      getResourceId(resource) ||
-                      `${resource?.title}-${index}`
-                    }
-                    resource={resource}
-                    saved={isSaved(resource)}
-                    onSave={() =>
-                      toggleSave(resource)
-                    }
-                    onOpen={() =>
-                      openResource(resource)
-                    }
-                  />
-                )
-              )}
-            </div>
-          )}
-        </section>
-
+      {/* Type overview */}
+      <div className="mt-10 border-t border-[#383832] pt-8">
+        <div className="label mb-4">Resource Types</div>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          {[
+            { type: 'course', label: 'Courses', count: 12, desc: 'Structured learning' },
+            { type: 'video', label: 'Videos', count: 18, desc: 'Visual explanations' },
+            { type: 'article', label: 'Articles', count: 24, desc: 'Focused concepts' },
+            { type: 'documentation', label: 'Documentation', count: 9, desc: 'Deep references' },
+            { type: 'practice', label: 'Practice', count: 14, desc: 'Hands-on learning' },
+            { type: 'project', label: 'Projects', count: 6, desc: 'Build real things' },
+          ].map((item) => (
+            <button
+              key={item.type}
+              onClick={() => setTypeFilter(item.type)}
+              className="border border-[#383832] rounded-xl p-4 text-left hover:border-[#C89B5B]/30 transition-colors cursor-pointer"
+            >
+              <div className="text-sm font-medium text-[#F3F0E8]">{item.label}</div>
+              <div className="text-xs text-[#77766F] mt-0.5">{item.desc}</div>
+              <div className="text-lg font-semibold text-[#C89B5B] mt-2">{item.count}</div>
+            </button>
+          ))}
+        </div>
       </div>
     </div>
-  );
-}
-
-
-/* =============================================================
-   RECOMMENDED RESOURCE
-============================================================= */
-
-function RecommendedResource({
-  resource,
-  saved,
-  onSave,
-  onOpen,
-  onStart,
-}) {
-  const TypeIcon = getTypeIcon(resource?.type);
-
-  const skills = getResourceSkills(resource);
-
-  const relevance = getRelevance(resource);
-
-  return (
-    <motion.article
-      className="featured-resource"
-      initial={{
-        opacity: 0,
-        y: 16,
-      }}
-      animate={{
-        opacity: 1,
-        y: 0,
-      }}
-      transition={{
-        duration: 0.4,
-      }}
-      onClick={onOpen}
-    >
-      <div className="featured-glow" />
-
-      <div className="featured-icon">
-        <Sparkles size={23} />
-      </div>
-
-      <div className="featured-content">
-
-        <div className="featured-topline">
-          <span className="personalized-badge">
-            <Sparkles size={13} />
-            PERSONALIZED FOR YOU
-          </span>
-
-          {relevance !== null && (
-            <span className="match-badge">
-              {relevance}% ROUTE MATCH
-            </span>
-          )}
-        </div>
-
-        <h3>
-          {resource?.title ||
-            'Recommended learning resource'}
-        </h3>
-
-        {resource?.subtitle && (
-          <div className="featured-provider">
-            {resource.subtitle}
-          </div>
-        )}
-
-        {resource?.description && (
-          <p className="featured-description">
-            {resource.description}
-          </p>
-        )}
-
-        <div className="resource-meta">
-          {resource?.duration && (
-            <span>
-              <Clock size={14} />
-              {resource.duration}
-            </span>
-          )}
-
-          {resource?.level && (
-            <span>
-              <BarChart3 size={14} />
-              {resource.level}
-            </span>
-          )}
-
-          <span>
-            <BookOpen size={14} />
-            {String(
-              resource?.type || 'Course'
-            ).toUpperCase()}
-          </span>
-        </div>
-
-        {skills.length > 0 && (
-          <div className="resource-skills">
-            {skills.slice(0, 5).map(
-              (skill, index) => (
-                <span key={`${skill}-${index}`}>
-                  {skill}
-                </span>
-              )
-            )}
-          </div>
-        )}
-
-        <div className="featured-actions">
-          <button
-            type="button"
-            className="primary-resource-button"
-            onClick={onStart}
-          >
-            <Play size={15} />
-            Start Learning
-            <ArrowRight size={16} />
-          </button>
-
-          <button
-            type="button"
-            className={
-              saved
-                ? 'secondary-resource-button saved'
-                : 'secondary-resource-button'
-            }
-            onClick={(event) => {
-              event.stopPropagation();
-              onSave();
-            }}
-          >
-            <Bookmark
-              size={16}
-              fill={saved ? 'currentColor' : 'none'}
-            />
-
-            {saved ? 'Saved' : 'Save'}
-          </button>
-
-          {resource?.url && (
-            <button
-              type="button"
-              className="external-resource-button"
-              onClick={onStart}
-            >
-              <ExternalLink size={15} />
-              Open resource
-            </button>
-          )}
-        </div>
-      </div>
-
-      <div className="featured-score">
-        <div
-          className="score-ring"
-          style={{
-            '--score':
-              relevance !== null
-                ? `${relevance * 3.6}deg`
-                : '0deg',
-          }}
-        >
-          <div className="score-ring-inner">
-            <strong>
-              {relevance !== null
-                ? `${relevance}%`
-                : '—'}
-            </strong>
-
-            <span>MATCH</span>
-          </div>
-        </div>
-      </div>
-    </motion.article>
-  );
-}
-
-
-/* =============================================================
-   RESOURCE CARD
-============================================================= */
-
-function ResourceCard({
-  resource,
-  saved,
-  onSave,
-  onOpen,
-}) {
-  const TypeIcon = getTypeIcon(resource?.type);
-
-  const relevance = getRelevance(resource);
-
-  const skills = getResourceSkills(resource);
-
-  return (
-    <motion.article
-      className="resource-card"
-      initial={{
-        opacity: 0,
-        y: 12,
-      }}
-      animate={{
-        opacity: 1,
-        y: 0,
-      }}
-      transition={{
-        duration: 0.25,
-      }}
-      whileHover={{
-        y: -4,
-      }}
-      onClick={onOpen}
-    >
-      <div className="resource-card-top">
-        <div className="resource-type">
-          <TypeIcon size={15} />
-
-          <span>
-            {resource?.type || 'Course'}
-          </span>
-        </div>
-
-        <button
-          type="button"
-          className={
-            saved
-              ? 'card-bookmark active'
-              : 'card-bookmark'
-          }
-          onClick={(event) => {
-            event.stopPropagation();
-            onSave();
-          }}
-          aria-label={
-            saved
-              ? 'Remove bookmark'
-              : 'Save resource'
-          }
-        >
-          <Bookmark
-            size={16}
-            fill={saved ? 'currentColor' : 'none'}
-          />
-        </button>
-      </div>
-
-      <div className="resource-card-body">
-        <h3>
-          {resource?.title ||
-            'Learning resource'}
-        </h3>
-
-        {resource?.subtitle && (
-          <p className="resource-provider">
-            {resource.subtitle}
-          </p>
-        )}
-
-        {resource?.description && (
-          <p className="resource-card-description">
-            {resource.description}
-          </p>
-        )}
-
-        <div className="resource-card-meta">
-          {resource?.duration && (
-            <span>
-              <Clock size={13} />
-              {resource.duration}
-            </span>
-          )}
-
-          {resource?.level && (
-            <span>
-              <BarChart3 size={13} />
-              {resource.level}
-            </span>
-          )}
-        </div>
-
-        {skills.length > 0 && (
-          <div className="resource-card-skills">
-            {skills.slice(0, 3).map(
-              (skill, index) => (
-                <span key={`${skill}-${index}`}>
-                  {skill}
-                </span>
-              )
-            )}
-
-            {skills.length > 3 && (
-              <span>
-                +{skills.length - 3}
-              </span>
-            )}
-          </div>
-        )}
-      </div>
-
-      <div className="resource-card-footer">
-        <button
-          type="button"
-          onClick={(event) => {
-            event.stopPropagation();
-            onOpen();
-          }}
-          className="view-resource-button"
-        >
-          View resource
-          <ArrowRight size={15} />
-        </button>
-
-        {relevance !== null && (
-          <div className="card-relevance">
-            <span>{relevance}%</span>
-            <small>match</small>
-          </div>
-        )}
-      </div>
-    </motion.article>
   );
 }

@@ -1,355 +1,87 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import {
-  ArrowLeft,
-  ArrowRight,
-  BarChart2,
-  Bookmark,
-  CheckCircle2,
-  Clock,
-  ExternalLink,
-  Sparkles,
-} from 'lucide-react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-
+import { ArrowRight, ArrowLeft, Clock, BarChart2, Bookmark } from 'lucide-react';
+import { TypeBadge } from '../components/common/Badge';
+import { Button } from '../components/common/Button';
+import { LoadingState } from '../components/common/States';
 import { resourceService } from '../services/resourceService';
-import './CourseDetail.css';
 
 export default function CourseDetail() {
   const { resourceId } = useParams();
   const navigate = useNavigate();
-
   const [resource, setResource] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    let mounted = true;
-
-    async function loadResource() {
-      try {
-        setLoading(true);
-        setError('');
-
-        const data =
-          await resourceService.getResourceById(
-            resourceId
-          );
-
-        if (!mounted) return;
-
-        setResource(data);
-      } catch (err) {
-        if (!mounted) return;
-
-        console.error(
-          'Failed to load resource:',
-          err
-        );
-
-        setError(
-          err?.response?.data?.detail ||
-            err?.message ||
-            'Unable to load this resource.'
-        );
-      } finally {
-        if (mounted) {
-          setLoading(false);
-        }
-      }
-    }
-
-    loadResource();
-
-    return () => {
-      mounted = false;
-    };
+    (async () => {
+      const data = await resourceService.getResourceById(resourceId);
+      setResource(data);
+      setLoading(false);
+    })();
   }, [resourceId]);
 
-  function handleSave() {
-    setSaved((current) => !current);
-  }
+  const handleSave = async () => {
+    await resourceService.saveResource(resourceId);
+    setSaved(true);
+  };
 
-  function handleStartLearning() {
-    if (!resource?.url) return;
-
-    window.open(
-      resource.url,
-      '_blank',
-      'noopener,noreferrer'
-    );
-  }
-
-  function getScore() {
-    return (
-      resource?.relevance ??
-      resource?.score ??
-      resource?.match_score ??
-      resource?.route_relevance ??
-      null
-    );
-  }
-
-  function getSkills() {
-    if (Array.isArray(resource?.skills)) {
-      return resource.skills;
-    }
-
-    if (Array.isArray(resource?.skill_names)) {
-      return resource.skill_names;
-    }
-
-    return [];
-  }
-
-  if (loading) {
-    return (
-      <div className="course-detail-state">
-        <div className="course-detail-spinner" />
-        <p>Loading resource...</p>
-      </div>
-    );
-  }
-
-  if (error || !resource) {
-    return (
-      <div className="course-detail-state">
-        <h2>Resource unavailable</h2>
-
-        <p>
-          {error || 'Resource not found.'}
-        </p>
-
-        <button
-          type="button"
-          onClick={() => navigate('/resources')}
-        >
-          <ArrowLeft size={15} />
-          Back to Resources
-        </button>
-      </div>
-    );
-  }
-
-  const score = getScore();
-  const skills = getSkills();
+  if (loading) return <LoadingState message="Loading resource..." />;
 
   return (
-    <div className="course-detail-page">
+    <div className="max-w-3xl mx-auto px-6 py-8">
+      <button
+        onClick={() => navigate('/resources')}
+        className="flex items-center gap-2 text-sm text-[#77766F] hover:text-[#F3F0E8] mb-8 cursor-pointer transition-colors"
+      >
+        <ArrowLeft size={14} /> Back to Resources
+      </button>
 
-      <main className="course-detail-container">
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+        <div className="flex items-start gap-3 mb-4 flex-wrap">
+          <TypeBadge type={resource?.type} />
+          <span className="flex items-center gap-1 text-xs text-[#77766F]"><Clock size={11} />{resource?.duration}</span>
+          <span className="flex items-center gap-1 text-xs text-[#77766F]"><BarChart2 size={11} />{resource?.level}</span>
+        </div>
 
-        {/* ================================= */}
-        {/* BACK */}
-        {/* ================================= */}
+        <h1 className="font-serif text-3xl text-[#F3F0E8] mb-2">{resource?.title}</h1>
+        {resource?.subtitle && <p className="text-base text-[#AAA89F] mb-6">{resource.subtitle}</p>}
 
-        <button
-          type="button"
-          className="course-back"
-          onClick={() => navigate('/resources')}
-        >
-          <ArrowLeft size={16} />
-          Back to Resources
-        </button>
+        {resource?.description && (
+          <p className="text-sm text-[#AAA89F] leading-relaxed mb-6 border-l-2 border-[#C89B5B]/40 pl-4">
+            {resource.description}
+          </p>
+        )}
 
-        {/* ================================= */}
-        {/* HERO */}
-        {/* ================================= */}
+        <div className="flex flex-wrap gap-2 mb-8">
+          {resource?.skills?.map((s) => <span key={s} className="tag">{s}</span>)}
+        </div>
 
-        <motion.section
-          className="course-hero"
-          initial={{
-            opacity: 0,
-            y: 15,
-          }}
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
-          transition={{
-            duration: 0.35,
-          }}
-        >
-
-          <div className="course-main">
-
-            {/* Meta */}
-
-            <div className="course-meta">
-
-              <span className="course-type">
-                {resource.type || 'COURSE'}
-              </span>
-
-              <span>
-                <Clock size={14} />
-                {resource.duration ||
-                  'Self-paced'}
-              </span>
-
-              <span>
-                <BarChart2 size={14} />
-                {resource.level ||
-                  'All levels'}
-              </span>
-
+        {resource?.relevance && (
+          <div className="border border-[#C89B5B]/20 rounded-xl p-4 mb-8 flex items-center justify-between">
+            <div>
+              <div className="label text-[#C89B5B] mb-1">Route Relevance</div>
+              <div className="text-sm text-[#AAA89F]">Directly addresses your current skill gap</div>
             </div>
-
-            {/* Title */}
-
-            <h1>
-              {resource.title}
-            </h1>
-
-            {/* Provider */}
-
-            {resource.subtitle && (
-              <div className="course-provider">
-                {resource.subtitle}
-              </div>
-            )}
-
-            {/* Description */}
-
-            <section className="course-about">
-
-              <div className="course-section-label">
-                ABOUT THIS RESOURCE
-              </div>
-
-              <p>
-                {resource.description ||
-                  'This resource is designed to strengthen the skills required for your learning route.'}
-              </p>
-
-            </section>
-
-            {/* Skills */}
-
-            {skills.length > 0 && (
-              <section className="course-skills">
-
-                <div className="course-section-label">
-                  SKILLS COVERED
-                </div>
-
-                <div className="course-skill-list">
-
-                  {skills.map((skill) => (
-                    <span key={skill}>
-                      {skill}
-                    </span>
-                  ))}
-
-                </div>
-
-              </section>
-            )}
-
+            <div className="text-2xl font-semibold text-[#C89B5B]">{resource.relevance}%</div>
           </div>
+        )}
 
-          {/* ================================= */}
-          {/* SIDE PANEL */}
-          {/* ================================= */}
-
-          <aside className="course-sidebar">
-
-            {score !== null && (
-              <div className="relevance-card">
-
-                <div className="course-section-label">
-                  ROUTE RELEVANCE
-                </div>
-
-                <div className="relevance-score">
-                  {Math.round(score)}%
-                </div>
-
-                <p>
-                  This resource was matched to
-                  your current learning route.
-                </p>
-
-                <div className="relevance-bar">
-                  <span
-                    style={{
-                      width: `${Math.min(
-                        100,
-                        Math.max(0, score)
-                      )}%`,
-                    }}
-                  />
-                </div>
-
-              </div>
-            )}
-
-            <div className="course-actions">
-
-              <button
-                type="button"
-                className="course-primary-button"
-                onClick={handleStartLearning}
-                disabled={!resource.url}
-              >
-                <ArrowRight size={17} />
-                Start Learning
-                <ExternalLink size={14} />
-              </button>
-
-              <button
-                type="button"
-                className={
-                  saved
-                    ? 'course-save-button saved'
-                    : 'course-save-button'
-                }
-                onClick={handleSave}
-              >
-                {saved ? (
-                  <CheckCircle2 size={17} />
-                ) : (
-                  <Bookmark size={17} />
-                )}
-
-                {saved
-                  ? 'Saved'
-                  : 'Save Resource'}
-              </button>
-
-            </div>
-
-            {/* Why this resource */}
-
-            <div className="why-card">
-
-              <div className="why-icon">
-                <Sparkles size={17} />
-              </div>
-
-              <div>
-
-                <strong>
-                  Why this resource?
-                </strong>
-
-                <p>
-                  It is selected using your
-                  current skills, learning goals,
-                  preferred difficulty, and route
-                  requirements.
-                </p>
-
-              </div>
-
-            </div>
-
-          </aside>
-
-        </motion.section>
-
-      </main>
+        <div className="flex gap-3">
+          <Button icon={<ArrowRight size={14} />} onClick={() => window.open(resource?.url, '_blank')}>
+            Start Learning
+          </Button>
+          <Button
+            variant="secondary"
+            icon={<Bookmark size={14} />}
+            onClick={handleSave}
+          >
+            {saved ? 'Saved' : 'Save'}
+          </Button>
+          <Button variant="ghost" onClick={() => navigate(-1)}>Back</Button>
+        </div>
+      </motion.div>
     </div>
   );
 }

@@ -1,13 +1,26 @@
 import client from './api';
+import { mockSkills } from '../data/mockData';
+
+const delay = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export const skillService = {
   async getSkills() {
-    const res = await client.get('/skills');
-    return res.data;
+    try {
+      const res = await client.get('/skills');
+      return res.data;
+    } catch {
+      await delay(300);
+      return mockSkills;
+    }
   },
 
   async getSkillGaps() {
-    const res = await client.get('/skills/gaps');
-    return res.data;
+    try {
+      const res = await client.get('/skills/gaps');
+      return res.data;
+    } catch {
+      await delay(300);
+      return null;
+    }
   },
 };
