@@ -11,16 +11,21 @@ class RegisterRequest(BaseModel):
     @field_validator("name")
     @classmethod
     def name_not_empty(cls, v: str) -> str:
-        if not v.strip():
+        v = v.strip()
+
+        if not v:
             raise ValueError("Name cannot be empty")
-        return v.strip()
+
+        return v
 
     @field_validator("email")
     @classmethod
     def email_valid(cls, v: str) -> str:
         v = v.strip().lower()
+
         if "@" not in v or "." not in v.split("@")[-1]:
             raise ValueError("Please enter a valid email address")
+
         return v
 
     @field_validator("password")
@@ -28,13 +33,24 @@ class RegisterRequest(BaseModel):
     def password_length(cls, v: str) -> str:
         if len(v) < 8:
             raise ValueError("Password must be at least 8 characters")
+
+        # bcrypt has a maximum input size of 72 bytes
+        if len(v.encode("utf-8")) > 72:
+            raise ValueError("Password must be 72 bytes or fewer")
+
         return v
 
     @field_validator("confirm_password")
     @classmethod
     def passwords_match(cls, v: str, info) -> str:
-        if "password" in info.data and v != info.data["password"]:
-            raise ValueError("Passwords do not match")
+        if "password" in info.data:
+            if v != info.data["password"]:
+                raise ValueError("Passwords do not match")
+
+        # bcrypt has a maximum input size of 72 bytes
+        if len(v.encode("utf-8")) > 72:
+            raise ValueError("Password must be 72 bytes or fewer")
+
         return v
 
 

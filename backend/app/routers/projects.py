@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from ..dependencies import get_current_user
+from app.services.ai_service import AIServiceError, ai_service
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 
@@ -13,17 +14,26 @@ PROJECTS = [
 
 @router.get("")
 async def get_projects(current_user: dict = Depends(get_current_user)):
-    return PROJECTS
+    try:
+        return ai_service.projects(current_user)
+    except AIServiceError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
 
 
 @router.get("/recommended")
 async def get_recommended(current_user: dict = Depends(get_current_user)):
-    return [p for p in PROJECTS if p["status"] == "recommended"]
+    try:
+        return ai_service.projects(current_user)
+    except AIServiceError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
 
 
 @router.get("/{project_id}")
 async def get_project(project_id: str, current_user: dict = Depends(get_current_user)):
-    project = next((p for p in PROJECTS if p["id"] == project_id), None)
+    try:
+        project = next((p for p in ai_service.projects(current_user) if p["id"] == project_id), None)
+    except AIServiceError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
     if not project:
         from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="Project not found")

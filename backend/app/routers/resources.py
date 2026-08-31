@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from ..dependencies import get_current_user
+from app.services.ai_service import AIServiceError, ai_service
 
 router = APIRouter(prefix="/resources", tags=["resources"])
 
@@ -18,17 +19,26 @@ RESOURCES = [
 
 @router.get("")
 async def get_resources(current_user: dict = Depends(get_current_user)):
-    return RESOURCES
+    try:
+        return ai_service.resources(current_user)
+    except AIServiceError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
 
 
 @router.get("/recommended")
 async def get_recommended(current_user: dict = Depends(get_current_user)):
-    return sorted(RESOURCES, key=lambda r: r["relevance"], reverse=True)[:5]
+    try:
+        return ai_service.resources(current_user)[:5]
+    except AIServiceError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
 
 
 @router.get("/{resource_id}")
 async def get_resource(resource_id: str, current_user: dict = Depends(get_current_user)):
-    resource = next((r for r in RESOURCES if r["id"] == resource_id), None)
+    try:
+        resource = next((r for r in ai_service.resources(current_user) if r["id"] == resource_id), None)
+    except AIServiceError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
     if not resource:
         from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="Resource not found")

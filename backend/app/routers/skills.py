@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
+from app.services.ai_service import AIServiceError, ai_service
 from ..dependencies import get_current_user
 
 router = APIRouter(prefix="/skills", tags=["skills"])
@@ -51,10 +52,10 @@ async def get_skills(current_user: dict = Depends(get_current_user)):
 
 @router.get("/gaps")
 async def get_skill_gaps(current_user: dict = Depends(get_current_user)):
-    target = current_user.get("target_career", "AI / ML Engineer")
-    user_skills = current_user.get("skills", [])
-    from ..services.route_service import compute_skill_gaps
-    return compute_skill_gaps(user_skills, target)
+    try:
+        return ai_service.skill_gaps(current_user)
+    except AIServiceError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
 
 
 @router.get("/target-profile")
