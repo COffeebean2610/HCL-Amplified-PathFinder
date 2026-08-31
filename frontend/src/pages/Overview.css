@@ -1,0 +1,886 @@
+/* =========================================================
+   OVERVIEW RIGHT COLUMN
+========================================================= */
+
+.overview-right-grid {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+
+/* =========================================================
+   TOP ROW
+   CURRENT STAGE + DAILY FOCUS
+========================================================= */
+
+.overview-top-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+
+/* =========================================================
+   MIDDLE ROW
+   ROUTE + SKILLS
+========================================================= */
+
+.overview-middle-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: 20px;
+}
+
+
+/* =========================================================
+   ALL DASHBOARD CARDS
+========================================================= */
+
+.dashboard-card {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(24, 23, 20, 0.96),
+      rgba(13, 13, 12, 0.98)
+    );
+
+  border: 1px solid rgba(200, 155, 91, 0.18);
+
+  border-radius: 16px;
+
+  padding: 24px;
+
+  box-sizing: border-box;
+
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+
+.dashboard-card:hover {
+  border-color: rgba(200, 155, 91, 0.34);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(27, 26, 22, 0.98),
+      rgba(14, 14, 13, 1)
+    );
+}
+
+
+/* =========================================================
+   CARD LABEL
+========================================================= */
+
+.card-label {
+  color: #c89b5b;
+
+  font-size: 10px;
+  font-weight: 600;
+
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+
+  margin-bottom: 7px;
+}
+
+
+/* =========================================================
+   CARD HEADER
+========================================================= */
+
+.card-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin-bottom: 22px;
+}
+
+.card-title {
+  margin: 0;
+
+  color: #f3f0e8;
+
+  font-family: Georgia, 'Times New Roman', serif;
+
+  font-size: 22px;
+  line-height: 1.2;
+
+  font-weight: 500;
+}
+
+.card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  flex-shrink: 0;
+
+  border: 0;
+  background: transparent;
+
+  color: #aaa89f;
+
+  font-size: 12px;
+
+  cursor: pointer;
+
+  padding: 3px 0;
+
+  transition:
+    color 0.2s ease,
+    gap 0.2s ease;
+}
+
+.card-link:hover {
+  color: #c89b5b;
+  gap: 9px;
+}
+
+
+/* =========================================================
+   CURRENT STAGE
+========================================================= */
+
+.current-stage-card,
+.daily-focus-card {
+  min-height: 205px;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.stage-main,
+.daily-main {
+  display: flex;
+  align-items: center;
+
+  gap: 16px;
+
+  flex: 1;
+}
+
+.stage-icon,
+.daily-icon {
+  width: 52px;
+  height: 52px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 13px;
+
+  color: #c89b5b;
+
+  background: rgba(200, 155, 91, 0.08);
+
+  border: 1px solid rgba(200, 155, 91, 0.22);
+}
+
+.stage-information,
+.daily-information {
+  min-width: 0;
+}
+
+.stage-title,
+.daily-title {
+  color: #f3f0e8;
+
+  font-family: Georgia, 'Times New Roman', serif;
+
+  font-size: 20px;
+  line-height: 1.25;
+
+  margin-bottom: 6px;
+}
+
+.stage-subtitle,
+.daily-time {
+  color: #77766f;
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   ROUTE OVERVIEW
+========================================================= */
+
+.route-card {
+  min-height: 470px;
+}
+
+.timeline {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 0;
+}
+
+.timeline-item {
+  position: relative;
+
+  display: flex;
+
+  gap: 16px;
+
+  min-height: 78px;
+}
+
+.timeline-item:not(:last-child)::before {
+  content: '';
+
+  position: absolute;
+
+  left: 9px;
+  top: 21px;
+  bottom: -2px;
+
+  width: 1px;
+
+  background: rgba(255, 255, 255, 0.10);
+}
+
+.timeline-dot {
+  position: relative;
+  z-index: 2;
+
+  width: 20px;
+  height: 20px;
+
+  flex-shrink: 0;
+
+  margin-top: 1px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #11110f;
+
+  border: 1px solid rgba(255, 255, 255, 0.16);
+
+  color: #0b0b0a;
+}
+
+.timeline-dot.completed {
+  background: #c89b5b;
+  border-color: #c89b5b;
+}
+
+.timeline-dot.current-dot {
+  border-color: #c89b5b;
+
+  box-shadow:
+    0 0 0 4px rgba(200, 155, 91, 0.08);
+}
+
+.timeline-dot.current-dot span {
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: #c89b5b;
+}
+
+.timeline-content {
+  min-width: 0;
+  padding-bottom: 20px;
+}
+
+.timeline-title {
+  display: flex;
+  align-items: baseline;
+
+  gap: 10px;
+
+  color: #e8e4da;
+
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.stage-number {
+  color: #65645e;
+
+  font-size: 10px;
+
+  font-variant-numeric: tabular-nums;
+}
+
+.timeline-status {
+  margin-top: 5px;
+
+  color: #77766f;
+
+  font-size: 11px;
+}
+
+.timeline-item.current .timeline-title {
+  color: #f3f0e8;
+}
+
+.timeline-item.current .timeline-status {
+  color: #c89b5b;
+}
+
+
+/* =========================================================
+   SKILLS
+========================================================= */
+
+.skills-card {
+  min-height: 470px;
+}
+
+.skills-summary {
+  display: flex;
+  align-items: center;
+
+  gap: 28px;
+
+  margin-bottom: 22px;
+}
+
+.skills-donut {
+  position: relative;
+
+  width: 116px;
+  height: 116px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background:
+    conic-gradient(
+      #c89b5b 0deg,
+      #c89b5b 180deg,
+      #59564e 180deg,
+      #59564e 270deg,
+      #282722 270deg,
+      #282722 360deg
+    );
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.skills-donut::before {
+  content: '';
+
+  position: absolute;
+
+  inset: 8px;
+
+  border-radius: 50%;
+
+  background: #11110f;
+}
+
+.donut-inner {
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+}
+
+.donut-inner strong {
+  color: #f3f0e8;
+
+  font-family: Georgia, 'Times New Roman', serif;
+
+  font-size: 28px;
+  line-height: 1;
+}
+
+.donut-inner span {
+  margin-top: 5px;
+
+  color: #77766f;
+
+  font-size: 9px;
+
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.skills-legend {
+  display: flex;
+  flex-direction: column;
+
+  gap: 12px;
+
+  flex: 1;
+}
+
+.legend-row {
+  display: grid;
+
+  grid-template-columns: 8px 1fr auto;
+
+  align-items: center;
+
+  gap: 9px;
+
+  color: #96948d;
+
+  font-size: 12px;
+}
+
+.legend-row strong {
+  color: #e8e4da;
+
+  font-size: 12px;
+}
+
+.legend-dot {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+}
+
+.legend-dot.strong {
+  background: #c89b5b;
+}
+
+.legend-dot.developing {
+  background: #77766f;
+}
+
+.legend-dot.attention {
+  background: #44423d;
+}
+
+
+/* =========================================================
+   DIVIDER
+========================================================= */
+
+.card-divider {
+  width: 100%;
+  height: 1px;
+
+  margin: 4px 0 18px;
+
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.subsection-title {
+  margin-bottom: 14px;
+
+  color: #aaa89f;
+
+  font-size: 11px;
+
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+
+/* =========================================================
+   SKILL PROGRESS
+========================================================= */
+
+.skill-progress-list {
+  display: flex;
+  flex-direction: column;
+
+  gap: 15px;
+
+  margin-bottom: 20px;
+}
+
+.skill-progress-row {
+  width: 100%;
+}
+
+.skill-progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin-bottom: 7px;
+}
+
+.skill-name {
+  color: #aaa89f;
+
+  font-size: 12px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.skill-percent {
+  flex-shrink: 0;
+
+  color: #c89b5b;
+
+  font-size: 11px;
+}
+
+.mini-progress {
+  width: 100%;
+  height: 5px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background: #272620;
+}
+
+.mini-progress > div {
+  height: 100%;
+
+  border-radius: inherit;
+
+  background: #c89b5b;
+
+  transition: width 0.5s ease;
+}
+
+
+/* =========================================================
+   PROJECTS
+========================================================= */
+
+.projects-card {
+  min-height: 300px;
+}
+
+.projects-list {
+  display: flex;
+  flex-direction: column;
+
+  margin-bottom: 20px;
+}
+
+.project-row {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns: 44px minmax(0, 1fr) auto 18px;
+
+  align-items: center;
+
+  gap: 14px;
+
+  padding: 14px 4px;
+
+  border: 0;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+
+  background: transparent;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  color: inherit;
+
+  transition:
+    background 0.2s ease,
+    padding 0.2s ease;
+}
+
+.project-row:first-child {
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.project-row:hover {
+  padding-left: 10px;
+  padding-right: 10px;
+
+  background: rgba(200, 155, 91, 0.04);
+}
+
+.project-icon {
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 11px;
+}
+
+.project-icon.completed {
+  color: #c89b5b;
+
+  background: rgba(200, 155, 91, 0.08);
+
+  border: 1px solid rgba(200, 155, 91, 0.18);
+}
+
+.project-icon.progress {
+  color: #aaa89f;
+
+  background: rgba(255, 255, 255, 0.05);
+
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.project-icon.upcoming {
+  color: #5f5d57;
+
+  background: rgba(255, 255, 255, 0.025);
+
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.project-information {
+  min-width: 0;
+}
+
+.project-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  color: #e8e4da;
+
+  font-size: 13px;
+}
+
+.project-status {
+  margin-top: 4px;
+
+  color: #77766f;
+
+  font-size: 11px;
+}
+
+.project-percentage {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.project-percentage.completed {
+  color: #c89b5b;
+}
+
+.project-percentage.progress {
+  color: #aaa89f;
+}
+
+.project-arrow {
+  color: #5f5d57;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.project-row:hover .project-arrow {
+  color: #c89b5b;
+
+  transform: translateX(3px);
+}
+
+
+/* =========================================================
+   BUTTON
+========================================================= */
+
+.wide-outline-button {
+  width: 100%;
+
+  min-height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  border: 1px solid rgba(200, 155, 91, 0.22);
+
+  border-radius: 9px;
+
+  background: transparent;
+
+  color: #aaa89f;
+
+  font-size: 12px;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.wide-outline-button:hover {
+  background: rgba(200, 155, 91, 0.07);
+
+  border-color: rgba(200, 155, 91, 0.42);
+
+  color: #c89b5b;
+}
+
+
+/* =========================================================
+   EMPTY STATES
+========================================================= */
+
+.empty-card-state,
+.projects-empty,
+.skills-empty {
+  color: #77766f;
+
+  font-size: 12px;
+
+  line-height: 1.6;
+}
+
+.empty-card-state {
+  padding: 30px 0;
+}
+
+.projects-empty {
+  padding: 20px 0;
+}
+
+.empty-card-state p,
+.projects-empty p {
+  margin: 0 0 10px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1100px) {
+
+  .overview-top-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .overview-middle-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+
+@media (max-width: 700px) {
+
+  .dashboard-card {
+    padding: 18px;
+
+    border-radius: 13px;
+  }
+
+  .card-header-row {
+    margin-bottom: 18px;
+  }
+
+  .card-title {
+    font-size: 19px;
+  }
+
+  .skills-summary {
+    gap: 20px;
+  }
+
+  .skills-donut {
+    width: 95px;
+    height: 95px;
+  }
+
+  .donut-inner strong {
+    font-size: 24px;
+  }
+
+  .project-row {
+    grid-template-columns: 40px minmax(0, 1fr) auto 16px;
+
+    gap: 10px;
+  }
+
+  .project-icon {
+    width: 38px;
+    height: 38px;
+  }
+
+}
+
+
+@media (max-width: 480px) {
+
+  .stage-main,
+  .daily-main {
+    align-items: flex-start;
+  }
+
+  .stage-icon,
+  .daily-icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .stage-title,
+  .daily-title {
+    font-size: 17px;
+  }
+
+  .skills-summary {
+    align-items: flex-start;
+  }
+
+  .skills-donut {
+    width: 85px;
+    height: 85px;
+  }
+
+  .skills-legend {
+    gap: 9px;
+  }
+
+  .project-percentage {
+    display: none;
+  }
+
+  .project-row {
+    grid-template-columns: 40px minmax(0, 1fr) 16px;
+  }
+
+}

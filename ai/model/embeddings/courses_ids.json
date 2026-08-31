@@ -1,3 +1,4 @@
+git check-ignore -v backend/.env
 {
   "CRS_0001": 0,
   "CRS_0002": 1,

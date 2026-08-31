@@ -12,7 +12,11 @@ export const profileService = {
   },
 
   async getCareerRecommendation(profileData) {
-    const res = await client.post('/recommendations/career', profileData);
+    const res = await client.post(
+      '/recommendations/career',
+      profileData
+    );
+
     return res.data;
   },
 
@@ -22,7 +26,11 @@ export const profileService = {
   },
 
   async updatePreferences(data) {
-    const res = await client.put('/users/me/preferences', data);
+    const res = await client.put(
+      '/users/me/preferences',
+      data
+    );
+
     return res.data;
   },
 };

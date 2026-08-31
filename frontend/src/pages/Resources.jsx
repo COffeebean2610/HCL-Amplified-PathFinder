@@ -1,587 +1,917 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
   Search,
-  ArrowUpRight,
-  ArrowRight,
-  BookOpen,
-  Play,
-  FileText,
-  Code2,
-  BookMarked,
-  FolderKanban,
-  Clock3,
+  SlidersHorizontal,
   Sparkles,
-  Target,
+  ArrowRight,
+  Play,
+  Bookmark,
+  Clock,
+  BarChart3,
+  BookOpen,
+  Video,
+  FileText,
+  BookMarked,
+  Dumbbell,
   ExternalLink,
-  ChevronRight,
-} from "lucide-react";
+} from 'lucide-react';
 
-import "./Resources.css";
-import { resourceService } from "../services/resourceService";
-import { ErrorState, LoadingState } from '../components/common/States';
+import { resourceService } from '../services/resourceService';
+import './Resources.css';
 
-
-// --------------------------------------------------
-// RESOURCE DATA
-// --------------------------------------------------
-
-const resources = [
-  {
-    id: 1,
-    title: "Cross Validation Explained",
-    type: "Article",
-    icon: FileText,
-    duration: "12 min",
-    difficulty: "Intermediate",
-    description:
-      "Understand cross-validation techniques and how they improve model evaluation.",
-    skills: ["Model Evaluation", "Machine Learning"],
-    relevance: 94,
-  },
-  {
-    id: 2,
-    title: "Classification Metrics Deep Dive",
-    type: "Video",
-    icon: Play,
-    duration: "28 min",
-    difficulty: "Intermediate",
-    description:
-      "Learn precision, recall, F1-score, ROC-AUC and when to use each metric.",
-    skills: ["Classification", "Model Evaluation"],
-    relevance: 91,
-  },
-  {
-    id: 3,
-    title: "Hands-on Model Evaluation",
-    type: "Practice",
-    icon: Code2,
-    duration: "40 min",
-    difficulty: "Intermediate",
-    description:
-      "Apply model evaluation techniques using real datasets and Python.",
-    skills: ["Python", "Model Evaluation"],
-    relevance: 89,
-  },
-  {
-    id: 4,
-    title: "Feature Engineering for ML",
-    type: "Course",
-    icon: BookOpen,
-    duration: "90 min",
-    difficulty: "Intermediate",
-    description:
-      "Build stronger machine learning models through effective feature engineering.",
-    skills: ["Feature Engineering", "Machine Learning"],
-    relevance: 86,
-  },
-  {
-    id: 5,
-    title: "Ensemble Methods Explained",
-    type: "Video",
-    icon: Play,
-    duration: "35 min",
-    difficulty: "Intermediate",
-    description:
-      "Explore bagging, boosting and ensemble learning with practical examples.",
-    skills: ["Machine Learning", "Ensemble Methods"],
-    relevance: 83,
-  },
-  {
-    id: 6,
-    title: "Introduction to Deep Learning",
-    type: "Course",
-    icon: BookOpen,
-    duration: "120 min",
-    difficulty: "Advanced",
-    description:
-      "A practical introduction to neural networks and modern deep learning.",
-    skills: ["Deep Learning", "Neural Networks"],
-    relevance: 79,
-  },
-  {
-    id: 7,
-    title: "Statistics for Machine Learning",
-    type: "Book",
-    icon: BookMarked,
-    duration: "3 hrs",
-    difficulty: "Intermediate",
-    description:
-      "Build the statistical foundation required for machine learning.",
-    skills: ["Statistics", "Machine Learning"],
-    relevance: 76,
-  },
-  {
-    id: 8,
-    title: "Docker for ML Engineers",
-    type: "Documentation",
-    icon: Code2,
-    duration: "60 min",
-    difficulty: "Advanced",
-    description:
-      "Learn how to containerize and deploy machine learning applications.",
-    skills: ["Docker", "MLOps"],
-    relevance: 68,
-  },
+const RESOURCE_TYPES = [
+  { label: 'All Types', value: 'all' },
+  { label: 'Course', value: 'course' },
+  { label: 'Video', value: 'video' },
+  { label: 'Article', value: 'article' },
+  { label: 'Documentation', value: 'documentation' },
+  { label: 'Book', value: 'book' },
+  { label: 'Practice', value: 'practice' },
 ];
 
+const TYPE_ICONS = {
+  course: BookOpen,
+  video: Video,
+  article: FileText,
+  documentation: BookMarked,
+  book: BookOpen,
+  practice: Dumbbell,
+};
 
-// --------------------------------------------------
-// RESOURCE TYPE DATA
-// --------------------------------------------------
+function normalizeType(type) {
+  if (!type) return 'course';
 
-const resourceTypes = [
-  {
-    title: "Courses",
-    subtitle: "Structured learning",
-    count: 12,
-    icon: BookOpen,
-    className: "course",
-  },
-  {
-    title: "Videos",
-    subtitle: "Visual explanations",
-    count: 18,
-    icon: Play,
-    className: "video",
-  },
-  {
-    title: "Articles",
-    subtitle: "Focused concepts",
-    count: 24,
-    icon: FileText,
-    className: "article",
-  },
-  {
-    title: "Documentation",
-    subtitle: "Deep references",
-    count: 9,
-    icon: Code2,
-    className: "documentation",
-  },
-  {
-    title: "Practice",
-    subtitle: "Hands-on learning",
-    count: 14,
-    icon: Target,
-    className: "practice",
-  },
-  {
-    title: "Projects",
-    subtitle: "Build real things",
-    count: 6,
-    icon: FolderKanban,
-    className: "projects",
-  },
-];
+  return String(type)
+    .toLowerCase()
+    .replace(/[\s_-]+/g, '');
+}
 
+function getTypeIcon(type) {
+  const normalized = normalizeType(type);
 
-// --------------------------------------------------
-// FILTERS
-// --------------------------------------------------
-
-const filters = [
-  "All Types",
-  "Course",
-  "Video",
-  "Article",
-  "Documentation",
-  "Book",
-  "Practice",
-];
-
-const resourceIcons = { course: BookOpen, video: Play, article: FileText, documentation: Code2, practice: Code2, book: BookMarked };
-const normalizeResource = (resource) => ({
-  ...resource,
-  type: `${resource.type || "Article"}`.replace(/^./, (letter) => letter.toUpperCase()),
-  difficulty: resource.difficulty || resource.level || "Intermediate",
-  skills: Array.isArray(resource.skills) ? resource.skills : [],
-  icon: resourceIcons[`${resource.type || "article"}`.toLowerCase()] || FileText,
-});
-
-
-// --------------------------------------------------
-// RESOURCE CARD
-// --------------------------------------------------
-
-function ResourceCard({ resource, onOpen }) {
-  const Icon = resource.icon;
+  if (normalized === 'documentation') return BookMarked;
+  if (normalized === 'practice') return Dumbbell;
 
   return (
-    <article className="resource-card">
-      <div className="resource-card-left">
-        <div className={`resource-icon ${resource.type.toLowerCase()}`}>
-          <Icon size={18} strokeWidth={1.8} />
-        </div>
-
-        <div className="resource-card-content">
-          <div className="resource-meta">
-            <span className={`resource-type ${resource.type.toLowerCase()}`}>
-              {resource.type}
-            </span>
-
-            <span className="resource-duration">
-              <Clock3 size={13} />
-              {resource.duration}
-            </span>
-
-            <span className="resource-dot">•</span>
-
-            <span className="resource-difficulty">
-              {resource.difficulty}
-            </span>
-          </div>
-
-          <h3>{resource.title}</h3>
-
-          <p>{resource.description}</p>
-
-          <div className="resource-tags">
-            {resource.skills.map((skill) => (
-              <span key={skill}>{skill}</span>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="resource-card-right">
-        <div className="relevance">
-          <strong>{resource.relevance}%</strong>
-          <span>Route relevance</span>
-        </div>
-
-        <button className="resource-action" type="button" onClick={() => onOpen(resource.id)}>
-          <ArrowUpRight size={17} />
-        </button>
-      </div>
-    </article>
+    TYPE_ICONS[normalized] ||
+    BookOpen
   );
 }
 
+function normalizeResources(data) {
+  if (Array.isArray(data)) return data;
 
-// --------------------------------------------------
-// MAIN PAGE
-// --------------------------------------------------
+  if (Array.isArray(data?.resources)) {
+    return data.resources;
+  }
+
+  if (Array.isArray(data?.items)) {
+    return data.items;
+  }
+
+  if (Array.isArray(data?.data)) {
+    return data.data;
+  }
+
+  return [];
+}
+
+function getResourceId(resource) {
+  return (
+    resource?.id ??
+    resource?.resource_id ??
+    resource?.resourceId ??
+    resource?.course_id
+  );
+}
+
+function getResourceSkills(resource) {
+  if (Array.isArray(resource?.skills)) {
+    return resource.skills;
+  }
+
+  if (Array.isArray(resource?.skill_names)) {
+    return resource.skill_names;
+  }
+
+  return [];
+}
+
+function getRelevance(resource) {
+  const value =
+    resource?.relevance ??
+    resource?.route_relevance ??
+    resource?.match ??
+    resource?.match_score ??
+    resource?.route_match;
+
+  if (value === null || value === undefined || value === '') {
+    return null;
+  }
+
+  const number = Number(value);
+
+  if (Number.isNaN(number)) {
+    return null;
+  }
+
+  // Handle APIs returning 0.38 instead of 38.
+  if (number > 0 && number <= 1) {
+    return Math.round(number * 100);
+  }
+
+  return Math.round(number);
+}
+
+function getAverageRelevance(resources) {
+  const values = resources
+    .map(getRelevance)
+    .filter(
+      (value) =>
+        value !== null &&
+        !Number.isNaN(value)
+    );
+
+  if (!values.length) return 0;
+
+  return Math.round(
+    values.reduce((sum, value) => sum + value, 0) /
+      values.length
+  );
+}
 
 export default function Resources() {
   const navigate = useNavigate();
-  const [activeFilter, setActiveFilter] = useState("All Types");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [resourceData, setResourceData] = useState([]);
+
+  const [resources, setResources] = useState([]);
+  const [recommended, setRecommended] = useState(null);
+
   const [loading, setLoading] = useState(true);
+  const [recommendedLoading, setRecommendedLoading] =
+    useState(true);
+
   const [error, setError] = useState('');
+  const [search, setSearch] = useState('');
+  const [activeType, setActiveType] = useState('all');
+  const [savedResources, setSavedResources] = useState(
+    []
+  );
 
   useEffect(() => {
-    (async () => {
+    const saved =
+      JSON.parse(
+        localStorage.getItem('routemaster_saved_resources') ||
+          '[]'
+      ) || [];
+
+    setSavedResources(saved);
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function loadResources() {
       try {
-        const data = await resourceService.getResources();
-        setResourceData((Array.isArray(data) ? data : []).map(normalizeResource));
+        setLoading(true);
         setError('');
+
+        const [resourceResponse, recommendedResponse] =
+          await Promise.all([
+            resourceService.getResources(),
+            resourceService.getRecommended(),
+          ]);
+
+        if (!mounted) return;
+
+        const resourceList =
+          normalizeResources(resourceResponse);
+
+        const recommendedList =
+          normalizeResources(recommendedResponse);
+
+        setResources(resourceList);
+
+        /*
+         * The recommendation endpoint should normally return
+         * the personalized resource(s) for the current user.
+         *
+         * We use the first recommendation as the featured
+         * resource instead of hardcoding a specific course.
+         */
+        setRecommended(
+          recommendedList.length
+            ? recommendedList[0]
+            : null
+        );
       } catch (err) {
-        setError(err.message || 'Unable to load resources.');
+        if (!mounted) return;
+
+        setError(
+          err?.response?.data?.detail ||
+            err?.message ||
+            'Unable to load learning resources.'
+        );
       } finally {
-        setLoading(false);
+        if (mounted) {
+          setLoading(false);
+          setRecommendedLoading(false);
+        }
       }
-    })();
+    }
+
+    loadResources();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const filteredResources = useMemo(() => {
-    return resourceData.filter((resource) => {
-      const matchesFilter =
-        activeFilter === "All Types" ||
-        resource.type === activeFilter;
+    const query = search.trim().toLowerCase();
 
-      const query = searchQuery.toLowerCase().trim();
+    return resources.filter((resource) => {
+      const type = normalizeType(resource?.type);
 
-      const matchesSearch =
-        !query ||
-        resource.title.toLowerCase().includes(query) ||
-        resource.description.toLowerCase().includes(query) ||
-        resource.skills.some((skill) =>
-          skill.toLowerCase().includes(query)
-        );
+      const matchesType =
+        activeType === 'all' ||
+        type === normalizeType(activeType);
 
-      return matchesFilter && matchesSearch;
+      if (!matchesType) return false;
+
+      if (!query) return true;
+
+      const searchableText = [
+        resource?.title,
+        resource?.subtitle,
+        resource?.description,
+        resource?.provider,
+        ...(getResourceSkills(resource) || []),
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+
+      return searchableText.includes(query);
     });
-  }, [activeFilter, resourceData, searchQuery]);
-  const recommendedResource = resourceData.find((resource) => resource.is_current) || resourceData[0] || null;
+  }, [resources, search, activeType]);
 
-  if (loading) return <LoadingState message="Loading resources..." />;
-  if (error) return <ErrorState message={error} onRetry={() => window.location.reload()} />;
+  const averageRelevance = useMemo(
+    () => getAverageRelevance(resources),
+    [resources]
+  );
 
+  const recommendedRelevance = recommended
+    ? getRelevance(recommended)
+    : null;
+
+  const toggleSave = (resource) => {
+    const id = getResourceId(resource);
+
+    if (!id) return;
+
+    setSavedResources((current) => {
+      const exists = current.includes(id);
+
+      const next = exists
+        ? current.filter((item) => item !== id)
+        : [...current, id];
+
+      localStorage.setItem(
+        'routemaster_saved_resources',
+        JSON.stringify(next)
+      );
+
+      return next;
+    });
+  };
+
+  const isSaved = (resource) => {
+    const id = getResourceId(resource);
+
+    return id
+      ? savedResources.includes(id)
+      : false;
+  };
+
+  const openResource = (resource) => {
+    const id = getResourceId(resource);
+
+    if (id) {
+      navigate(`/resources/${id}`);
+      return;
+    }
+
+    if (resource?.url) {
+      window.open(
+        resource.url,
+        '_blank',
+        'noopener,noreferrer'
+      );
+    }
+  };
+
+  const handleStartLearning = (event, resource) => {
+    event.stopPropagation();
+
+    if (resource?.url) {
+      window.open(
+        resource.url,
+        '_blank',
+        'noopener,noreferrer'
+      );
+      return;
+    }
+
+    openResource(resource);
+  };
+
+  if (loading) {
+    return (
+      <div className="resources-page">
+        <div className="resources-loading">
+          <div className="resources-loading-spinner" />
+
+          <p>Loading your learning resources...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="resources-page">
+      <div className="resources-container">
 
-        {/* -------------------------------- */}
-        {/* HEADER */}
-        {/* -------------------------------- */}
+        {/* =====================================================
+            PAGE HEADER
+        ====================================================== */}
 
         <header className="resources-header">
-          <div>
-            <span className="page-eyebrow">LEARNING RESOURCES</span>
+          <div className="resources-header-main">
+            <div className="resources-eyebrow">
+              LEARNING RESOURCES
+            </div>
 
             <h1>Resources</h1>
 
             <p>
-              Discover the right resources to strengthen your skills
-              and move forward on your learning route.
+              Discover the right resources to strengthen
+              your skills and move forward on your learning
+              route.
             </p>
           </div>
 
           <div className="resources-header-stat">
             <span>PERSONALIZED FOR YOU</span>
-            <strong>{recommendedResource?.relevance || 0}%</strong>
-            <small>average route relevance</small>
+
+            <strong>
+              {averageRelevance}%
+            </strong>
+
+            <small>
+              average route relevance
+            </small>
           </div>
         </header>
 
+        {/* =====================================================
+            SEARCH
+        ====================================================== */}
 
-        {/* -------------------------------- */}
-        {/* SEARCH + FILTERS */}
-        {/* -------------------------------- */}
-
-        <section className="resource-controls">
-
-          <div className="resource-search">
+        <section className="resources-controls">
+          <div className="resources-search">
             <Search size={19} />
 
             <input
               type="text"
+              value={search}
+              onChange={(event) =>
+                setSearch(event.target.value)
+              }
               placeholder="Search resources, skills or topics..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
             />
 
-            {searchQuery && (
+            {search && (
               <button
-                className="clear-search"
-                onClick={() => setSearchQuery("")}
                 type="button"
+                className="search-clear"
+                onClick={() => setSearch('')}
               >
-                ×
+                Clear
               </button>
             )}
           </div>
 
+          <div className="resources-filters">
+            <div className="filter-label">
+              <SlidersHorizontal size={15} />
+              <span>FILTER BY TYPE</span>
+            </div>
 
-          <div className="resource-filters">
-            {filters.map((filter) => (
-              <button
-                key={filter}
-                type="button"
-                className={
-                  activeFilter === filter
-                    ? "filter-btn active"
-                    : "filter-btn"
-                }
-                onClick={() => setActiveFilter(filter)}
-              >
-                {filter}
-              </button>
-            ))}
+            <div className="filter-buttons">
+              {RESOURCE_TYPES.map((type) => (
+                <button
+                  key={type.value}
+                  type="button"
+                  className={
+                    activeType === type.value
+                      ? 'filter-button active'
+                      : 'filter-button'
+                  }
+                  onClick={() =>
+                    setActiveType(type.value)
+                  }
+                >
+                  {type.label}
+                </button>
+              ))}
+            </div>
           </div>
-
         </section>
 
+        {/* =====================================================
+            ERROR
+        ====================================================== */}
 
-        {/* -------------------------------- */}
-        {/* PERSONALIZED RECOMMENDATION */}
-        {/* -------------------------------- */}
+        {error && (
+          <div className="resources-error">
+            <div>
+              <strong>
+                Unable to load some resources
+              </strong>
 
-        <section className="recommended-resource">
+              <p>{error}</p>
+            </div>
 
-          <div className="recommended-glow" />
-
-          <div className="recommended-icon">
-            <Sparkles size={21} />
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+            >
+              Retry
+            </button>
           </div>
+        )}
 
-          <div className="recommended-content">
+        {/* =====================================================
+            PERSONALIZED RECOMMENDATION
+        ====================================================== */}
 
-            <div className="recommended-label">
-              <span>PERSONALIZED FOR YOU</span>
-
-              <span className="recommended-score">
-                {recommendedResource?.relevance || 0}% ROUTE MATCH
+        <section className="recommended-section">
+          <div className="section-heading-row">
+            <div>
+              <span className="section-eyebrow">
+                YOUR NEXT STEP
               </span>
+
+              <h2>
+                Recommended for your route
+              </h2>
             </div>
 
-            <h2>{recommendedResource?.title || 'No recommended resource yet'}</h2>
+            {recommendedRelevance !== null && (
+              <div className="section-match">
+                <span>ROUTE MATCH</span>
 
-            <p>
-              {recommendedResource?.description || 'Resources tailored to your current route will appear here.'}
-            </p>
-
-            <div className="recommended-tags">
-              {(recommendedResource?.skills || []).slice(0, 2).map((skill) => <span key={skill}>{skill}</span>)}
-              <span>{recommendedResource?.duration || '—'}</span>
-              <span>{recommendedResource?.difficulty || '—'}</span>
-            </div>
-
-            <div className="recommended-actions">
-
-              <button className="primary-resource-btn" type="button" onClick={() => recommendedResource?.id && navigate(`/resources/${recommendedResource.id}`)}>
-                <Play size={16} />
-                Start Learning
-                <ArrowRight size={16} />
-              </button>
-
-              <button className="secondary-resource-btn" type="button" onClick={() => recommendedResource?.id && navigate(`/resources/${recommendedResource.id}`)}>
-                Why recommended?
-                <ChevronRight size={15} />
-              </button>
-
-            </div>
-
+                <strong>
+                  {recommendedRelevance}%
+                </strong>
+              </div>
+            )}
           </div>
 
-          <div className="recommended-progress">
-
-            <div className="progress-ring">
-              <svg viewBox="0 0 100 100">
-                <circle
-                  className="progress-ring-bg"
-                  cx="50"
-                  cy="50"
-                  r="42"
-                />
-
-                <circle
-                  className="progress-ring-value"
-                  cx="50"
-                  cy="50"
-                  r="42"
-                />
-              </svg>
+          {recommendedLoading ? (
+            <div className="recommendation-skeleton">
+              <div />
+              <div />
+              <div />
+            </div>
+          ) : recommended ? (
+            <RecommendedResource
+              resource={recommended}
+              saved={isSaved(recommended)}
+              onSave={() =>
+                toggleSave(recommended)
+              }
+              onOpen={() =>
+                openResource(recommended)
+              }
+              onStart={(event) =>
+                handleStartLearning(
+                  event,
+                  recommended
+                )
+              }
+            />
+          ) : (
+            <div className="empty-recommendation">
+              <Sparkles size={22} />
 
               <div>
-                <strong>48%</strong>
-                <span>Current</span>
+                <strong>
+                  No personalized recommendation yet
+                </strong>
+
+                <p>
+                  Complete your profile and skill
+                  preferences to receive a resource
+                  recommendation tailored to your route.
+                </p>
               </div>
             </div>
-
-            <div className="target-info">
-              <span>REQUIRED</span>
-              <strong>75%</strong>
-            </div>
-
-          </div>
-
+          )}
         </section>
 
-
-        {/* -------------------------------- */}
-        {/* ALL RESOURCES */}
-        {/* -------------------------------- */}
+        {/* =====================================================
+            ALL RESOURCES
+        ====================================================== */}
 
         <section className="all-resources-section">
-
-          <div className="section-heading">
+          <div className="section-heading-row">
             <div>
-              <span className="section-eyebrow">EXPLORE</span>
+              <span className="section-eyebrow">
+                EXPLORE
+              </span>
+
               <h2>All Resources</h2>
             </div>
 
             <span className="resource-count">
-              {filteredResources.length} resources
+              {filteredResources.length}{' '}
+              {filteredResources.length === 1
+                ? 'resource'
+                : 'resources'}
             </span>
           </div>
 
+          {filteredResources.length === 0 ? (
+            <div className="resources-empty">
+              <Search size={26} />
 
-          <div className="resources-grid">
-
-            {filteredResources.map((resource) => (
-              <ResourceCard
-                key={resource.id}
-                resource={resource}
-                onOpen={(resourceId) => navigate(`/resources/${resourceId}`)}
-              />
-            ))}
-
-          </div>
-
-
-          {filteredResources.length === 0 && (
-            <div className="empty-resources">
-              <Search size={30} />
               <h3>No resources found</h3>
+
               <p>
-                Try searching for another skill or resource type.
+                Try another search term or choose a
+                different resource type.
               </p>
 
               <button
                 type="button"
                 onClick={() => {
-                  setSearchQuery("");
-                  setActiveFilter("All Types");
+                  setSearch('');
+                  setActiveType('all');
                 }}
               >
                 Clear filters
               </button>
             </div>
+          ) : (
+            <div className="resources-grid">
+              {filteredResources.map(
+                (resource, index) => (
+                  <ResourceCard
+                    key={
+                      getResourceId(resource) ||
+                      `${resource?.title}-${index}`
+                    }
+                    resource={resource}
+                    saved={isSaved(resource)}
+                    onSave={() =>
+                      toggleSave(resource)
+                    }
+                    onOpen={() =>
+                      openResource(resource)
+                    }
+                  />
+                )
+              )}
+            </div>
+          )}
+        </section>
+
+      </div>
+    </div>
+  );
+}
+
+
+/* =============================================================
+   RECOMMENDED RESOURCE
+============================================================= */
+
+function RecommendedResource({
+  resource,
+  saved,
+  onSave,
+  onOpen,
+  onStart,
+}) {
+  const TypeIcon = getTypeIcon(resource?.type);
+
+  const skills = getResourceSkills(resource);
+
+  const relevance = getRelevance(resource);
+
+  return (
+    <motion.article
+      className="featured-resource"
+      initial={{
+        opacity: 0,
+        y: 16,
+      }}
+      animate={{
+        opacity: 1,
+        y: 0,
+      }}
+      transition={{
+        duration: 0.4,
+      }}
+      onClick={onOpen}
+    >
+      <div className="featured-glow" />
+
+      <div className="featured-icon">
+        <Sparkles size={23} />
+      </div>
+
+      <div className="featured-content">
+
+        <div className="featured-topline">
+          <span className="personalized-badge">
+            <Sparkles size={13} />
+            PERSONALIZED FOR YOU
+          </span>
+
+          {relevance !== null && (
+            <span className="match-badge">
+              {relevance}% ROUTE MATCH
+            </span>
+          )}
+        </div>
+
+        <h3>
+          {resource?.title ||
+            'Recommended learning resource'}
+        </h3>
+
+        {resource?.subtitle && (
+          <div className="featured-provider">
+            {resource.subtitle}
+          </div>
+        )}
+
+        {resource?.description && (
+          <p className="featured-description">
+            {resource.description}
+          </p>
+        )}
+
+        <div className="resource-meta">
+          {resource?.duration && (
+            <span>
+              <Clock size={14} />
+              {resource.duration}
+            </span>
           )}
 
-        </section>
+          {resource?.level && (
+            <span>
+              <BarChart3 size={14} />
+              {resource.level}
+            </span>
+          )}
 
+          <span>
+            <BookOpen size={14} />
+            {String(
+              resource?.type || 'Course'
+            ).toUpperCase()}
+          </span>
+        </div>
 
-        {/* -------------------------------- */}
-        {/* RESOURCE TYPES */}
-        {/* -------------------------------- */}
-
-        <section className="resource-types-section">
-
-          <div className="section-heading">
-            <div>
-              <span className="section-eyebrow">BROWSE BY TYPE</span>
-              <h2>Resource Library</h2>
-            </div>
+        {skills.length > 0 && (
+          <div className="resource-skills">
+            {skills.slice(0, 5).map(
+              (skill, index) => (
+                <span key={`${skill}-${index}`}>
+                  {skill}
+                </span>
+              )
+            )}
           </div>
+        )}
 
+        <div className="featured-actions">
+          <button
+            type="button"
+            className="primary-resource-button"
+            onClick={onStart}
+          >
+            <Play size={15} />
+            Start Learning
+            <ArrowRight size={16} />
+          </button>
 
-          <div className="resource-types-grid">
+          <button
+            type="button"
+            className={
+              saved
+                ? 'secondary-resource-button saved'
+                : 'secondary-resource-button'
+            }
+            onClick={(event) => {
+              event.stopPropagation();
+              onSave();
+            }}
+          >
+            <Bookmark
+              size={16}
+              fill={saved ? 'currentColor' : 'none'}
+            />
 
-            {resourceTypes.map((item) => {
-              const Icon = item.icon;
+            {saved ? 'Saved' : 'Save'}
+          </button>
 
-              return (
-                <button
-                  key={item.title}
-                  className={`resource-type-card ${item.className}`}
-                  type="button"
-                  onClick={() => {
-                    if (filters.includes(item.title.slice(0, -1))) {
-                      setActiveFilter(item.title.slice(0, -1));
-                    }
-                  }}
-                >
+          {resource?.url && (
+            <button
+              type="button"
+              className="external-resource-button"
+              onClick={onStart}
+            >
+              <ExternalLink size={15} />
+              Open resource
+            </button>
+          )}
+        </div>
+      </div>
 
-                  <div className="type-card-icon">
-                    <Icon size={20} />
-                  </div>
+      <div className="featured-score">
+        <div
+          className="score-ring"
+          style={{
+            '--score':
+              relevance !== null
+                ? `${relevance * 3.6}deg`
+                : '0deg',
+          }}
+        >
+          <div className="score-ring-inner">
+            <strong>
+              {relevance !== null
+                ? `${relevance}%`
+                : '—'}
+            </strong>
 
-                  <div className="type-card-content">
-                    <h3>{item.title}</h3>
-                    <p>{item.subtitle}</p>
-                  </div>
-
-                  <div className="type-card-count">
-                    {item.count}
-                  </div>
-
-                  <ArrowRight
-                    className="type-card-arrow"
-                    size={17}
-                  />
-
-                </button>
-              );
-            })}
-
+            <span>MATCH</span>
           </div>
+        </div>
+      </div>
+    </motion.article>
+  );
+}
 
-        </section>
 
-    </div>
+/* =============================================================
+   RESOURCE CARD
+============================================================= */
+
+function ResourceCard({
+  resource,
+  saved,
+  onSave,
+  onOpen,
+}) {
+  const TypeIcon = getTypeIcon(resource?.type);
+
+  const relevance = getRelevance(resource);
+
+  const skills = getResourceSkills(resource);
+
+  return (
+    <motion.article
+      className="resource-card"
+      initial={{
+        opacity: 0,
+        y: 12,
+      }}
+      animate={{
+        opacity: 1,
+        y: 0,
+      }}
+      transition={{
+        duration: 0.25,
+      }}
+      whileHover={{
+        y: -4,
+      }}
+      onClick={onOpen}
+    >
+      <div className="resource-card-top">
+        <div className="resource-type">
+          <TypeIcon size={15} />
+
+          <span>
+            {resource?.type || 'Course'}
+          </span>
+        </div>
+
+        <button
+          type="button"
+          className={
+            saved
+              ? 'card-bookmark active'
+              : 'card-bookmark'
+          }
+          onClick={(event) => {
+            event.stopPropagation();
+            onSave();
+          }}
+          aria-label={
+            saved
+              ? 'Remove bookmark'
+              : 'Save resource'
+          }
+        >
+          <Bookmark
+            size={16}
+            fill={saved ? 'currentColor' : 'none'}
+          />
+        </button>
+      </div>
+
+      <div className="resource-card-body">
+        <h3>
+          {resource?.title ||
+            'Learning resource'}
+        </h3>
+
+        {resource?.subtitle && (
+          <p className="resource-provider">
+            {resource.subtitle}
+          </p>
+        )}
+
+        {resource?.description && (
+          <p className="resource-card-description">
+            {resource.description}
+          </p>
+        )}
+
+        <div className="resource-card-meta">
+          {resource?.duration && (
+            <span>
+              <Clock size={13} />
+              {resource.duration}
+            </span>
+          )}
+
+          {resource?.level && (
+            <span>
+              <BarChart3 size={13} />
+              {resource.level}
+            </span>
+          )}
+        </div>
+
+        {skills.length > 0 && (
+          <div className="resource-card-skills">
+            {skills.slice(0, 3).map(
+              (skill, index) => (
+                <span key={`${skill}-${index}`}>
+                  {skill}
+                </span>
+              )
+            )}
+
+            {skills.length > 3 && (
+              <span>
+                +{skills.length - 3}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div className="resource-card-footer">
+        <button
+          type="button"
+          onClick={(event) => {
+            event.stopPropagation();
+            onOpen();
+          }}
+          className="view-resource-button"
+        >
+          View resource
+          <ArrowRight size={15} />
+        </button>
+
+        {relevance !== null && (
+          <div className="card-relevance">
+            <span>{relevance}%</span>
+            <small>match</small>
+          </div>
+        )}
+      </div>
+    </motion.article>
   );
 }

@@ -6,6 +6,7 @@ import { projectService } from '../services/projectService';
 import { routeService } from '../services/routeService';
 import { skillService } from '../services/skillService';
 import { ErrorState, LoadingState } from '../components/common/States';
+import './Overview.css';
 
 import {
   ChevronRight,
@@ -166,10 +167,55 @@ function ExamplePill({ children }) {
   );
 }
 
-
 /* =========================================================
    RIGHT COLUMN
 ========================================================= */
+
+function DashboardRightColumn({
+  route,
+  resource,
+  skills,
+  apiProjects,
+}) {
+  return (
+    <div className="overview-right-grid">
+
+      {/* =====================================================
+          TOP ROW
+      ===================================================== */}
+
+      <div className="overview-top-grid">
+
+        <CurrentStage route={route} />
+
+        <DailyFocus resource={resource} />
+
+      </div>
+
+
+      {/* =====================================================
+          MIDDLE ROW
+      ===================================================== */}
+
+      <div className="overview-middle-grid">
+
+        <RouteOverview route={route} />
+
+        <SkillsCard skills={skills} />
+
+      </div>
+
+
+      {/* =====================================================
+          BOTTOM ROW
+      ===================================================== */}
+
+      <ProjectsCard apiProjects={apiProjects} />
+
+    </div>
+  );
+}
+
 
 /* =========================================================
    CURRENT STAGE
@@ -178,39 +224,60 @@ function ExamplePill({ children }) {
 function CurrentStage({ route }) {
   const navigate = useNavigate();
 
+  const stages = route?.stages || [];
+
+  const currentIndex = stages.findIndex(
+    (stage) => stage.status === 'current'
+  );
+
+  const currentStageNumber =
+    currentIndex >= 0 ? currentIndex + 1 : 0;
+
   return (
     <section className="dashboard-card current-stage-card">
+
       <div className="card-label">
         YOUR CURRENT STAGE
       </div>
 
-      <div className="stage-row">
+      <div className="stage-main">
+
         <div className="stage-icon">
-          <BarChart3 size={27} strokeWidth={1.6} />
+          <BarChart3
+            size={25}
+            strokeWidth={1.6}
+          />
         </div>
 
         <div className="stage-information">
+
           <div className="stage-title">
             {route?.current_stage || 'No active route'}
           </div>
 
           <div className="stage-subtitle">
-            {route ? `Stage ${String((route.stages || []).findIndex((stage) => stage.status === 'current') + 1).padStart(2, '0')} of ${String((route.stages || []).length).padStart(2, '0')}` : 'Create a route to begin'}
+            {route
+              ? `Stage ${String(currentStageNumber).padStart(2, '0')} of ${String(stages.length).padStart(2, '0')}`
+              : 'Create a route to begin'}
           </div>
+
         </div>
 
-        <button
-          type="button"
-          className="outline-button"
-          onClick={() => navigate("/my-routes")}
-        >
-          View Stage
-          <ArrowRight size={17} />
-        </button>
       </div>
+
+      <button
+        type="button"
+        className="wide-outline-button"
+        onClick={() => navigate('/my-routes')}
+      >
+        View Stage
+        <ArrowRight size={16} />
+      </button>
+
     </section>
   );
 }
+
 
 /* =========================================================
    DAILY FOCUS
@@ -221,16 +288,22 @@ function DailyFocus({ resource }) {
 
   return (
     <section className="dashboard-card daily-focus-card">
+
       <div className="card-label">
         DAILY FOCUS
       </div>
 
-      <div className="daily-row">
+      <div className="daily-main">
+
         <div className="daily-icon">
-          <Sun size={25} strokeWidth={1.6} />
+          <Sun
+            size={24}
+            strokeWidth={1.6}
+          />
         </div>
 
         <div className="daily-information">
+
           <div className="daily-title">
             {resource?.title || 'No resource recommended yet'}
           </div>
@@ -238,19 +311,26 @@ function DailyFocus({ resource }) {
           <div className="daily-time">
             {resource?.duration || 'Choose a learning resource'}
           </div>
+
         </div>
 
-        <button
-          type="button"
-          className="outline-button continue-button"
-          onClick={async () => {
-            if (resource?.id) navigate(`/resources/${resource.id}`);
-          }}
-        >
-          Continue
-          <ArrowRight size={17} />
-        </button>
       </div>
+
+      <button
+        type="button"
+        className="wide-outline-button"
+        onClick={() => {
+          if (resource?.id) {
+            navigate(`/resources/${resource.id}`);
+          } else {
+            navigate('/resources');
+          }
+        }}
+      >
+        Continue Learning
+        <ArrowRight size={16} />
+      </button>
+
     </section>
   );
 }
@@ -266,7 +346,14 @@ function RouteOverview({ route }) {
   const stages = (route?.stages || []).map((stage) => ({
     number: stage.number,
     title: stage.title,
-    status: stage.status === 'completed' ? 'Completed' : stage.status === 'current' ? 'Current Stage' : 'Upcoming',
+
+    status:
+      stage.status === 'completed'
+        ? 'Completed'
+        : stage.status === 'current'
+        ? 'Current Stage'
+        : 'Upcoming',
+
     completed: stage.status === 'completed',
     current: stage.status === 'current',
   }));
@@ -274,75 +361,106 @@ function RouteOverview({ route }) {
   return (
     <section className="dashboard-card route-card">
 
-      <div className="card-label">
-        YOUR ROUTE OVERVIEW
-      </div>
+      <div className="card-header-row">
 
-      <div className="timeline">
-
-        {stages.map((stage) => (
-
-          <div
-            className={`timeline-item ${
-              stage.current ? "current" : ""
-            }`}
-            key={stage.number}
-          >
-
-            <div
-              className={`timeline-dot ${
-                stage.completed
-                  ? "completed"
-                  : stage.current
-                  ? "current-dot"
-                  : "upcoming"
-              }`}
-            >
-
-              {stage.completed && (
-                <Check size={14} strokeWidth={2.5} />
-              )}
-
-              {!stage.completed && stage.current && (
-                <span />
-              )}
-
-            </div>
-
-            <div className="timeline-content">
-
-              <div className="timeline-title">
-
-                <span className="stage-number">
-                  {stage.number}
-                </span>
-
-                <span>
-                  {stage.title}
-                </span>
-
-              </div>
-
-              <div className="timeline-status">
-                {stage.status}
-              </div>
-
-            </div>
-
+        <div>
+          <div className="card-label">
+            YOUR ROUTE OVERVIEW
           </div>
 
-        ))}
+          <h3 className="card-title">
+            Learning journey
+          </h3>
+        </div>
+
+        <button
+          type="button"
+          className="card-link"
+          onClick={() => navigate('/my-routes')}
+        >
+          View route
+          <ArrowRight size={15} />
+        </button>
 
       </div>
 
-      <button
-  type="button"
-  className="wide-outline-button"
-  onClick={() => navigate("/my-routes")}
->
-  View Full Route
-  <ArrowRight size={17} />
-</button>
+
+      {stages.length > 0 ? (
+        <div className="timeline">
+
+          {stages.map((stage) => (
+
+            <div
+              className={`timeline-item ${
+                stage.current ? 'current' : ''
+              }`}
+              key={stage.number}
+            >
+
+              <div
+                className={`timeline-dot ${
+                  stage.completed
+                    ? 'completed'
+                    : stage.current
+                    ? 'current-dot'
+                    : 'upcoming'
+                }`}
+              >
+
+                {stage.completed && (
+                  <Check
+                    size={13}
+                    strokeWidth={2.5}
+                  />
+                )}
+
+                {!stage.completed &&
+                  stage.current && (
+                    <span />
+                  )}
+
+              </div>
+
+
+              <div className="timeline-content">
+
+                <div className="timeline-title">
+
+                  <span className="stage-number">
+                    {String(stage.number).padStart(2, '0')}
+                  </span>
+
+                  <span>
+                    {stage.title}
+                  </span>
+
+                </div>
+
+                <div className="timeline-status">
+                  {stage.status}
+                </div>
+
+              </div>
+
+            </div>
+
+          ))}
+
+        </div>
+      ) : (
+        <div className="empty-card-state">
+          <p>No route stages available yet.</p>
+
+          <button
+            type="button"
+            className="card-link"
+            onClick={() => navigate('/my-routes')}
+          >
+            Create your route
+            <ArrowRight size={15} />
+          </button>
+        </div>
+      )}
 
     </section>
   );
@@ -350,85 +468,165 @@ function RouteOverview({ route }) {
 
 
 /* =========================================================
-   SKILLS
+   SKILLS AT A GLANCE
 ========================================================= */
 
-function SkillsCard({ skills }) {
+function SkillsCard({ skills = [] }) {
   const navigate = useNavigate();
+
+  const strongCount = skills.filter(
+    (skill) => skill.status === 'strong'
+  ).length;
+
+  const developingCount = skills.filter(
+    (skill) => skill.status === 'developing'
+  ).length;
+
+  const attentionCount = skills.filter(
+    (skill) => skill.status === 'needs_attention'
+  ).length;
+
+
+  /*
+   * Use actual skill data when available.
+   * Falls back to an empty state instead of fake values.
+   */
+  const developingSkills = skills
+    .filter(
+      (skill) =>
+        skill.status === 'developing' ||
+        skill.status === 'needs_attention'
+    )
+    .slice(0, 3);
+
 
   return (
     <section className="dashboard-card skills-card">
 
-      <div className="card-label">
-        SKILLS AT A GLANCE
+      <div className="card-header-row">
+
+        <div>
+          <div className="card-label">
+            SKILLS AT A GLANCE
+          </div>
+
+          <h3 className="card-title">
+            Your skill profile
+          </h3>
+        </div>
+
+        <button
+          type="button"
+          className="card-link"
+          onClick={() => navigate('/skills')}
+        >
+          View all
+          <ArrowRight size={15} />
+        </button>
+
       </div>
 
-      <div className="skills-top">
+
+      <div className="skills-summary">
 
         <div className="skills-donut">
 
           <div className="donut-inner">
-            <strong>{skills.length}</strong>
-            <span>Skills Tracked</span>
+            <strong>
+              {skills.length}
+            </strong>
+
+            <span>
+              Skills
+            </span>
           </div>
 
         </div>
+
 
         <div className="skills-legend">
 
           <Legend
             className="strong"
             label="Strong"
-            value={skills.filter((skill) => skill.status === 'strong').length}
+            value={strongCount}
           />
 
           <Legend
             className="developing"
             label="Developing"
-            value={skills.filter((skill) => skill.status === 'developing').length}
+            value={developingCount}
           />
 
           <Legend
             className="attention"
             label="Need Attention"
-            value={skills.filter((skill) => skill.status === 'needs_attention').length}
+            value={attentionCount}
           />
 
         </div>
 
       </div>
 
+
       <div className="card-divider" />
 
+
       <div className="subsection-title">
-        Top Developing
+        Focus Areas
       </div>
 
-      <SkillProgress
-        label="Model Evaluation"
-        percentage="48%"
-        width="48%"
-      />
 
-      <SkillProgress
-        label="Feature Engineering"
-        percentage="61%"
-        width="61%"
-      />
+      <div className="skill-progress-list">
 
-      <SkillProgress
-        label="Deep Learning"
-        percentage="31%"
-        width="31%"
-      />
+        {developingSkills.length > 0 ? (
+
+          developingSkills.map((skill) => {
+
+            const percentage =
+              Number(
+                skill.progress ??
+                skill.percentage ??
+                skill.score ??
+                0
+              );
+
+            return (
+              <SkillProgress
+                key={skill.id || skill.name || skill.title}
+                label={
+                  skill.name ||
+                  skill.title ||
+                  'Skill'
+                }
+                percentage={`${percentage}%`}
+                width={`${Math.min(
+                  Math.max(percentage, 0),
+                  100
+                )}%`}
+              />
+            );
+
+          })
+
+        ) : (
+
+          <div className="skills-empty">
+            Your tracked skills will appear here.
+          </div>
+
+        )}
+
+      </div>
+
 
       <button
         type="button"
         className="wide-outline-button"
-        onClick={() => navigate("/skills")}
+        onClick={() => navigate('/skills')}
       >
         View All Skills
-        <ArrowRight size={17} />
+        <ArrowRight size={16} />
       </button>
 
     </section>
@@ -436,20 +634,38 @@ function SkillsCard({ skills }) {
 }
 
 
-function Legend({ className, label, value }) {
+/* =========================================================
+   LEGEND
+========================================================= */
+
+function Legend({
+  className,
+  label,
+  value,
+}) {
   return (
     <div className="legend-row">
 
-      <span className={`legend-dot ${className}`} />
+      <span
+        className={`legend-dot ${className}`}
+      />
 
-      <span>{label}</span>
+      <span className="legend-label">
+        {label}
+      </span>
 
-      <strong>{value}</strong>
+      <strong>
+        {value}
+      </strong>
 
     </div>
   );
 }
 
+
+/* =========================================================
+   SKILL PROGRESS
+========================================================= */
 
 function SkillProgress({
   label,
@@ -459,19 +675,27 @@ function SkillProgress({
   return (
     <div className="skill-progress-row">
 
-      <span className="skill-name">
-        {label}
-      </span>
+      <div className="skill-progress-header">
 
-      <div className="mini-progress">
-        <div
-          style={{ width }}
-        />
+        <span className="skill-name">
+          {label}
+        </span>
+
+        <span className="skill-percent">
+          {percentage}
+        </span>
+
       </div>
 
-      <span className="skill-percent">
-        {percentage}
-      </span>
+      <div className="mini-progress">
+
+        <div
+          style={{
+            width,
+          }}
+        />
+
+      </div>
 
     </div>
   );
@@ -482,102 +706,182 @@ function SkillProgress({
    PROJECTS
 ========================================================= */
 
-function ProjectsCard({ apiProjects }) {
+function ProjectsCard({
+  apiProjects = [],
+}) {
   const navigate = useNavigate();
 
-  const projects = apiProjects.map((project) => ({
-    ...project,
-    status: project.status === 'completed' ? 'Completed' : project.status === 'current' ? 'In Progress' : 'Upcoming',
-    percentage: project.status === 'completed' ? '100%' : project.status === 'current' ? `${project.progress || 0}%` : '',
-    type: project.status === 'completed' ? 'completed' : project.status === 'current' ? 'progress' : 'upcoming',
-  }));
+  const projects = apiProjects.map((project) => {
+
+    const status =
+      project.status === 'completed'
+        ? 'Completed'
+        : project.status === 'current'
+        ? 'In Progress'
+        : 'Upcoming';
+
+    const type =
+      project.status === 'completed'
+        ? 'completed'
+        : project.status === 'current'
+        ? 'progress'
+        : 'upcoming';
+
+    const percentage =
+      project.status === 'completed'
+        ? '100%'
+        : project.status === 'current'
+        ? `${project.progress || 0}%`
+        : '';
+
+    return {
+      ...project,
+      status,
+      type,
+      percentage,
+    };
+  });
+
 
   return (
     <section className="dashboard-card projects-card">
 
-      <div className="card-label">
-        PROJECTS ON YOUR ROUTE
+      <div className="card-header-row">
+
+        <div>
+          <div className="card-label">
+            PROJECTS ON YOUR ROUTE
+          </div>
+
+          <h3 className="card-title">
+            Build through practice
+          </h3>
+        </div>
+
+        <button
+          type="button"
+          className="card-link"
+          onClick={() => navigate('/projects')}
+        >
+          View all
+          <ArrowRight size={15} />
+        </button>
+
       </div>
 
-      <div className="projects-list">
 
-        {projects.map((project, index) => (
+      {projects.length > 0 ? (
+
+        <div className="projects-list">
+
+          {projects.map((project) => (
+
+            <button
+              type="button"
+              className="project-row"
+              key={project.id || project.title}
+              onClick={() => {
+                if (project.id) {
+                  navigate(
+                    `/projects/${project.id}`
+                  );
+                }
+              }}
+            >
+
+              <div
+                className={`project-icon ${project.type}`}
+              >
+
+                {project.type === 'completed' && (
+                  <CircleCheck
+                    size={20}
+                    strokeWidth={1.7}
+                  />
+                )}
+
+                {project.type === 'progress' && (
+                  <Play
+                    size={17}
+                    strokeWidth={1.7}
+                  />
+                )}
+
+                {project.type === 'upcoming' && (
+                  <Circle
+                    size={19}
+                    strokeWidth={1.5}
+                  />
+                )}
+
+              </div>
+
+
+              <div className="project-information">
+
+                <div className="project-title">
+                  {project.title}
+                </div>
+
+                <div className="project-status">
+                  {project.status}
+                </div>
+
+              </div>
+
+
+              {project.percentage && (
+                <div
+                  className={`project-percentage ${project.type}`}
+                >
+                  {project.percentage}
+                </div>
+              )}
+
+
+              <ArrowRight
+                className="project-arrow"
+                size={16}
+              />
+
+            </button>
+
+          ))}
+
+        </div>
+
+      ) : (
+
+        <div className="projects-empty">
+          <p>
+            No projects have been added to your route yet.
+          </p>
 
           <button
             type="button"
-            className="project-row"
-            key={project.title}
-            onClick={() => project.id && navigate(`/projects/${project.id}`)}
-            style={{ width: "100%", border: 0, background: "transparent", padding: 0, textAlign: "left" }}
+            className="card-link"
+            onClick={() => navigate('/projects')}
           >
-
-            <div
-              className={`project-icon ${project.type}`}
-            >
-
-              {project.type === "completed" && (
-                <CircleCheck
-                  size={21}
-                  strokeWidth={1.7}
-                />
-              )}
-
-              {project.type === "progress" && (
-                <Play
-                  size={18}
-                  strokeWidth={1.7}
-                />
-              )}
-
-              {project.type === "upcoming" && (
-                <Circle
-                  size={20}
-                  strokeWidth={1.5}
-                />
-              )}
-
-            </div>
-
-            <div className="project-information">
-
-              <div className="project-title">
-                {project.title}
-              </div>
-
-              <div className="project-status">
-                {project.status}
-              </div>
-
-            </div>
-
-            {project.percentage && (
-              <div
-                className={`project-percentage ${project.type}`}
-              >
-                {project.percentage}
-              </div>
-            )}
-
+            Explore projects
+            <ArrowRight size={15} />
           </button>
+        </div>
 
-        ))}
+      )}
 
-      </div>
 
       <button
-  type="button"
-  className="wide-outline-button"
-  onClick={() => navigate("/projects")}
->
-  View All Projects
-  <ArrowRight size={17} />
-</button>
+        type="button"
+        className="wide-outline-button"
+        onClick={() => navigate('/projects')}
+      >
+        View All Projects
+        <ArrowRight size={16} />
+      </button>
 
     </section>
   );
 }
-
-
 /* =========================================================
    WEEKLY PROGRESS
 ========================================================= */
@@ -800,11 +1104,12 @@ function RightColumn({ route }) {
 function DashboardGrid({ route, resource, skills, projects }) {
   return (
     <section className="dashboard-grid">
-      <CurrentStage route={route} />
-      <DailyFocus resource={resource} />
-      <RouteOverview route={route} />
-      <SkillsCard skills={skills} />
-      <ProjectsCard apiProjects={projects} />
+      <DashboardRightColumn
+  route={route}
+  resource={resource}
+  skills={skills}
+  apiProjects={apiProjects}
+/>
     </section>
   );
 }
